@@ -1,0 +1,302 @@
+#!/usr/bin/perl -w
+#
+#
+#  Given a fortran source file, generate a Makefile list of files
+#  (in the current directory) containing all needed subprograms.
+#
+#  useful for generating makefiles from fortran source codes.
+#
+#  copyright (c) 1998  matt newville
+#
+use Getopt::Std;
+
+use subs qw{FindCalled FindDepend WriteMake AddtoList DumpHelp};
+my ($f,$j,$i,$len,$src,$obj,$found,$is,$iu,$ishere,$dir,$a)=();
+my ($out,$extradirs,$prefix);
+my (@unfound, @unfound_inc,@seen,@incs,@writ_inc,%files);
+# $|=1;  #autoflush outputs
+
+getopts('p:d:o:');
+$extradirs = ($opt_d) ? ($opt_d) : " ";
+$prefix    = ($opt_p) ? ($opt_p) : "";
+
+if ($opt_o) {
+    open(OUT, ">$opt_o") or die "couldn't open $opt_o\n"; 
+    select OUT; 
+}
+if ($#ARGV<0) {DumpHelp and exit;}
+
+
+#
+# first:  build a hash telling which subprograms are in which files,
+#         $files{$function} names the file that a function is in.
+#  scans only fortran source with lower case names
+#  subprogram names limited to alphanumeric characters
+#  subprograms supported: subroutine, entry, .* function
+
+# bulid directory list of files
+my @dirs = (".");
+push @dirs , split (/\s/o,$extradirs);
+my @dirfiles = ();
+foreach $dir (@dirs) {
+  opendir(DIR,"$dir") or die "can't open directory $dir\n";
+  push @dirfiles, readdir(DIR);
+  closedir(DIR);
+}
+
+# scan files for subprogram keywords
+print  "# Scanning files ...  ";
+foreach $f (@dirfiles) {
+  next unless $f =~ /^[a-z][a-z0-9]*.*\.f$/io;
+  open(FH, $f) or warn "# couldn't open $f\n";
+  ##    print  "$f ... ";
+  while (<FH>) {
+    next if ( (/^c/io) or (/^\s*$/o));
+    if  ((/^ \s* subroutine\s+([\w]+)\s*.*/io) or
+	 (/^ \s* entry\s+([\w]+)\s*.*/io)      or
+	 (/^ \s*.* function\s+([\w]+)\s*.*/io) ) {	
+      $a = $1;
+      $a =~ tr/A-Z/a-z/;
+      $files{$a} = $f;
+    }
+  }
+  close(FH);
+}
+#
+# second:  for each named argument, create a list of needed files
+#        a   determine called routines and looking for "external"
+#            declarations and "call " constructs.
+#        b   look up file for each routine
+#        c   look in all needed files until all routines are found
+# find all called routines, save in array @seen
+@seen = @ARGV;
+foreach $f (@ARGV) {
+  print "\n# Finding routines needed to make $f ...";
+  FindCalled($f);
+}
+
+# write SRC and OBJ lines
+print "\n$prefix"."SRC =\t";
+WriteMake(0,50,@seen);
+print "\n$prefix"."OBJ =\t";
+WriteMake(1,50,@seen);
+
+# determine and write dependencies
+print "\n# dependencies:\n";
+foreach $src (@seen) {
+  next if $src =~ /^\s*$/o;
+  $src =~ /(.*)(\.f)/io and $obj = "$1".".o";
+  $found = 0;
+  @writ_inc  = ();
+  FindDepend($src);    # finds all included files
+  $len   = 0;
+  for $is (0..$#writ_inc) {
+    $ishere = 1;
+    for $iu (0..$#unfound_inc) {
+      $ishere = 0 if ($writ_inc[$is] eq $unfound_inc[$iu]);
+    }
+    if ($ishere) {
+      print " $writ_inc[$is]";
+      $len += length($writ_inc[$is]);
+    }
+    print "\\\n\t" and $len = 0 if (($len > 45) and ($is < $#writ_inc));
+  }
+  print "\n" if ($found);
+}
+
+# write INC  (list of include files)
+print "\n$prefix"."INC =\t";
+WriteMake(0,50,@incs);   
+
+# warn about unfound subprograms
+if (defined($unfound[0])) { 
+  print "\n# WARNING: these subprograms seem to be needed but weren't found\n";
+  print "$prefix"."MISSING=\t";
+  WriteMake(0,50,@unfound);
+}
+# warn about unfound include files
+if (defined($unfound_inc[0])) {
+  print "\n# WARNING: these include files seem to be needed but weren't found\n";
+  print "$prefix"."MISSING_INC=\t";
+  WriteMake(0,50,@unfound_inc);
+}
+# done
+
+sub FindCalled { # find all needed routines and files
+  my ($b,@extroutines) = ();
+  my($fh) = ++$i;
+  open($fh, $_[0]) or warn "# couldn't open $_[0]\n";
+  while (<$fh>) {
+    next if ( (/^c/io) or (/^\s*$/io));
+    if  (/^ \s* external\s+(.*)/io)  { # `external' functions
+      #       "external a, b, c" is allowed, so we need to keep
+      #       a stack of functions to look up (using push and shift)
+      $a = $1;
+      $a =~ tr/A-Z/a-z/;
+      push @extroutines , split (/,/o,$a) ;
+      while (@extroutines) {
+	$b = shift (@extroutines);
+	$b =~ s/\s*//go;  #allows simpler "split" above
+	AddtoList($b);
+      }
+      # `call'ed subroutines: simpler syntax (must be on it's own line)
+    } elsif (/^[\d\s]{1,6}.*call\s+([\w]+)\s*.*/io) {
+      $a = $1;
+      $a =~ tr/A-Z/a-z/;
+      AddtoList($a);
+    }
+  }
+  close($fh) and --$i;
+}
+
+sub AddtoList { # manage list of called routines and functions for FindCalled
+  my ($b,$new,$is) = ($_[0],1,0);
+  $b =~ tr/A-Z/a-z/;
+  if (defined($files{$b})) { # is there a  corresponding file?
+    for $is (0..$#seen) { $new = 0 if ($files{$b} eq $seen[$is]);}
+    #    if this file has not already been seen,
+    #    then find all the called routines in this file too.
+    if ($new) {
+      $seen[++$#seen]  = $files{$b};
+      FindCalled($files{$b});
+    }
+  } else {   # if *no* corresponding file, add to unfound list
+    for $is (0..$#unfound) {$new = 0 if ($b eq $unfound[$is]);}
+    if ($new) { $unfound[++$#unfound]  = $b;}
+  }
+}
+
+sub FindDepend { # find ``include'' dependencies of a fortran file
+  my($fh) = ++$i;
+  my ($new,$written,$t,$iw,$is,$opened) = ();
+  $opened = open($fh, $_[0]) ;
+  unless ($opened) {
+    $new = 1;
+    for $is (0..$#unfound_inc) {$new = 0 if ($_[0] eq $unfound_inc[$is]);}
+    if ($new) {$unfound_inc[++$#unfound_inc]  = $_[0];}
+    return 0;
+  }
+  while (<$fh>) {
+    if (/^[  ]\s*include\s*["{'\s*]([^"{'\s]*)(["}'\s])\s*/o) {
+      #                        fix emacs colorizing from that last regex: "
+      #   has this included file been seen before?
+      $a = $1;
+      $a =~ tr/A-Z/a-z/;
+      $new  = 0;
+      for $is (0..$#incs) {$new = 1 if ($a eq $incs[$is]);}
+      $incs[++$#incs]  = $a unless ($new);
+      #   is this the first found ``include'' for this file?
+      unless ($found) {
+	print "$obj: ";
+	$found = 1;
+	@writ_inc  = ();  #reset writ_inc array for each new file
+      }
+      #   has this included file been written down yet?
+      $written = 0;
+      for $iw (0..$#writ_inc)   {$written = 1 if ($a eq $writ_inc[$iw]);}
+      unless ($written) {
+	$writ_inc[++$#writ_inc] = $a;
+	FindDepend($a);
+      }
+    }
+  }
+  close($fh) and --$i;
+}
+
+sub WriteMake {  # simple write in a Makefile format
+  my ($obj_switch,$len,@out) = @_;
+  my ($i,$l) =(0,0);
+  for $i (0..$#out) {
+    print "\\\n\t" and $l = 0 if ($l > $len);
+    if ($obj_switch) {  # = 1 for "OBJ"
+      $out[$i] =~ /(.*)\.f/o  and print " $1".".o";
+    } else {        # = 0 for normal case
+      print " $out[$i]";
+    }
+    $l += length ($out[$i]);
+  }
+  print "\n";
+}
+
+sub DumpHelp {
+my $help_msg =<<'END'; # written when no arguments are given
+usage:   F77Maker [-options] file(s)
+purpose: create a Makefile listing for a list of fortran source files
+options: switch        meaning
+          -h           display this help message
+          -p  PREFIX   append prefix PREFIX to Makefile variables
+          -o  FILE     output file to redirect output to
+
+  Type 'perldoc F77Maker' for more details
+END
+print STDERR $help_msg;
+}
+
+__END__
+
+=head1 NAME
+
+F77Maker - generate Makefile dependencies for fortran code
+
+=head1 SYNOPSIS
+
+F77Maker [C<-o> outputfile  C<-p> PREFIX] file(s)
+
+This program generate a Makefile listing of source, object, 
+and include file, and depencies (ie, include files) for a 
+list of fortran source code files.   The output is written
+in a form suitable to be included in a Makefile.  These
+Makefile variables are written:
+
+=over  3
+
+=item I<SRC>
+list of all required source files.
+
+=item I<OBJ>
+list of the objects made from the SRC files.
+
+=item I<INC>
+list of ``include''d files.
+
+=back 
+
+
+IF the optional C<-p> switch is used, the argument will be used as a prefix
+for each of the above Make variables
+
+Make dependencies (a list of ``include''d files for each SRC
+file) are also written.
+
+Warnings are given for subprograms and include files that 
+cannot be found in the current directory.
+
+=head1 DESCRIPTION
+
+F77Maker proceeds likes this:
+
+First, all the fortran source codes (F<*.f>) in the current working
+directory are scanned for subprogram units (B<subroutine>, B<function>, and
+B<entry>) and a table is built of which subprograms are found in which
+file.
+
+Then the listed files are scanned for keywords pointing to external
+subprograms (that is, either B<call> or an explicit B<external>
+declaration).  When an external subprogram is found in the table created
+above, the file containing the called subprogram is scanned for keywords
+pointing to external subprograms.  This is done recursively until all files
+containing required subprograms have been scanned.
+
+Subprograms that can't be located in the files in the current directory are
+listed in the I<MIAS> Makefile variables.  The missing routines may be in
+an external library, so  this list should be treated as a warning.
+
+In addition to determining all the source code files required to compile
+the listed files, the Makefile dependencies on include files is also
+listed.
+
+=head1 AUTHOR
+
+M. Newville  --  newville@cars.uchicago.edu
+
+=cut

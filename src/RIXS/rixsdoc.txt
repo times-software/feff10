@@ -1,0 +1,18 @@
+Files needed to run rixs module.
+
+wscrn_1.dat
+wscrn_2.dat
+
+rl_1.dat
+rl_2.dat
+
+gg_1.bin
+gg_2.bin
+
+xsect_1.dat
+xsect_2.dat
+
+phase_1.dat
+phase_2.dat
+
+So, make xsph, screen, and fms run twice with different core hole potentials.

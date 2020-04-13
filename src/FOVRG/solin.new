@@ -1,0 +1,470 @@
+      subroutine solin (en,fl,agi,api,kap,rmt,jri,imax,ic3,vm, iwkb)
+!                  resolution of the dirac equation
+!                   p' - kap*p/r = - ( en/cl-v )*g - eg/r
+!                   g' + kap*g/r = ( 2*cl+en/cl-v )*p + ep/r
+! at the origin v approximately is -z/(r*cl) due to the point nucleus
+! en one-electron energy in atomic units and negative
+! fl power of the first term in development at the origin
+! agi (api) initial values of the first development coefficient
+! at the origin of the large(small)component
+! kap quantum number kappa
+! imax the last point of tabulation of the wave function
+
+      implicit double precision (a-h,o-z)
+      include '../HEADERS/dim.h'
+      include '../HEADERS/const.h'
+      parameter (npi=5, test=1.0d+5)
+      complex*16 en,agi,api,c3,vmh
+      complex*16 gg,ag,gp,ap,dv,av,eg,ceg,ep,cep, vm(nrptx)
+      common/comdic/cl,dz,gg(nrptx),ag(10),gp(nrptx),ap(10),dv(nrptx), &
+     &   av(10),eg(nrptx),ceg(10),ep(nrptx),cep(10)
+
+      complex*16 ec,eph,egh,f,g,ac,bc,acp,bcp,dg,dp, vh
+      complex*16 dg2, dp2, dg3, dp3, dg4, dp4
+      dimension dg(npi), dp(npi)
+
+! Debug
+      complex*16 gg_exact(nrptx)
+      complex*16 gp_exact(nrptx)
+      complex*16 dg_exact(nrptx)
+      complex*16 dp_exact(nrptx)
+
+! Debug
+      complex*16 delta_V
+      complex*16 k1, k2, k3, k4, m1, m2, m3, m4
+
+! gg,gp -output, dv,eg,ep - input
+!
+! cl speed of light (approximately 137.037 in atomic units)
+! dz nuclear charge
+! gg (gp) large (small) component
+! dv direct potential (v)     eg and ep exchange potentials
+! ag,ap,av,ceg and cep are respectively the
+! development coefficients for gg,gp,dv,eg and ep
+!
+      common/tabtec/hx,dr(nrptx),test1,test2,ndor,np,nes,method,idim
+! hx exponential step
+! dr radial mesh
+! test1,test2,nes,method are dummy.
+!  ndor number of terms for the developments at the origin
+! np maximum number of the tabulation points
+! idim dimension of the block dr
+      complex*16 jl(0:ltot+1), hl(0:ltot+1), xkmt, ck, dum1, factor
+      external besjh
+
+! Debug
+!     write(6,FMT='(A)') '# Inside solin, vm, dv'
+!     do iir=1,251
+!       write(6,FMT='(1P,5E12.4)') &
+!    &        exp(-8.8 + (iir-1)*0.05), &
+!    &        vm(iir), dv(iir)
+!     end do
+!     write(6,FMT='(A)') '# Inside solin, gg'
+
+! Debug
+!     if ( (real(dv(1)) .gt. -4.8407E+01) .and. 7
+!    &     (real(dv(1)) .lt. -4.8405E+01)       ) then
+!       write(6,FMT='(A)') '# Inside solin, Target potential'
+! Zero out the potential for testing purposes
+!       do iir=1,251
+!         dv(iir) =  0.0000D+00
+!       end do
+! Constant potential over the whole grid (E > V)
+!       do iir=1,251
+!         dv(iir) = -2.0000D+00
+!       end do
+! Constant potential inside muffin tin, zero outside (E > V)
+!       delta_V = 3.000D0
+!       do iir=1,jri-1
+!         dv(iir) = -delta_V
+!       end do
+!       do iir=jri,iwkb
+!         dv(iir) =  0.0000D+00
+!       end do
+! Step potential, with step 2*delta_V
+!       delta_V = 0.250D0
+!       do iir=1,jri-1
+!         dv(iir) = -0.2500D+00-delta_V
+!       end do
+!       do iir=jri,iwkb
+!         dv(iir) = -0.2500D+00+delta_V
+!       end do
+! Coulomb potential over the whole grid
+!       do iir=1,251
+!         dv(iir) = -1.0D+00/(137.07D0*dr(iir))
+!       end do
+! Plug a Coulomb potential inside muffin tin
+!       do iir=1,jri-1
+!         dv(iir) = -1.0D+00/(137.07D0*dr(iir))
+!       end do
+!       do iir=jri,iwkb
+!         dv(iir) =  0.0D+00
+!       end do
+!     end if
+
+      ccl=cl+cl
+      ihard = 0
+      ec=en/cl
+      do 115 i=2,ndor
+         ag(i)=0.0d0
+ 115     ap(i)=0.0d0
+!     integration of the inhomogenious system
+!     no need in normalization, since we can use 
+!     normalization agi=ag(1)=const
+ 
+!            solution of the inhomogenios dirac equation
+! gg gp initially exch. terms, at the time of return are wave functions
+! ag and ap development coefficients of  gg and gp
+! en one-electron energy
+! fl power of the first development term at the origin
+! agi (api) initial values of the first development coefficients
+! at the origin of a large (small) component
+ 
+! Debug
+!     vmh = cl * dv(jri-1)
+!     ck = sqrt(2*(en-vmh) + (alphfs*(en-vmh))**2)
+!     xkmt = ck * dr(jri-1)
+!     call besjh( xkmt, 2, jl, hl)
+!     write(6,FMT='(A,1P,2E16.8)') 'Inside solin h0(jri-1)', hl(0)
+!     vmh = cl * dv(jri)
+!     ck = sqrt(2*(en-vmh) + (alphfs*(en-vmh))**2)
+!     xkmt = ck * dr(jri-1)
+!     call besjh( xkmt, 2, jl, hl)
+!     write(6,FMT='(A,1P,2E16.8)') 'Inside solin h0(jri)  ', hl(0)
+
+!     started with h_l above jri inside dfovrg
+! Debug Fix
+! We start with the potential right outside the mt (i.e., at jri)
+      vmh = cl * dv(jri)
+      ck = sqrt(2*(en-vmh) + (alphfs*(en-vmh))**2)
+      il = abs(kap)
+      if (kap.lt. 0) il = il - 1
+      ilp = il - 1
+      if (kap .lt. 0) ilp = il + 1
+      ilx = il+1
+      if (ilp.gt.il) ilx=ilp+1
+      xsign = -1.d0
+      if (kap.gt.0) xsign = 1.d0
+      factor = ck*alphfs
+      factor = xsign * factor/(1+sqrt(1+factor**2))
+      dum1 = 1/ sqrt(1+factor**2)
+
+      iflat = min ( jri, iwkb)
+      do i = jri, imax
+        j= iflat + npi - i
+        xkmt = ck * dr(i)
+        call besjh( xkmt, ilx, jl, hl)
+        gg(i) = hl(il) * dr(i) * dum1
+        gp(i) = hl(ilp) * dr(i) * dum1 * factor
+        if (j.gt.0) then
+          f = (ec - dv(i))*dr(i)
+          g = f + ccl * dr(i)
+          c3 = ic3*vm(i)/g**2
+          dg(j) = -(  g*gp(i) - kap*gg(i) )
+          dp(j) = -(  kap*gp(i) - (f-c3)*gg(i) )
+!         neglect exchage term outside jri
+!         dg(j) = -(  g*gp(i) - kap*gg(i) + ep(i) )
+!         dp(j) = -(  kap*gp(i) - (f-c3)*gg(i) - eg(i) )
+        endif
+      enddo
+
+! Debug
+!     write(6,FMT='(A,4I5)') &
+!    &      '# Inside solin, kap, il, ilp, ilx', &
+!    &      kap, il, ilp, ilx
+
+! Debug Fix
+! Calculate the solutions at the matching point (i.e. at jri-1, using the
+! potential OUTSIDE the mt, see above)
+        xkmt = ck * dr(jri-1)
+        call besjh( xkmt, ilx, jl, hl)
+        gg(jri-1) = hl(il)  * dr(jri-1) * dum1
+        gp(jri-1) = hl(ilp) * dr(jri-1) * dum1 * factor
+! Calculate the derivatives at the matching point (i.e. at jri-1, using the
+! potential INSIDE the mt, see above)
+!       f = (ec - dv(jri-1))*dr(jri-1)
+!       g = f + ccl * dr(jri-1)
+!       dg(1) = -(  g*gp(jri-1) - kap*gg(jri-1) )
+!       dp(1) = -(  kap*gp(jri-1) - f*gg(jri-1) )
+
+! Debug
+      do iir=1,iwkb
+! Uncomment these lines to get exact solution for a flat pot inside mt
+!---------------------------------------------------------------------
+!       vmh = cl * dv(iir)
+!       ck = sqrt(2*(en-vmh) + (alphfs*(en-vmh))**2)
+!       factor = ck*alphfs
+!       factor = xsign * factor/(1+sqrt(1+factor**2))
+!       dum1 = 1/ sqrt(1+factor**2)
+!---------------------------------------------------------------------
+        xkmt = ck * dr(iir)
+        call besjh( xkmt, ilx, jl, hl)
+        gg_exact(iir) = hl(il)  * dr(iir) * dum1
+        gp_exact(iir) = hl(ilp) * dr(iir) * dum1 * factor
+        f = (ec - dv(iir))*dr(iir)
+        g = f + ccl * dr(iir)
+! Debug
+! c3 shouldn't play a role here. Remove
+!       c3 = ic3*vm(iir)/g**2
+!       dg_exact(iir) = -( g*gp_exact(iir) - kap*gg_exact(iir) )
+!       dp_exact(iir) = -( kap*gp_exact(iir) - (f-c3)*gg_exact(iir) )
+        dg_exact(iir) = -( g*gp_exact(iir) - kap*gg_exact(iir) )
+        dp_exact(iir) = -( kap*gp_exact(iir) - f*gg_exact(iir) )
+      end do
+
+! Debug
+!     write(6,FMT='(A,3I5)') &
+!    &      '# Inside solin, jri, iwkb, imax', &
+!    &      jri, iwkb, imax
+!     write(6,FMT='(A,1P,5E18.10)') &
+!    &      '# Inside solin, en, ec, ccl', &
+!    &      en, ec, ccl
+
+! Debug
+!     do i=imax,jri-1,-1
+!       write(6,FMT='(I5,1P,10E16.8)') &
+!    &        i, gg(i), gg_exact(i), &
+!    &           dg(iflat + npi - i), dg_exact(i), dv(i)
+!     end do
+!     write(6,FMT='(I5,1P,10E16.8)') &
+!    &      jri-1, gg(jri-1), gg_exact(jri-1), &
+!    &             dg(npi), dg_exact(jri-1), dv(jri-1)
+!     write(6,FMT='(I5,1P,10E16.8)') &
+!    &      jri-1, gg(jri-1), gg_exact(jri-1), &
+!    &             gp(jri-1), gp_exact(jri-1), dv(jri-1)
+!     write(6,FMT='(I5,1P,10E16.8)')
+!    &      jri-1, &
+!    &      gg(jri-1), gg_exact(jri-1), &
+!    &      gp(jri-1), gp_exact(jri-1), &
+!    &      dv(jri-1)
+
+! Use Runge-Kutta to calculate the solution over the WHOLE range
+! This should solve the problem of oscillations in Milne near the nuclei
+      do i=jri-1,2,-1
+
+        f=(ec-dv(i))*dr(i)
+        g=f+ccl*dr(i)
+        k1 = -hx*(   g*gp(i) - kap*gg(i) )
+        m1 = -hx*( kap*gp(i) -   f*gg(i) )
+        f=(ec-(dv(i)+dv(i-1))/2.0)*dr(i)*exp(-0.5*hx)
+        g=f+ccl*dr(i)*exp(-0.5*hx)
+        k2 = -hx*(   g*(gp(i)+0.5*m1) - kap*(gg(i)+0.5*k1) )
+        m2 = -hx*( kap*(gp(i)+0.5*m1) -   f*(gg(i)+0.5*k1) )
+        k3 = -hx*(   g*(gp(i)+0.5*m2) - kap*(gg(i)+0.5*k2) )
+        m3 = -hx*( kap*(gp(i)+0.5*m2) -   f*(gg(i)+0.5*k2) )
+        f=(ec-dv(i-1))*dr(i-1)
+        g=f+ccl*dr(i-1)
+        k4 = -hx*(   g*(gp(i)+m3) - kap*(gg(i)+k3) )
+        m4 = -hx*( kap*(gp(i)+m3) -   f*(gg(i)+k3) )
+
+! These are the predicted solutions at the next point
+        gg(i-1) = gg(i) + (k1+2*k2+2*k3+k4)/6
+        gp(i-1) = gp(i) + (m1+2*m2+2*m3+m4)/6
+
+!       write(6,FMT='(I5,1P,10E16.8)') &
+!    &        i-1, &
+!    &        gg(i-1), gg_exact(i-1), &
+!    &        gp(i-1), gp_exact(i-1), &
+!    &        dv(i-1)
+
+! Debug
+!       write(6,FMT='(I5,1P,10E16.8)') &
+!    &        i-1, gg(i-1), gg_exact(i-1), &
+!    &        dg(jri-i), dg_exact(i-1), &
+!    &        dv(i-1)
+!       write(6,FMT='(A)') ' '
+!       write(6,FMT='(I5,1P,10E16.8)') i-1, &
+!    &        gg(i-1), gg_exact(i-1), &
+!    &        gp(i-1), gp_exact(i-1), &
+!    &        dv(i-1)
+
+! Debug
+!       write(6,FMT='(I5,1P,4E16.8)') &
+!    &        i,       gg(i), gg_exact(i)
+!       write(6,FMT='(A,1P,4E16.8)') &
+!    &        '     ', gp(i), gp_exact(i)
+!       write(6,FMT='(A,1P,4E16.8)') &
+!    &        '     ', dg(npi+i-jri+1), dg_exact(i)
+!       write(6,FMT='(A,1P,4E16.8)') &
+!    &        '     ', dp(npi+i-jri+1), dp_exact(i)
+
+      end do
+
+! Debug
+! Avoid this code for now
+      if ( .false. ) then
+
+! Use Runge-Kutta to get a start for Milne's method
+! Milne requires the values of the function at a couple of previous points
+! and the derivatives at the current point, plus four more points.
+! So, we go from jri-1 to jri-4 to calculate the values of the function
+! at jri-1 to jri-5, and then we calculate the derivative at jri-5.
+! ep and eg shouldn't play a role here, so we remove them
+! Same with c3
+      do i=jri-1,jri-4,-1
+
+        f=(ec-dv(i))*dr(i)
+        g=f+ccl*dr(i)
+        k1 = -hx*(   g*gp(i) - kap*gg(i) )
+        m1 = -hx*( kap*gp(i) -   f*gg(i) )
+! Debug
+!       write(6,FMT='(A)') ' '
+!       write(6,FMT='(A,1P,4E16.8)') '  f,  g', f, g
+!       write(6,FMT='(A,1P,4E16.8)') ' k1, m1', k1, m1
+        f=(ec-(dv(i)+dv(i-1))/2.0)*dr(i)*exp(-0.5*hx)
+        g=f+ccl*dr(i)*exp(-0.5*hx)
+        k2 = -hx*(   g*(gp(i)+0.5*m1) - kap*(gg(i)+0.5*k1) )
+        m2 = -hx*( kap*(gp(i)+0.5*m1) -   f*(gg(i)+0.5*k1) )
+! Debug
+!       write(6,FMT='(A)') ' '
+!       write(6,FMT='(A,1P,4E16.8)') '  f,  g', f, g
+!       write(6,FMT='(A,1P,4E16.8)') ' k2, m2', k2, m2
+        k3 = -hx*(   g*(gp(i)+0.5*m2) - kap*(gg(i)+0.5*k2) )
+        m3 = -hx*( kap*(gp(i)+0.5*m2) -   f*(gg(i)+0.5*k2) )
+! Debug
+!       write(6,FMT='(A)') ' '
+!       write(6,FMT='(A,1P,4E16.8)') '  f,  g', f, g
+!       write(6,FMT='(A,1P,4E16.8)') ' k3, m3', k3, m3
+        f=(ec-dv(i-1))*dr(i-1)
+        g=f+ccl*dr(i-1)
+        k4 = -hx*(   g*(gp(i)+m3) - kap*(gg(i)+k3) )
+        m4 = -hx*( kap*(gp(i)+m3) -   f*(gg(i)+k3) )
+! Debug
+!       write(6,FMT='(A)') ' '
+!       write(6,FMT='(A,1P,4E16.8)') '  f,  g', f, g
+!       write(6,FMT='(A,1P,4E16.8)') ' k4, m4', k4, m4
+
+! These are the derivatives at the current point
+        dg(jri-i) =  k1/hx
+        dp(jri-i) =  m1/hx
+
+! These are the predicted solutions at the next point
+        gg(i-1) = gg(i) + (k1+2*k2+2*k3+k4)/6
+        gp(i-1) = gp(i) + (m1+2*m2+2*m3+m4)/6
+
+! Debug
+!       write(6,FMT='(I5,1P,10E16.8)') &
+!    &        i-1, gg(i-1), gg_exact(i-1), &
+!    &        dg(jri-i), dg_exact(i-1), &
+!    &        dv(i-1)
+!       write(6,FMT='(A)') ' '
+!       write(6,FMT='(I5,1P,10E16.8)') i-1, &
+!    &        gg(i-1), gg_exact(i-1), &
+!    &        gp(i-1), gp_exact(i-1), &
+!    &        dv(i-1)
+
+! Debug
+!       write(6,FMT='(I5,1P,4E16.8)') &
+!    &        i,       gg(i), gg_exact(i)
+!       write(6,FMT='(A,1P,4E16.8)') &
+!    &        '     ', gp(i), gp_exact(i)
+!       write(6,FMT='(A,1P,4E16.8)') &
+!    &        '     ', dg(npi+i-jri+1), dg_exact(i)
+!       write(6,FMT='(A,1P,4E16.8)') &
+!    &        '     ', dp(npi+i-jri+1), dp_exact(i)
+
+      end do
+
+! Now we have to calculate the derivatives at the last point predicted
+! above, which are missing
+      f=(ec-dv(jri-5))*dr(jri-5)
+      g=f+ccl*dr(jri-5)
+      dg(5) = -(   g*gp(jri-5) - kap*gg(jri-5) )
+      dp(5) = -( kap*gp(jri-5) -   f*gg(jri-5) )
+
+! Debug
+      do i=jri-1,jri-5,-1
+        write(6,FMT='(I5,1P,4E16.8)') &
+     &        i,       gg(i), gg_exact(i)
+        write(6,FMT='(A,1P,4E16.8)') &
+     &        '     ', gp(i), gp_exact(i)
+        write(6,FMT='(A,1P,4E16.8)') &
+     &        '     ', dg(jri-i), dg_exact(i)
+        write(6,FMT='(A,1P,4E16.8)') &
+     &        '     ', dp(jri-i), dp_exact(i)
+      end do
+
+! Use Milne's method to solve once we have all the values for
+! the solutions and their derivatives
+!     integration of the inhomogenious system
+      a1 = hx * 3.3
+      a2 = -hx * 4.2
+      a3 = hx * 7.8
+      a4 = hx * 14.0/45.0
+      a5 = hx * 64.0/45.0
+      a6 = hx * 24.0/45.0
+!     do 55 i = jri - npi + 1 , 2, -1
+!     do 55 i = iflat, 2, -1
+      do 55 i = jri-5, 2, -1
+         nit = 0
+!        predictor
+         acp=gg(i+5)+a1*(dg(npi)+dg(npi-4))+a2*(dg(npi-1)+dg(npi-3)) &
+     &       +a3*dg(npi-2)
+         bcp=gp(i+5)+a1*(dp(npi)+dp(npi-4))+a2*(dp(npi-1)+dp(npi-3)) &
+     &       +a3*dp(npi-2)
+!        ac,bc -corrector w/o contribution from derivatives at i+1
+         ac=gg(i+3)+a4*dg(npi-3)+a5*(dg(npi)+dg(npi-2))+a6*dg(npi-1)
+         bc=gp(i+3)+a4*dp(npi-3)+a5*(dp(npi)+dp(npi-2))+a6*dp(npi-1)
+         do 61 j=1,npi-1
+            dg(j)=dg(j+1)
+ 61         dp(j)=dp(j+1)
+         f=(ec-dv(i-1))*dr(i-1)
+         g=f+ccl*dr(i-1)
+         c3 = ic3*vm(i-1)/g**2
+! Debug
+! We remove ep and eg because they shouldn't play a role for
+! the irregular solution
+ 64      dg(npi)= -( g*bcp-kap*acp )
+         dp(npi)= -( kap*bcp-(f-c3)*acp )
+!64      dg(npi)= -( g*bcp-kap*acp+ep(i-1) )
+!        dp(npi)= -( kap*bcp-(f-c3)*acp-eg(i-1) )
+!        corrected values
+! Debug
+         gg(i-1)=ac+a4*dg(npi)
+         gp(i-1)=bc+a4*dp(npi)
+! Debug
+!        if ( nit .eq. 2 ) then
+!          write(6,FMT='(I5,1P,4E12.4)') i-1, gg(i-1), dg(npi)
+!          write(6,FMT='(1P,5E12.4)')
+!        end if
+!    &         exp(-8.8 + (i-2)*0.05), gg(i-1), dg(npi)
+         if ( abs(test*(gg(i-1)-acp)) .gt. abs(gg(i-1)) .or. &
+     &        abs(test*(gp(i-1)-bcp)) .gt. abs(gp(i-1)) ) then
+!           test failed
+            if (nit.lt.40) then
+               acp = gg(i-1)
+               bcp = gp(i-1)
+               nit = nit + 1
+               goto 64
+            else
+               ihard = ihard+1
+            endif
+         endif
+         write(6,FMT='(I5,1P,10E16.8)') &
+     &         i-1, gg(i-1), gg_exact(i-1), dg(npi), dg_exact(i-1), &
+     &         dv(i-1)
+ 55   continue
+
+! Debug
+! End avoided code
+      end if
+
+      do 741 i=imax+1,np
+         gg(i)=0.0d00
+ 741     gp(i)=0.0d00
+      ag(1)=gg(1)* dr(1)**(-fl)
+      ap(1)=gp(1)* dr(1)**(-fl)
+
+! Debug
+!     write(6,FMT='(A)') '# Inside solin'
+!     do iir=1,iwkb
+!       write(6,FMT='(1P,3E12.4)') &
+!    &        exp(-8.8 + (iir-1)*0.05), &
+!    &        gg(iir)
+!       write(6,FMT='(I5,1P,2E12.4)') 7
+!    &        iir, 7
+!    &        gg(iir)
+!     end do
+
+      return
+      end

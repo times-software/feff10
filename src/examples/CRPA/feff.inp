@@ -1,0 +1,26 @@
+* Define the material:
+CIF Ce-Cerium.cif
+
+* For O K edge
+* EDGE K
+* TARGET 2
+
+* For Ce L3 edge
+ EDGE L3
+ TARGET 1
+ 
+ UNFREEZEF
+
+CRPA 3 1.49
+
+* For quality calculations, increase SCF and FMS radii, e.g. to 6 and 8
+SCF 4.0 0 100 0.2 1 
+COREHOLE FSR
+XANES 20.0 0.07 0.0
+
+FMS 5.0 0     
+END
+
+
+
+

@@ -1,0 +1,80 @@
+#!/bin/csh -f
+set bin = "/Users/jorissen/science/software/FEFF/opcons/bin"
+
+if ($#argv > 0 ) goto $1
+step1:
+$bin/step1
+$bin/optical_runmods dirs1.txt
+
+step2:
+$bin/step2
+$bin/optical_runmods dirs2.txt
+
+step4:
+#KJ adding a bunch of "shit" here for EELS
+
+set testeels = `grep -i EELS core.inp`
+if ($testeels != '' ) then
+   
+   echo Running opcons for EELS.
+   echo Make sure the ELNES/EXELFS cards contain the same parameters in all feff.*
+#  rename all xmu.dat to xmu01.dat
+   foreach i ( edges/*/*/* )
+   if (-d $i ) then
+      if (-e $i/xmu.dat) mv $i/xmu.dat $i/xmu01.dat
+   endif 
+   end
+
+#  now cycle and go through all 9 xmu0?.dat files one by one
+   set j = 1
+   while ( $j < 10 )
+      echo RUNNING SIGMA TENSOR COMPONENT $j OUT OF 9 +++++++++++++++++
+      foreach i ( edges/*/*/* )
+         if (-d $i  &&  `echo $i | grep -v re ` !=  '') then  # exclude fms_re and path_re, which are not currently used
+            if (-e $i/xmu0${j}.dat && `echo $i | grep -v fprime` != '') then
+               cp $i/xmu0${j}.dat $i/xmu.dat
+            else if (($j == 1 || $j == 5 || $j == 9) && `echo $i | grep -i fprime` != '') then
+               #add the background to the diagonal terms (xx, yy, zz)
+               #I'm thinking I ought to find a way to divide this by 3!
+               cp $i/xmu01.dat $i/xmu.dat
+               $bin/athird $i/xmu
+            endif
+         endif
+      end
+      #run the regular opcons for this x_i x_j component of the sigma tensor
+      $bin/step4
+      foreach f ( opconsKK fine_st opcons osc_str xmu fdplp opcons0 sumrules log_step4 background eps )
+         if(-e $f.dat) mv $f.dat ${f}0${j}.dat
+      end
+      foreach i ( edges/*/*/* )
+         if(-e $i/xmu.dat) rm -f $i/xmu.dat
+      end 
+      @ j ++
+   end
+   # now "fix" the "01" case back to convention
+   foreach f ( opconsKK fine_st opcons osc_str xmu fdplp opcons0 sumrules log_step4 background eps )
+      if(-e ${f}01.dat) cp ${f}01.dat ${f}.dat
+   end
+   foreach i ( edges/*/*/* )
+   if (-d $i ) then
+      if (-e $i/xmu01.dat) mv $i/xmu01.dat $i/xmu.dat
+   endif 
+   end
+   # now get the final EELS spectrum
+   set t = `ls edges/*/*/*/eels.inp`
+   set t = $t[1]
+   head -n 3 $t > eels.inp
+   set eelsline = `head -n 4 $t | tail -n 1 | awk '{print $1,$2,$3}' `
+   echo $eelsline 2 3 >> eels.inp #tells eels to use column 3 of opconsKK.dat
+   head -n 20 $t | tail -n 16 >> eels.inp 
+   eels
+   echo Final result for spectrum is in eels.dat .
+else
+   echo "opcons without eels"
+   $bin/step4
+endif
+
+
+end:
+echo opcons is done.
+exit 0

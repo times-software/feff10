@@ -1,0 +1,7 @@
+This directory contains various mathematical routines for linear algebra,
+interpolation, integration, 3j symbols, Wigner rotation matrices, 
+Bessel functions, etc..
+
+All routines in this directory are covered by the LICENSE inside
+license.h file. File lu.f contains LAPACK linear algebra routines
+necessary for FEFF, which are in a public domain.

@@ -1,0 +1,12 @@
+DMDW
+Common subdirectories: DMDW/Test  ../../feff9-FT/src/DMDW/Test
+Common subdirectories: DMDW/tutorials  ../../feff9-FT/src/DMDW/tutorials
+FULLSPECTRUM
+Common subdirectories: FULLSPECTRUM/HEADERS  ../../feff9-FT/src/FULLSPECTRUM/HEADERS
+Common subdirectories: FULLSPECTRUM/SCRIPTS  ../../feff9-FT/src/FULLSPECTRUM/SCRIPTS
+INPGEN
+Common subdirectories: INPGEN/tests  ../../feff9-FT/src/INPGEN/tests
+project
+Common subdirectories: project/feff9  ../../feff9-FT/src/project/feff9
+XSPH
+Only in ../../feff9-FT/src/XSPH: phmesh2T.f90

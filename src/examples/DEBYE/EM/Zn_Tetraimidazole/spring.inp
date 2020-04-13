@@ -1,0 +1,17 @@
+*             res   wmax  dosfit acut   
+*  VDOS        0.02   1      1.2
+  VDOS        0.02   20      0.1
+
+  STRETCHES  
+ * i       j     k_ij  dR_ij (%)   
+   0       2      110.        2.
+   1       2      626.        5.
+ 
+
+  ANGLES
+ *  i      j     k     ktheta     dtheta (%)
+    2      0     5       37.         10.
+*   2      0    11       37.         10.
+*   2      0     8       37.         10.
+    1      2     3     2590.         10.
+*   4      5     6     2590.         10.

@@ -1,0 +1,215 @@
+#!/usr/bin/perl
+# FEFF8 FORTRAN 77 code converter
+#
+# Author: Yoshi Takimoto
+#         ytakimot@u.washington.edu
+#
+#
+
+# version number
+$version = "0.21 [5-Feb-2004]";
+# 0.20 - 2004/2/5 quick fix for the parameter in the first line
+# 0.19 - 2004/1/5 fixed ifort compatibility problem
+#        print10 -> print 10
+
+# load packages
+use Getopt::Long; # allow the extended processing of command line options
+
+# set default options
+
+# get the command-line options
+GetOptions("h","v","f","c");
+
+# print out version if requested, then quit
+if ($opt_v) {
+  print "\nVersion number: $version\n";
+  exit 1;
+}
+
+# print out help if requested, then quit
+if ($opt_h) {
+  print_help();
+  exit 1;
+}
+
+if (!$ARGV[0]) {
+  print "You must specify at least one file to convert.\n";
+  print "Usage: f77to90 [-h] [-v] [-f] [-c] file(s)\n";
+  exit 1;
+}
+
+foreach $old (@ARGV) {
+  open(OLD, "< $old") or die "can't open $old: $!";
+
+  if (!$opt_c) {
+    $new = "$old"."90";
+    open(NEW, "> $new") or die "can't open $new: $!";
+  }
+
+  while (<OLD>) {
+    @code = <OLD>;
+
+    $i = 1;
+    $pre2 = "";
+    s/^[cC\*]/\!/;
+    $pre1 = $_;
+    $curr = $_;
+
+    # Remove all unwanted spaces in PARAMETER statements
+    if (/parameter/) {
+      $curr = $_;
+      chomp $curr;
+      if (/(\d) (\d)/) {
+        s/(\d) (?=\d)/$1$2/g;
+        print "$old (PAR):$i $curr --> $_"; # Print to screen to check
+      }
+    }
+
+    foreach $_ (@code) {
+      # Replace Comment Character c, C or * to !
+      if ($opt_c) {
+        if (/(^[cC\*])/) {
+            print "$old ($1>\!):$i $_"; # Print to screen to check
+	}
+        if (/^\t/) {
+            print "$old (TAB):$i $_"; # Print to screen to check
+	}
+      }
+      s/^[cC\*]/\!/;
+      s/^\t/        /g;
+      s/print10/print 10/g;
+
+      # Check code for all non-comment lines
+      if (/\A[^\!]/) {
+
+        # Remove all unwanted spaces in PARAMETER statements
+        if (/parameter/) {
+          $curr = $_;
+          chomp $curr;
+          if (/(\d) (\d)/) {
+            s/(\d) (?=\d)/$1$2/g;
+            print "$old (PAR):$i $curr --> $_"; # Print to screen to check
+          }
+        }
+
+        # Change d00 to d00 (real double number)
+        if (/(\d)d (00)/) {
+          $curr = $_;
+          chomp $curr;
+          s/(\d)d (00)/$1d$2/g;
+          print "$old (d00):$i $curr --> $_"; # Print to screen for warning
+        }
+        # Change [0-9] 000 to [0-9]000 (remove spaces in a number)
+        if (/(\d) (000)/) {
+          $curr = $_;
+          chomp $curr;
+          s/(\d) (?=000)/$1$2/g;
+          print "$old (000):$i $curr --> $_"; # Print to screen for warning
+        }
+        # Change [0-9] e-[0-9] (remove space)
+        if (/(\d) e(\-\d)/) {
+          $curr = $_;
+          chomp $curr;
+          s/(\d) e(\-\d)/$1e$2/g;
+          print "$old (0e-):$i $curr --> $_"; # Print to screen for warning
+        }
+	# Change .eq. to .eq., for example
+        if (/\. (ne|eq|gt|lt|le|ge)(\.)/) {
+          $curr = $_;
+          chomp $curr;
+          s/\. (ne|eq|gt|lt|le|ge)(\.)/ .$1./g;
+          print "$old (.$1):$i $curr --> $_"; # Print to screen for warning
+        }
+
+        # Handling line continuation
+        if (/^ {5}[\$\&\.\*xi0-9](?!f)/) {
+          # Change continuation line characters at position 6
+          s/^ {5}./     \&/;
+
+          # Need to change previous line to add & character at position 73
+          $curr = $_;
+          if (/^ {5}\& 5\*vt/) {
+            print "$old (***):$i $_"; # Special case
+            chomp $pre1;
+            $pre1 = "$pre1"."5";
+            for ($len = length($pre1); $len < 72; ++$len) {
+  	      $pre1 = "$pre1 ";
+	    }
+	    $pre1 = "$pre1\&\n";
+            s/(^ {5}\& )5/$1/;
+	    $curr = $_;
+          } else {
+            $_ = $pre1;
+            if (!/\&$/) {
+              if (/^\!/) {
+                chomp $pre2; # Temporary remove line feed
+                for ($len = length($pre2); $len < 72; ++$len) { # Add & char at 73
+                  $pre2 = "$pre2 ";
+                }
+                $pre2 = "$pre2\&\n"; 
+              } else {
+                chomp $pre1; # Temporary remove line feed
+                for ($len = length($pre1); $len < 72; ++$len) { # Add & char at 73
+                  $pre1 = "$pre1 ";
+                }
+                $pre1 = "$pre1\&\n"; 
+              }
+           }
+          } # else-if
+
+          $_ = $curr;
+
+        } # end if (line continuation)
+      } # end if (all non-comment line)
+
+      if (!$opt_c) {
+        print NEW "$pre2";
+      }
+      $pre2 = $pre1;
+      $pre1 = $_;
+      ++$i;
+    } # end foreach @code
+    
+    if (!$opt_c) {
+      print NEW "$pre2";
+      print NEW "$pre1";
+    }
+
+  } # end while <OLD>
+
+  close(OLD)          or die "can't close $old: $!";
+  
+  if (!$opt_c) {
+    close(NEW)          or die "can't close $new: $!";
+  }
+  if ($opt_f) {
+    rename($new, $old) or die "can't rename $new to $old: $!";
+  } # end if ($opt_f)
+} # end foreach @ARGV
+
+#
+# name: print_help
+#
+sub print_help{
+  print <<END;
+
+ This is intended to use for FEFF8.2 source codes to convert 
+ FORTRAN 90 "compatible" codes.
+ WARNING: Should not be used for any other purpose.
+
+ Usage: f77to90.pl [-h] [-v] [-f] file(s)
+
+ The only mandatory command-line arguments are the names of the files
+ to be processed.  Wildcards are allowed (e.g. *.f will process all 
+ FORTRAN 77 files)
+ If no option is specified, new files(s) ended with "90" is created
+ (e.g. filename.f -> filename.f90).
+
+ The options are
+   -h              print this help
+   -v              version number
+   -f              force to modify the original file(s)
+   -c              perform check, no file modification
+
+END
+}

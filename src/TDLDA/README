@@ -1,0 +1,119 @@
+              TDLDA and PMBSE INSTRUCTIONS for FEFF8.4
+
+You have 2 separate options of well automated TDLDA and experimental
+PMBSE calculations.  The advantage of PMBSE calculations
+is the ability to account for the core-hole interaction in variety of ways.
+Also method accounts for the fine structure, while TDLDA calculation are 
+currently done with G_c only (neglecting G_sc and fine structure). 
+
+TDLDA  ifxc
+  This is highly automated version of the code, that executes Zangwill-Soven
+  TDLDA calculations, modified for the solid state potential.
+  ifxc=0 - RPA calculations
+  ifxc=1 - local f_xc term from Zangwill-Soven paper is added, to account for
+    core-hole potential. The other way to include core-hole
+    would be ifxc=0 and (*NOHOLE) card.  This has not been tested yet.
+
+PMBSE ipmbse nonlocal ifxc ibasis
+  ipmbse - method of PMBSE calculations
+    1 - results should be the same as for TDLDA calculations, but they
+        will be on the same grid as PMBSE calculations, which is convinient
+        for comparisons
+    2 - projection method Bethe-Salpeter Equation approach (PMBSE)
+    3 - combined method of the paper; K_x + f_xc accounted for by LF-TDLDA
+        while K_d - f_xc accounted for by PMBSE. Only make sense in 
+        combination with nonlocal=1,2 (see below)
+    4 - also combined method but adds smoothing function S which goes
+        from 0 near the edge and goes to 1 about 100 eV from the edge.
+        S*(K_x + f_xc) accounted for by LF-TDLDA and correspondingly
+        K_d +(1-S)*K_x -S*f_xc accounted for by PMBSE. This smoothing 
+        function allows to account for the fine structure near the edge,
+        which LF TDLDA is currently neglecting. Notice that in this case
+        first 100 eV will look the same as ipmse=2
+  nonlocal - how core-hole potential is treated
+    0 - core potential is accounted for by f_xc (NOHOLE) or
+        by final state rule (*NOHOLE)
+    1 - core hole potential is read from pot.ch (pot.bin obtained with *NOHOLE)
+    2 - core hole potential is read from yoshi.dat (Stott-Zaremba calculations
+        of static core-hole potential, coded by Yoshi Takimoto)
+  ifxc - type xc Kernel to use (notice more options than for TDLDA card)
+    0 - RPA kernel - completely neglect xc
+    1 - ALDA kernel - like in Zangwill soven paper
+    2 - LDA kernel  - Gross/Kohn paper f_xc(omega)
+    3 - kernel in Ankudinov/Nesvizhsky/Rehr paper (recommended)
+    4 - ZS for edge-diagonal, GK fxc(deltaso) for off-diagonal
+  ibasis - type of basis set for projections
+    0 - AUTOMATED: partially occupied orbitals form the basis
+        no need to edit XSECTD or GETWF subroutines (see below)
+    1 - SEMI-AUTOMATED: orbitals are read from file 
+        you can read in e.g. natural orbitals created by other codes
+        (change filename and number of orbitals (nlp) inside the code)
+    2 - NON-AUTOMATED: orbitals constructed by putting infinite potential
+        at R_int (variable rint inside the code). Thus orbitals are zero
+        at and beyond R_int. You need manually adjust the energies so
+        that solution has a node at R_int.
+
+**  CREATE  FEFF8.4 (For developers version only) 
+**  copy *.f and Makefile from TDLDA directory to ../XSPH/ )
+
+** EDIT the code for nonlocal=1,2 option
+**  currently nonlocal=2 option needs a change of filename in
+**  subroutine XSPH, from which the screened core-hole potential is read
+
+EDIT the code for ibasis = 1,2 options
+  ibasis=1,2: need to set nlp, nlm, nlpoc, nlmoc in subroutine XSECTD 
+    nlp -number of l+1 final orbitals (nlp>0)
+    nlm - number of l-1 orbitals in the basis set (nlm>=0);
+    nlpoc - number of fully occupied orbitals l+1 orbitals; e.g. if you
+      want to start with 5p orbital; 4p orbital is fully occupied
+      nlpoc='principal quantum number'(4p) -'orbital quantum number'(4p)=4-1=3
+    nlmoc - same for l-1 orbitals
+  ibasis=1: edit subroutine GETWF to change the names of file to read from
+    and the transformation of distances and orbitals to code units
+  ibasis=2: edit subroutine XSECTD to change the energies at which the 
+    orbitals are calculated.   The code will print the information where
+    the node was found. Change the energy until it is found at R_int.
+    You can look at the resulting orbitals in fort.78.
+    More details are in subroutine XSECTD.
+    Setting of the energies should be done carefully.
+
+COMPILE the code: e.g. f77 feff84.f -o feff84
+
+RUN the code
+
+TDLDA card: run just like regular FEFF8 calculations.
+ 
+PMBSE card: attached automated script for LINUX does calculations in 2 steps:
+  STEP 1: get 4 xmu.dat files within single electron calculations for 2 edges.
+   -creates 4 subdirectories Oddp1, Oddm1, Evenp1, Evenm1, where Odd
+   refers to ininial L3, N5 etc. edges, while Even to L2, N4 etc..
+   p1 means l-->l+1 transition and m1 means l-->l-1 transition.
+   feff.inp in original directory should have ODD hole in it.
+   for initial K,L1, M1 edges only Oddp1 directory is needed.
+   (Micah it will be great if can also make EXAFS subdirectories
+    to interpolate fine structure  between 2 of them )
+  -modifies feff.inp file in subdirectories:
+     HOLE iholep , where iholep=ihole or iholep=ihole-1
+     MULTIPOLE 0  +/-1 card corresponding to directory name;
+     *PMBSE card is commented out,
+     CONTROL 1 1 1 1 1 1
+     FMS (or PATH expansions optional)
+  OUTPUT of 1-st step is 4 xmu.dat files in subdirectories
+
+  STEP 2: PMBSE calculation are run in original directory.
+   code reads  4 xmu.dat files created at STEP 1
+   Note: pot.bin file can be take from Oddp1 directory and code can be run
+   with CONTROL  0 1 0 0 0 0
+   HOLE ihole  (K,L1, L3, N1, N3, or other 'odd' hole)
+   NOHOLE
+   MULTIPOLE 2
+   PMBSE  ipmbse nonlocal ifxc  ibasis
+   FMS  (path expansion is not good near the edge)
+  OUTPUT:  'xsedge.dat' file where columns are:
+    1-st - photon energy (eV);
+    2-nd - intermediate  result after LF-TDLDA stage;
+    3-rd - final PMBSE cross-section in Angstrom**2.
+
+Final comments: Typically most of the time is spent in STEP 1.
+If you change fields in PMBSE card there is no need to rerun STEP 1.
+Examples are available for any transition metal, Xe or Diamond.

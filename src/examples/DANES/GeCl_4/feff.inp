@@ -1,0 +1,29 @@
+TITLE GeCl_4 r=2.09 /AA
+
+COREHOLE none
+EDGE K	1.0
+RSIGMA
+
+CONTROL 1 1 1 1 1 1
+
+SCF	3.0	1
+FMS	3.0	1
+RPATH	1.0
+DANES	8.0	0.05
+
+AFOLP	1.30
+
+POTENTIALS
+*	ipot	z	label
+	0	32	Ge	3 3
+	1	17	Cl	3 3
+
+ATOMS
+*	x	y	z	ipot	atom
+	0	0	0	0	Ge
+	1.2100	1.2100	1.2100	1	Cl
+	1.2100	-1.2100	-1.2100	1	Cl
+	-1.2100	1.2100	-1.2100	1	Cl
+	-1.2100	-1.2100	1.2100	1	Cl
+
+END

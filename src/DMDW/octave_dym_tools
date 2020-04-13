@@ -1,0 +1,420 @@
+#!/usr/bin/octave -q
+
+# Little testbed script to store and check things using octave
+
+###############################################################################
+
+# Function to read in a dynamical matrix in dym format
+function dym = Read_DM_dym(filename)
+
+  global auf2npm;
+  global npm2amups2;
+
+# Open the input file
+  file = fopen(filename,"rt","native");
+
+# Read the dym type flag
+  dym.Type = fscanf(file,"%i","C");
+
+# Read the number of atoms
+  dym.nAt = fscanf(file,"%i","C");
+
+# Read the atomic number for each atom
+  dym.an = zeros(dym.nAt,1);
+  for iAt=1:dym.nAt
+    dym.an(iAt) = fscanf(file,"%i","C");
+  endfor
+
+# Read the atomic mass for each atom
+  dym.am = zeros(dym.nAt,1);
+  for iAt=1:dym.nAt
+    dym.am(iAt) = fscanf(file,"%f","C");
+  endfor
+
+# Depending on the dym type, we read cartesian of reduced coordinates
+  if ( any(dym.Type == [1,2,3]) )
+
+# Read the cartesian coordinates
+    dym.xyz = zeros(dym.nAt,3);
+    for iAt=1:dym.nAt
+      [x, y, z] = fscanf(file,"%f %f %f","C");
+      dym.xyz(iAt,:) = [x, y, z];
+    endfor
+
+  elseif ( dym.Type == 4 )
+
+# Read the reduced coordinates
+    dym.red = zeros(dym.nAt,3);
+    for iAt=1:dym.nAt
+      [x, y, z] = fscanf(file,"%f %f %f","C");
+      dym.red(iAt,:) = [x, y, z];
+    endfor
+
+  endif
+
+# Read the dynamical matrix
+  for iPair=1:dym.nAt^2
+    [ iAt, jAt ] = fscanf(file,"%i%i","C");
+    [  xx, xy, xz ] = fscanf(file,"%f%f%f","C");
+    [  yx, yy, yz ] = fscanf(file,"%f%f%f","C");
+    [  zx, zy, zz ] = fscanf(file,"%f%f%f","C");
+    dym.dm_block{iAt,jAt} = [ [ xx, xy, xz ]
+                              [ yx, yy, yz ]
+                              [ zx, zy, zz ] ];
+  endfor
+
+# Convert the block dynamical matrix into the format used in DMDW
+  for iAt=1:dym.nAt
+    for jAt=1:dym.nAt
+
+      for ip=1:3
+        for jq=1:3
+          dym.dm(iAt+dym.nAt*(ip-1),jAt+dym.nAt*(jq-1)) = ...
+            auf2npm*npm2amups2* ...
+            dym.dm_block{iAt,jAt}(ip,jq)/sqrt(dym.am(iAt)*dym.am(jAt));
+        endfor
+      endfor
+
+    endfor
+  endfor
+
+# Read the dipole derivative data if present
+  if ( dym.Type == 3 )
+
+    dym.DipDrv = zeros(3*dym.nAt,3);
+    for iCoord=1:3*dym.nAt
+      [ dx, dy, dz ] = fscanf(file,"%f %f %f","C");
+      dym.DipDrv(iCoord,:) = [ dx, dy, dz ];
+    endfor
+
+  endif
+
+# Read the cell vectors if present and convert the reduced coordinates to cart.
+  if ( dym.Type == 4 )
+
+    dym.cell = zeros(3,3);
+    for iCoord=1:3
+      [ x, y, z ] = fscanf(file,"%f %f %f","C");
+      dym.cell(iCoord,:) = [ x, y, z ];
+    endfor
+
+    dym.xyz = zeros(dym.nAt,3);
+    for iAt=1:dym.nAt
+      dym.xyz(iAt,:) = dym.red(iAt,:)*dym.cell;
+    endfor
+  endif
+
+endfunction
+
+###############################################################################
+
+# Function to read in a dynamical matrix in block data format (bdf)
+function bdf = Read_DM_bdf(filename)
+
+# Open the input file
+  file = fopen(filename,"rt","native");
+
+# Read the number of reference atoms
+  bdf.nRef = fscanf(file,"%i","C");
+
+# Read the atomic numbers of the reference atoms
+  for iRef=1:bdf.nRef
+    bdf.AN(iRef) = fscanf(file,"%i","C");
+  endfor
+
+# Read the atomic numbers of the reference atoms
+  for iRef=1:bdf.nRef
+    bdf.AM(iRef) = fscanf(file,"%f","C");
+  endfor
+
+# Read the lattice constant
+  bdf.acell = fscanf(file,"%f","C");
+
+# Read the number of interactions
+  bdf.nInt = fscanf(file,"%i","C");
+
+# Read each one of the interactions for each reference atom
+  for iRef=1:bdf.nRef
+    for iInt=1:bdf.nInt
+#     [ iRef, iInt ]
+      [ iDummy, iDummy, bdf.Type(iRef,iInt), ...
+        bdf.RDist(iRef,iInt), vx, vy, vz ] = ...
+      fscanf(file,"%i%i%i%f%f%f%f","C");
+      bdf.RVect{iRef,iInt} = [ vx, vy, vz ];
+      fscanf(file,"%i%i%i","C");
+      [ iDummy, xx, xy, xz ] = fscanf(file,"%i%f%f%f","C");
+      [ iDummy, yx, yy, yz ] = fscanf(file,"%i%f%f%f","C");
+      [ iDummy, zx, zy, zz ] = fscanf(file,"%i%f%f%f","C");
+      bdf.DM{iRef,iInt} = [ [ xx, xy, xz ]
+                          [ yx, yy, yz ]
+                          [ zx, zy, zz ] ];
+    endfor
+  endfor
+
+endfunction
+
+###############################################################################
+
+# Function to write out a dynamical matrix in block data format (bdf)
+function Write_DM_bdf(bdf)
+
+# Write the number of reference atoms
+  printf("%4d\n",bdf.nRef);
+
+# Write the atomic numbers of the reference atoms
+  for iRef=1:bdf.nRef
+    printf("%4d",bdf.AN(iRef));
+  endfor
+  printf("\n");
+
+# Write the atomic numbers of the reference atoms
+  for iRef=1:bdf.nRef
+    printf("%16.8e",bdf.AM(iRef));
+  endfor
+  printf("\n");
+
+# Write the lattice constant
+  printf(" %17.10e\n",bdf.acell);
+
+# Write the number of interactions
+  printf("%4d\n",bdf.nInt);
+
+  for iRef=1:bdf.nRef
+    for iInt=1:bdf.nInt
+      printf(" %3d %3d %3d %16.10f", ...
+             iRef,iInt,bdf.Type(iRef,iInt),bdf.RDist(iRef,iInt));
+      printf(" %16.10f %16.10f %16.10f\n", ...
+             bdf.RVect{iRef,iInt}(1:3));
+      Prn_Mat(3,bdf.DM{iRef,iInt});
+    endfor
+  endfor
+endfunction
+
+###############################################################################
+
+function dym = Make_TrfD(dym)
+
+  nCoord = 3*dym.nAt;
+
+# Check the content of the DM to make sure it is OK:
+# dym.am
+# dym.xyz
+# exit
+
+# Initialize to zeros
+  dym.TrfD = zeros(nCoord,nCoord);
+
+# Calculate the center of mass
+  dym.R_CM = sum(dym.xyz.*repmat(dym.am,1,3))/sum(dym.am);
+
+# Debug
+# dym.R_CM
+# exit
+
+# Shift origin of cartesian coordinates in dym to R_CM
+  dym.xyz = dym.xyz - repmat(dym.R_CM,dym.nAt,1);
+
+# Calculate the Tensor of Inertia
+  dym.ToI = zeros(3,3);
+  for iAt=1:dym.nAt
+    dym.ToI(1,1) = dym.ToI(1,1) + ...
+                     dym.am(iAt)*(dym.xyz(iAt,2)^2+dym.xyz(iAt,3)^2);
+    dym.ToI(2,2) = dym.ToI(2,2) + ...
+                     dym.am(iAt)*(dym.xyz(iAt,1)^2+dym.xyz(iAt,3)^2);
+    dym.ToI(3,3) = dym.ToI(3,3) + ...
+                     dym.am(iAt)*(dym.xyz(iAt,1)^2+dym.xyz(iAt,2)^2);
+    dym.ToI(2,1) = dym.ToI(2,1) - dym.am(iAt)*(dym.xyz(iAt,2)*dym.xyz(iAt,1));
+    dym.ToI(3,1) = dym.ToI(3,1) - dym.am(iAt)*(dym.xyz(iAt,3)*dym.xyz(iAt,1));
+    dym.ToI(3,2) = dym.ToI(3,2) - dym.am(iAt)*(dym.xyz(iAt,3)*dym.xyz(iAt,2));
+  endfor
+
+  dym.ToI(1,2) = dym.ToI(2,1);
+  dym.ToI(1,3) = dym.ToI(3,1);
+  dym.ToI(2,3) = dym.ToI(3,2);
+
+# Debug
+# dym.ToI
+# exit
+
+# Calculate the eigenvectors (Principal Axes of Rotation) and
+# eigenvalues (Moments of Inertia) of the system
+  [ dym.PAoR, dym.MoI ] = eig(dym.ToI);
+  dym.MoI = diag(dym.MoI);
+
+# Translation vectors
+# x coords
+  dym.TrfD([1:dym.nAt]+0*dym.nAt,1) = sqrt(dym.am);
+# y coords
+  dym.TrfD([1:dym.nAt]+1*dym.nAt,2) = sqrt(dym.am);
+# z coords
+  dym.TrfD([1:dym.nAt]+2*dym.nAt,3) = sqrt(dym.am);
+
+# Rotation vectors
+  for iVec=1:3
+    for iAt=1:dym.nAt
+      dym.TrfD(iAt+[0,1,2]*dym.nAt,3+iVec) = ...
+           cross(dym.PAoR(:,iVec),dym.xyz(iAt,:)')*sqrt(dym.am(iAt));
+    endfor
+  endfor
+
+# Normalize the vectors
+  for iCoord=1:6
+    dym.TrfD(:,iCoord) = dym.TrfD(:,iCoord)/sqrt(sumsq(dym.TrfD(:,iCoord)));
+  endfor
+
+endfunction
+
+###############################################################################
+
+# Function that performs nIt Lanczos iterations on an array and returns
+# the associated poles and weights
+function [ Poles, Weights ] = Lanczos(nIt,q0,DM)
+
+# Dimension some things
+  nC = rows(DM);
+  a_i = zeros(nIt,1);
+  b_i = zeros(nIt-1,1);
+  q_i = zeros(nC,nIt);
+
+# Initialize vector
+  q_i(:,1) = q0;
+
+# First we generate the a and b values of the tridiagonal matrix
+# It 1
+  iIt = 1;
+  a_i(iIt) = q_i(:,iIt)'*DM*q_i(:,iIt);
+
+# It 2
+  if ( nIt > 1 )
+    iIt = 2;
+    q_i(:,iIt) = (DM-a_i(iIt-1)*eye(nC,nC))*q_i(:,iIt-1);
+    b_i(iIt-1) = sqrt(q_i(:,iIt)'*q_i(:,iIt));
+    q_i(:,iIt) = q_i(:,iIt)/b_i(iIt-1);
+    a_i(iIt) = q_i(:,iIt)'*DM*q_i(:,iIt);
+  endif
+
+# Rest
+  for iIt=3:nIt
+    q_i(:,iIt) = (DM-a_i(iIt-1)*eye(nC,nC))*q_i(:,iIt-1) - ...
+                  b_i(iIt-2)*q_i(:,iIt-2);
+    b_i(iIt-1) = sqrt(q_i(:,iIt)'*q_i(:,iIt));
+    q_i(:,iIt) = q_i(:,iIt)/b_i(iIt-1);
+    a_i(iIt) = q_i(:,iIt)'*DM*q_i(:,iIt);
+  endfor
+
+# Debug
+# a_i
+# b_i
+
+# Debug
+# Build the tridiagonal array
+  Phi = diag(a_i,0) + diag(b_i,1) + diag(b_i,-1);
+  EigVal = eig(Phi);
+  Energ = sqrt(abs(EigVal)).*sign(EigVal)*33.3564000/2/pi;
+
+  Poles   = zeros(nIt,1);
+  Weights = zeros(nIt,1);
+
+endfunction
+
+###############################################################################
+
+# Get the dym file name and load
+Args = argv();
+filename = Args{1};
+
+dym = Read_DM_dym(filename);
+
+# Check the dym structure
+#dym.red
+#dym.xyz
+#dym.dm(1,:)'
+#exit
+
+# Test TrfD
+dym = Make_TrfD(dym);
+#dym.xyz
+#printf("%12.8f\n",dym.TrfD(:,5))
+#exit
+
+#Pt_Ind = find(dym.an==78)
+#exit
+#for iAt=1:dym.nAt
+#  printf("%3d %8.6f %8.6f %8.6f\n",iAt,diag(dym.dm_block{iAt,iAt})');
+#endfor
+
+#exit
+# Diagonalize as is (no unit conversion, will convert evals)
+[EigVec, EigVal] = eig(dym.dm);
+EigVal = diag(EigVal);
+#Energ = sqrt(abs(EigVal)).*sign(EigVal)*33.3564000/2/pi
+Energ = sqrt(abs(EigVal)).*sign(EigVal)/2/pi;
+#[ Energ abs(EigVec(257,:)') abs(EigVec(257+dym.nAt,:)') abs(EigVec(257+2*dym.nAt,:)') ]
+
+# Now that we have the eigenvectors, we can check how they overlap with the
+# translation and rotation generating vectors we generated in the TrfD
+nEig_Prt = 10;
+Proj = zeros(nEig_Prt,6);
+for iEig=1:nEig_Prt
+  for iVec=1:6
+    Proj(iEig,iVec) = EigVec(:,iEig)'*dym.TrfD(:,iVec);
+  endfor
+endfor
+[Energ(1:nEig_Prt), Proj]
+exit
+
+# Generate the weights and widths for a spectr input
+Wid = 0.1*ones(rows(Energ),1);
+
+# Seed state:
+# Single atom, single coordinate displacement
+q0 = zeros(3*dym.nAt,1);
+iAt =    1;
+iCoord = 1;
+q0(iAt+(iCoord-1)*dym.nAt) = 1;
+
+# Project out the rotations and translations from q0
+for iVec=1:6
+  q0 = q0 - (q0'*dym.TrfD(:,iVec))*dym.TrfD(:,iVec);
+endfor
+
+# Renormalize the seed
+q0 = q0/sqrt(sumsq(q0));
+
+# Test the seed
+#q0'*q0
+#q0'*dym.TrfD(:,1)
+#q0'*dym.TrfD(:,2)
+#q0'*dym.TrfD(:,3)
+#q0'*dym.TrfD(:,4)
+#q0'*dym.TrfD(:,5)
+#q0'*dym.TrfD(:,6)
+#exit
+
+Wei = (q0'*EigVec).^2';
+
+#Wei = (EigVec(1,:)').^2;
+#Wei = (EigVec(257,:)').^2;
+
+lEne = min(Energ) - (max(Energ)-min(Energ))*0.03;
+hEne = max(Energ) + (max(Energ)-min(Energ))*0.03;
+printf("%12.5f %12.5f\n",lEne,hEne);
+printf("%12.5f\n",1.0);
+printf("%12.5f\n",1.0);
+printf("%12d\n",round((hEne-lEne)/0.002));
+printf("%12d\n",rows(Energ));
+printf("%12.5f %12.5f %12.5f\n", [ Energ, Wei, Wid ]');
+exit
+# Testing the Lanczos
+nIt = 9;
+q0 = zeros(3*dym.nAt,1);
+# z displacement on O
+#q0(2*dym.nAt+1) = 1;
+# x displacement on O
+#q0(0*dym.nAt+1) = 1;
+# Bang!
+q0(:) = 1;
+q0 = q0/sqrt(q0'*q0);
+
+[ Poles, Weights ] = Lanczos(nIt,q0,dym.dm);
+

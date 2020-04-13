@@ -1,0 +1,56 @@
+#!/bin/bash  
+echo ""
+
+if [ ! -f mods.list ]
+then
+	echo ' '  > mods.list
+fi
+modfile=$1
+echo "Finding modules for $modfile."
+# Find all used modules and the associated files.
+usedmods=`grep -i "^\ *\	*use" $modfile|sed -e's/[Uu][Ss][Ee]//g' -e's/[,!].*//g' |sort -ub`
+
+# if no module files are used, check if this file should be added to mods.list.
+if [ `grep -ic "^\ *\ *use" $modfile` -eq 0 ] 
+then
+	# if mods.list exists.
+	if [ -f mods.list ] 
+	then
+		 # If this file is not already in mods.list, add it
+	        if [ `grep -ic $modfile mods.list` -eq 0 ]
+		then
+			echo $modfile >> mods.list
+		fi
+	# if mods.list doesn't exist, add it.
+	else
+		echo $modfile >> mods.list
+	fi
+	exit 0
+else
+
+	# For each used module
+        echo -n "Modules used: " 
+	for mod in $usedmods
+	do
+                echo -n "$mod "
+		# find the file containing this module
+		usefile=`grep -i "^\ *\	*module\ *\	*$mod" */m_*.f90 |sed -e's/:.*//g'`
+		
+		# Only call recursively if this is not the input file
+		if [ ! $usefile == $modfile ]
+		then
+			# If this file is already in the list mods.list, move on to the next module,
+			# otherwise call this script recursively.
+			if [ `grep -ic $usefile mods.list` -eq 0 ]
+			then
+				./Utility/findmodslist $usefile
+			fi
+		fi
+	done
+	echo "" 
+	# Now add this file to the list of available modules if it isn't already there.
+	if [ `grep -ic $modfile mods.list` -eq 0 ]
+        then
+		echo $modfile >> mods.list
+	fi
+fi

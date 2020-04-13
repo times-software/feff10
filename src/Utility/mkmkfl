@@ -1,0 +1,268 @@
+#!/bin/bash
+# Define some variables used by this script.
+comment='########################################################################################################'
+newlines='\n\n'
+newlines='\n'
+newlines=''
+echo '# This Makefile make with mkmkmf' > Makefile
+echo '# Define suffixes to look for' >> Makefile
+echo .SUFFIXES: .f .f90 .o .mod >> Makefile
+echo -e ${newlines} >> Makefile
+# Get source directories
+srcdirs=`ls -F |grep / |grep -v Utility |grep -v Drivers |grep -v CVS |grep -v DEP`
+srcdirs="ATOM BAND COMMON COMPTON CRPA DEBYE DMDW EELS EELSMDFF ERRORMODS EXCH FF2X \
+         FMS FOVRG FULLSPECTRUM GENFMT IOMODS KSPACE LDOS MATH MKGTR MODS PAR PATH  \
+         POT RDINP RHORRP RIXS SCREEN SELF SFCONV TDLDA XSPH INPGEN"
+
+# echo source directories into Makefile
+echo -n "SRCDIRS  =" >> Makefile
+for dir in ${srcdirs}
+do
+	echo -n "${dir%%/} " >> Makefile
+done
+echo -e "$newlines" >> Makefile
+
+# Use the -I flag to tell compiler where to look for modules
+echo 'INCLUDEFLAGS=$(SRCDIRS:%=-I../%)' >> Makefile
+echo -e "$newlines" >> Makefile
+
+# Get executable names.
+if [ $# -eq 0 ]
+then
+	execs=`cat Utility/programs |sed -e's/dep//g'`
+else
+	execs=$*
+fi
+#execs='XSPH/xsph.f90 ATOM/atomic.f90 DMDW/dmdw.f90 
+#DMDW/dym2feffinp.f90 EELS/eels.f90 FF2X/ff2x.f90 
+#FMS/fms.f90 GENFMT/genfmt.f90 LDOS/ldos.f90 MKGTR/mkgtr.f90 
+#PATH/path.f90 POT/pot.f90 RDINP/rdinp.f90 SCREEN/screen.f90 SFCONV/sfconv.f90'
+echo -n "EXECUTABLES =" >> Makefile
+for ex in ${execs}
+do
+	binary=`basename ${ex%%.f90}`
+	echo -n "${binary} " >> Makefile
+done
+
+echo -e "$newlines" >> Makefile
+
+# Directory for compiled executables.
+echo "EXECDIR=../bin/Seq" >> Makefile
+
+echo -e "$newlines" >> Makefile
+echo '$(shell [ -e Compiler.mk ] || cp Compiler.mk.default Compiler.mk)' >> Makefile
+echo -e "$newlines" >> Makefile
+
+# Include compiler information from Compiler.mk
+echo "include Compiler.mk" >> Makefile
+echo -e "$newlines" >> Makefile
+echo 'ifneq ($(F90),gfortran)
+	FPPTASK=-DFEFF -fpp 
+endif' >> Makefile
+echo -e "$newlines" >> Makefile
+
+# Define the tool to make libraries
+echo 'lbtool = ar ru' >> Makefile
+
+# Define various messages to the user.
+echo 'parmessg = "\n\n\n\tmodular src is in ../mod/MPI/\n\tPlease cd there and compile\n\twith the appropriate script."' >> Makefile
+echo 'messg = "\n\n\n\tmodular src is in ../mod/Seq/\n\tPlease cd there and compile\n\twith the appropriate script."' >> Makefile
+echo 'monmessg = "\n\n\n\tsrc is in ../mod/MONO/\n\tPlease cd there and compile\n\twith the appropriate script."' >> Makefile
+echo 'smessg1 = "\n\tBinaries are located in ../bin/"' >> Makefile
+echo 'smessg2 = "\n\tYou can use the script named\n\t\tfeff"' >> Makefile
+echo 'smessg3 = "\n\tlocated in ../bin/ to run feff"' >> Makefile
+
+echo -e "$newlines" >> Makefile
+
+# include the sources and modules for each executable.
+for ex in ${execs}
+do
+	echo "# Source files needed by ${ex}." >> Makefile
+	# Get the basename
+	bsnam=`basename ${ex%%.f90}`
+	# Get the depfile name
+	depfile=`basename ${ex}`
+#	depfile=${depfile}-${ex##$depfile/}
+	depfile=${depfile%%.f90}
+	echo -n "include DEP/${depfile}" >> Makefile
+        echo  '$(DEPTYPE).mk' >> Makefile
+	echo "# Object files needed by ${ex}." >> Makefile
+	echo -n "${depfile}_OBJ = " >> Makefile
+	echo -n '${' >> Makefile
+	echo -n "${depfile}SRC" >> Makefile
+	echo ':.f90=.o}' >> Makefile
+	
+	echo -n "${depfile}_MODULES ="  >> Makefile
+	echo -n '${' >> Makefile
+	echo -n "${depfile}_MODULESRC" >> Makefile
+	echo ':.f90=.o}' >> Makefile
+	echo -e "$newlines" >> Makefile
+done
+
+echo -e "$newlines" >> Makefile
+
+echo ${comment} >> Makefile
+echo '###                                    MAKE TARGETS                                               ###' >> Makefile
+echo ${comment} >> Makefile
+echo -e "$newlines" >> Makefile
+
+echo 'all:
+	cp PAR/sequential.src PAR/par.f90
+	mkdir -p ../bin/Seq
+	make $(EXECUTABLES) "F90=$(F90)" "FLAGS=$(FLAGS)" "EXECDIR=../bin/Seq/"
+	. Utility/MkFeffScript seq
+	cp `find ./ -name *.script` ../bin/Seq/
+	echo -e $(smessg1) $(smessg2) $(smessg3)
+
+mpi:
+	cp PAR/parallel.src PAR/par.f90
+	mkdir -p ../bin/MPI
+	make $(EXECUTABLES) "F90=$(MPIF90)" "FLAGS=$(MPIFLAGS)" "EXECDIR=../bin/MPI/"
+	. Utility/MkFeffScript mpi
+	cp `find ./ -name *.script` ../bin/MPI/
+	echo -e $(parmessg1) $(parmessg2) $(parmessg3)
+
+src:
+	cp PAR/sequential.src PAR/par.f90
+	perl Utility/make_modular_sourcefiles.pl
+
+srcmpi:
+	cp PAR/parallel.src PAR/par.f90
+	perl Utility/make_modular_sourcefiles.pl mpi
+
+deps:
+	python Utility/mkdep.py
+
+# Make clean
+clean:
+	rm -rf */*.o */*.mod
+#####################################################################################################
+###                                  END MAKE TARGETS                                             ###
+#####################################################################################################' >> Makefile
+
+for ex in $execs
+do
+        binary=`basename ${ex%%.f90}`
+	#depfile=`dirname ${ex}`
+        #depfile=${depfile}-${ex##$depfile/}
+        depfile=$binary
+	echo "#####################################################################################################
+###                                  ${binary}                                             ###
+#####################################################################################################" >> Makefile
+	echo -n "${binary}:" >> Makefile
+	echo -n '$(EXECDIR)/' >> Makefile
+	echo "${binary}" >> Makefile
+	echo -n '$(EXECDIR)/' >> Makefile
+	echo -n "${binary}: " >> Makefile
+	echo -n '$(' >> Makefile
+	echo -n "${depfile}_MODULES) " >> Makefile
+	echo -n '$(' >> Makefile
+	echo  "${depfile}_OBJ) "  >> Makefile
+	echo -n '	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(' >> Makefile
+	echo -n "${depfile}_MODULES) "  >> Makefile
+	echo -n '$(' >> Makefile
+	echo  "${depfile}_OBJ)" '$(LDFLAGS)' >> Makefile
+	echo -n '	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(' >> Makefile
+	echo -n "${depfile}_MODULES) " >> Makefile 
+	echo -n '$(' >> Makefile
+	echo  "${depfile}_OBJ)" '$(LDFLAGS)' >> Makefile
+	echo "#####################################################################################################
+###                              END ${binary}                                             ###
+#####################################################################################################" >> Makefile
+	echo -e "${newlines}" >> Makefile
+done
+
+
+echo 'include DEP/dependencies.mk
+
+# How to make a .o file from .f90
+.f90.o:
+	@echo "cd $(<D); $(F90) -FR -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
+	@cd $(<D); $(F90) -FR -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
+
+.f.o:
+	@echo "cd $(<D); $(F90) -FI -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
+	@cd $(<D); $(F90) -FI -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
+
+.mod.o:
+	
+' >> Makefile
+
+# Now make Compiler.mk
+Comps='ifort pgf90 gfortran g95'
+Comps='ifort pgf90 gfortran'
+echo -e "\n\nLooking for fortran compiler:\n"
+CompFound=0
+rm -f Compiler.mk
+
+grep '[\\\$\\\@]'header Utility/Compilers \
+            |sed -e "s/#\@header//g" \
+            -e "s/#\$header/#/g" >> Compiler.mk
+#grep '#$header' Utility/Compilers |sed -e's/#$header/#/g' >> Compiler.mk
+#grep '#@header' Utility/Compilers |sed -e's/#@header//g' >> Compiler.mk
+
+for comp in $Comps
+do
+	echo "" >> Compiler.mk
+	echo "########################################" >> Compiler.mk
+	echo "#              $comp" >> Compiler.mk
+	echo "########################################" >> Compiler.mk
+	which $comp >& whichout.tmp
+	if [ $? -eq 0 ] 
+	then
+		echo "$comp found."
+	else
+		echo "$comp not found."
+	fi
+
+	if [ $CompFound -eq 0 ]
+	then
+		#grep "\$${comp}" Utility/Compilers \
+		#	|sed -e"s/#\$${comp}/#/g" >> Compiler.mk
+		#grep "\@${comp}" Utility/Compilers \
+		#	|sed -e"s/#\@${comp}//g" >> Compiler.mk
+                grep '#[\\\$\\\@]'${comp} Utility/Compilers \
+                        |sed -e "s/#\@${comp}//g" \
+                        -e "s/#\$${comp}/#/g" >> Compiler.mk
+	else
+		#grep "\$${comp}" Utility/Compilers \
+		#	|sed -e"s/#\$${comp}/#/g" >> Compiler.mk
+		#grep "\@${comp}" Utility/Compilers \
+		#	|sed -e"s/#\@${comp}/#/g" >> Compiler.mk
+               grep '#[\\\$\\\@]'${comp} Utility/Compilers \
+                        |sed -e "s/#\@${comp}/#/g" \
+                        -e "s/#\$${comp}/#/g" >> Compiler.mk
+
+	fi
+	CompFound=1
+done
+if [ $CompFound -eq 0 ]
+then
+	echo "No compiler was found in your path."
+	echo "Please edit Compiler.mk and add a compiler."
+	echo "F90 =" >> Compiler.mk
+fi
+
+echo "" >> Compiler.mk
+echo "########################################" >> Compiler.mk
+echo "#              mkl" >> Compiler.mk
+echo "########################################" >> Compiler.mk
+#grep '#$mkl' Utility/Compilers |sed -e's/#$mkl/#/g' >> Compiler.mk
+#grep '#@mkl' Utility/Compilers |sed -e's/#@mkl//g' >> Compiler.mk
+grep '#[\\\$\\\@]'mkl Utility/Compilers \
+         |sed -e "s/#\@mkl//g" \
+         -e "s/#\$mkl/#/g" >> Compiler.mk
+
+
+echo "" >> Compiler.mk
+echo "########################################" >> Compiler.mk
+echo "#              mpi" >> Compiler.mk
+echo "########################################" >> Compiler.mk
+#grep '#$mpi' Utility/Compilers |sed -e's/#$mpi/#/g' >> Compiler.mk
+#grep '#@mpi' Utility/Compilers |sed -e's/#@mpi//g' >> Compiler.mk
+grep '#[\\\$\\\@]'mpi Utility/Compilers \
+          |sed -e "s/#\@mpi//g" \
+          -e "s/#\$mpi/#/g" >> Compiler.mk
+
+
+rm whichout.tmp

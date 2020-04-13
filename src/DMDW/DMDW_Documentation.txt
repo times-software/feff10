@@ -1,0 +1,660 @@
+DMDW: A set of tools to calculate Debye-Waller factors and other related
+quantities using dynamical matrices.
+
+DMDW is a set of tools developed to calculate Debye-Waller (DW) factors and
+other related quantities from a dynamical matrix (matrix of force constants or
+Hessian matrix) using the Lanczos recursive algorithm.[Refs.] This set includes
+a module integrated into FEFF, a standalone version that can be used
+independently of FEFF and a Fortran module that can be integrated into
+third-party programs. DMDW also includes conversion tools to generate the
+required input files from different ab initio programs.
+
+This document is divided into the following sections:
+
+* Installing DMDW
+  ** Installing as a FEFF module
+  ** Creating and installing the standalone version
+  ** Using as a DW factor engine
+
+* Using DMDW
+  ** Using dym2feffinp
+  ** Using within a XANES or EXAFS calculation in FEFF
+  ** Calculating DW factors using the standalone version
+  ** The "dym" dynamical matrix file format
+
+* Examples
+  ** XANES and EXAFS calculations
+  ** Calculating DW factors with the standalone version
+  ** Creating a FEFF input file from a dym file using dym2feffinp
+  ** Creating dynamical matrix files from third-party programs
+
+* Troubleshooting common problems
+  ** Structure problems
+  ** Lanczos problems
+
+* Future developments
+  ** Expected changes in FEFF input format
+  ** Expected changes in DMDW input format
+  ** Expected changes in dynamical matrix file format
+
+-------------------------------------------------------------------------------
+
+* Installing DMDW
+  ** Installing as a FEFF module
+
+The installation of DMDW within FEFF is straightforward. Please refer to the
+FEFF installation instructions. After the FEFF installation is completed a
+module called "dmdw" should be located under the FEFF "bin" directory structure.
+
+  ** Creating and installing the standalone version
+
+Within the "src/DMDW" directory in the FEFF distribution, execute the following
+command:
+
+make standalone
+
+This will create a directory "dmdw_standalone" under "src/DMDW". Edit "Makefile"
+inside the directory "dmdw_standalone/src". Change the "F90" variable to your
+fortran 90 compiler of choice. Then execute the following commands:
+
+make
+make install
+make examples
+
+If everything worked correctly the reference results located in
+"dmdw_standalone/examples/Reference_Results" should agree with those generated
+in "dmdw_standalone/examples".
+
+  ** Using as a DW factor engine
+
+[NOT WRITTEN YET]
+
+-------------------------------------------------------------------------------
+
+* Using DMDW
+
+
+  ** Using dym2feffinp
+
+Before explaining how to include dynamical matrix DW factors in EXAFS and XANES
+calculations, it is important that the user becomes familiar with some
+constraints/limitations that are present in the current implementation. These
+limitations stem from the fact that both the dynamical matrix and FEFF input
+files contain structural information. These structures must match for the DW
+values to be correct. Since FEFF internally sorts the atoms according to
+distance to the absorber, special care must be taken to avoid mismatching the
+structural information coming from the FEFF input with that from the dym file.
+dym2feffinp is a utility that helps in the generation of FEFF input files with
+structures that match those in the dynamical matrix files. The usage of
+dym2feffinp is as follows:
+
+dym2feffinp [Options] dymfile
+
+where dymfile is the name of the file containing the dynamical matrix. This
+command creates two files, feff.dym and feff.inp, which contain correctly
+matched structures. (NOTE OF WARNING: If dymfile is named "feff.dym", then
+dym2feffinp will APPEND the updated dym information to it. We recommended that a
+different name is used for dymfile. Future version will check that dymfile
+doesn't use the "feff.dym" name.)
+
+The default behavior of dym2feffinp can be modified with the following options:
+
+  --c  iAbs   Use atom iAbs as absorber
+  --f  fname  Write feff input to file fname
+  --d  dname  Write adjusted dym file to file dname
+  --j         Skip header and only write POTENTIALS + ATOMS cards
+  --s  spec   Write feff input for spec=XANES or spec=EXAFS
+
+The --c options allows the user to choose different absorbers. The usual
+approach of editing a FEFF input file and changing the potential type of a
+certain atom to 0 will result in mismatched FEFF and dym structures. This should
+be avoided. It is recommended that different input files be generated using the
+--c option.
+
+The --f and --d change the default output filenames from "feff.inp" and
+"feff.dym" to fname and dname, respectively.
+
+  ** Using within a XANES or EXAFS calculation in FEFF
+
+The inclusion of dynamical matrix DW factors in XANES and EXAFS calculations is
+analogous to the use of correlated-Debye DW factors in FEFF84. In the XANES
+case, single-scattering DW factors are calculated for each pair of atoms in the
+cluster. For EXAFS calculations, the DW factors are calculated only for the
+selected paths (for instance, selected with the RPATH card). For both cases the
+DEBYE card input is only slightly different than in previous versions:
+
+DEBYE  Temp  Debye_Temp [DW_Opt [dym_File DMDW_Order DMDW_Type DMDW_Route]]
+
+where:
+	Temp		Temperature at which the DW factors are calculated
+	Debye_Temp	Debye Temperature of the material
+	DW_Opt		Option that controls the type of DW factors used.
+			The possible values are:
+				0	Correlated-Debye method
+				1	Eqs. of Motion method
+				2	Recursion method
+				3	CL [?? Need to check]
+				4	Read from "sig2.dat" file
+				5	Dynamical-Matrix method
+				<0	Do not calculate DW factors
+
+Options 0-4 are explained in the FEFF manual. When DW_Opt=5, the following
+parameters can be included:
+	dym_File	Name of the dynamical matrix information file. The
+			default value is "feff.dym"
+	DMDW_Order	Lanczos recursion order to be used in the calculation.
+			The default value is 2. Well converged results are
+			usually obtained for DMDW_Order=6-10. For small size
+			systems, these values might be too large. As a rule
+			of thumb, DMDW_Order should be less than
+			3*(Number of atoms)-6. Some paths, within systems with
+			high symmetry, might require a lower DMDW_Order. The
+			user should always check for convergence with this
+			parameter.
+	DMDW_Type	Type of DW calculation.
+			The possible values are:
+				0	Parallel s^2
+			[NOTE: the meaning of this parameter might change in a
+			future release]
+			The default value is 0.
+	DMDW_Route	Which paths to use in the dmdw module. These paths do
+			not affect the path selection in the XAS calculations,
+			they are used for the generation of an input file for
+			the independent dmdw module.
+			The possible values are:
+				 0	Skip dmdw module
+				 1	All SS paths from absorber
+				 2	Same as 1 + all DS paths from absorber
+				 3	Same as 2 + all TS paths from absorber
+				11	All SS paths
+				12	Same as 1 + all DS paths
+				13	Same as 2 + all TS paths
+			The default value is 0.
+
+  ** Calculating DW factors using the standalone version
+
+Other capabilities of DMDW can be accessed by means of the "dmdw" module or by
+compiling the standalone version (which generates a "dmdw" module without
+generating the rest of the FEFF code). All the details described below apply to
+the input used by both the "dmdw" module and the standalone version. During the
+execution of a normal FEFF run using ab initio DW factors, an input for the
+"dmdw" module is automatically generated based on the options used in the DEBYE
+card. This autogenerated input can be used "as is" with the standalone version,
+or further edited to access other capabilities.
+
+The "dmdw" input is very simple, with the first three lines determining the main
+parameters of the calculation. The rest of the input depends on the content of
+these first lines.
+
+Output_Level
+Lanczos_Order
+nT T_Min T_Max
+DW_Type
+
+where:
+
+Output_Level: How much output to print (integer).
+
+  This parameter determines how much output the DMDW module produces. For now
+  only two values are available: 0 for terse output and 1 for verbose. Terse
+  output only prints the target quantity, while verbose produces a lot of
+  other quantities of interest.
+
+Lanczos_Order: Number of Lanczos iterations (integer).
+
+  This parameter is equivalent to the DMDW_Order parameter described above for
+  the DEBYE card. It corresponds to the number of Lanczos iterations to be used
+  in the calculation. Well converged results are usually obtained for
+  DMDW_Order=6-10. For small size systems, these values might be too large. As a
+  rule of thumb, this value should be less than 3*(Number of atoms)-6. Some
+  paths, within systems with high symmetry, might require a lower recursion
+  order. The user should always check for convergence with this parameter.
+
+nT: Number of temperature values in grid (integer)
+          T_Min, T_Max: Minimum and maximum temperature values (real, in K)
+
+  Define a grid of temperatures in which to calculate the DW factors. This
+  option is very efficient in the generation of whole temperature curves since
+  it performs the Lanczos procedure only once and then calculates the DW for
+  each temperature.
+
+DMDW_Type: Type of DW calculation (integer).
+
+  This parameter is equivalent to the one described above for the DEBYE card,
+  but more values are available.
+  The possible values are:
+	0	Parallel s^2
+	1	Vibrational free energy
+        2       Self Energy/Spectral function
+	3	Crystallographic u^2
+        4	Perpendicular s^2 (Not available yet)
+	
+  The parallel s^2 is the usual mean-square relative displacement (MSRD) along a
+  path. The perpendicular s^2 is the MSRD orthogonal to a path. The
+  crystallographic u^2 is the mean-square displacement of a given atom with
+  respect to its stationary position. Finally, the vibrational free energy
+  associated with that crystallographic u^2 can also be calculated.
+
+  [NOTE: Options 1 and 4 are not fully activated in this release. Also notice
+         that the meaning of this parameter might change in a future release.]
+
+The rest of the input depends on DMDW_Type. Here we list each possible case:
+
+If DMDW_Type = 0 or 3, the rest of the "dmdw" input file should have the form:
+
+Filename
+nPathDesc
+PathDesc1
+PathDesc2
+.
+.
+
+where
+
+Filename: Name of file containing the dynamical matrix (string)
+
+  The file must be present in the same directory as the DMDW input and be in
+  "dym" format (see below).
+
+nPathDesc: Number of path descriptors (integer)
+
+  Define the number of path descriptors to use for the generation of paths.
+  
+PathDescN: Nth path descriptor used to generate a list of paths
+                        (integer and real, see below)
+
+  A path descriptor has the following form:
+  
+    nAt At(1)...At(nAt) Path_Length
+    
+  where:
+  
+    nAt: Number of atoms in the path (integer)
+    At(i): Index of atom that must be included in the path (integer)
+
+		These indices correspond to the ones used in the "dym" file. The
+		number 0 is a wildcard representing any atom in the structure.
+		For instance, the atom indices "1 0 2" represent a double
+		scattering paths starting at atom 1, ending at atom 2 and
+		passing through every other allowed atom in the system. The
+		paths are generated in such a way that no consecutive repeated
+		indices are allowed.
+
+    Path_Length: Effective path length cutoff (real, in Bohr)
+    
+		This parameter helps fine-tune the generated path list, removing
+		paths that are longer than necessary.
+
+  If the number of atoms in the path is 1 (nAt=1), then only crystallographic
+  u^2 values are computed for the single atom in the path (for all cartesian
+  displacements of that atom). DMDW will skip any multi-atom path for u^2
+  calculations (DMDW_Type = 3) and any single atom path for s^2 calculations
+  (DMDW_Type = 0).
+
+If DMDW_Type = 1 or 2, the rest of the "dmdw" input file should have the form:
+
+[Shauna, please include here the file format you use for the self-energy
+calculations and VFE].
+
+  ** The "dym" dynamical matrix file format
+
+  A "dym" file contains the information required by the Lanczos algorithm. This
+  includes the atomic masses, structure and force constants. Two conversion
+  scripts are included in the "bin" directory to convert Gaussian 03 formatted
+  checkpoint ("fchk") files (fchk2dym) and Quantum Espresso dynamical matrix
+  files (dynG2dym) into our "dym" dynamical matrix format. The "fchk2dym"
+  command has been thoroughly tested, but the "dynG2dym" has not. The current
+  format of the "dym" files is as follows:
+
+Line 1 - dym_Type: Dynamical matrix file type (integer)
+
+  This value is for future use. Set to 1 for now.
+
+[Shauna, please include here your modifications to the dym format.]
+
+Line 2 - nAt: Number of atoms (integer)
+
+  Number of atoms in the system.
+  
+Lines 2..2+nAt - Atomic numbers (integer)
+
+  Atomic numbers of atoms in the system.
+
+Lines 2+nAt+1..2+2*nAt - Atomic masses (real, in AMU)
+
+  Atomic masses of the atoms in the system.
+
+Lines 2+2*nAt+1..2+3*nAt - Atomic coordinates (real, in Bohr)
+
+  Cartesian coordinates ("x y z") of the atoms in the system.
+
+Lines 2+3*nAt+1..End - Dynamical matrix in atom pair block format (integer and
+                       real, see below,in atomic units):
+
+  The force constants in the system are stored for each pair of atoms in the
+  system using the following block format:
+
+     i j
+     d2E/dxidxj d2E/dxidyj d2E/dxidzj
+     d2E/dyidxj d2E/dyidyj d2E/dyidzj
+     d2E/dzidxj d2E/dzidyj d2E/dzidzj
+
+  where:
+  
+     i, j: Indices defining the atomic pair
+     d2E/daidbj: Second derivative of the energy (i.e. force constant) with
+                 respect to the a coordinate of atom i and the b coordinate of
+		 atom j, where a,b={x,y,z}.
+
+-------------------------------------------------------------------------------
+* Examples
+  ** Creating a FEFF input file from a dym file using dym2feffinp
+
+Here we demonstrate how to convert a dym file, in this case created from a
+Gaussian fchk file, into matched pairs of feff.inp and feff.dym files, for
+different absorbing centers.
+
+The dym file for a CO2 molecule (CO2.dym), converted from the formatted
+checkpoint file looks like:
+
+###############################################################################
+   1
+   3
+   8
+   6
+   8
+    15.99491460
+    12.00000000
+    15.99491460
+   0.00000000   0.00000000   2.20979482
+   0.00000000   0.00000000   0.00000000
+   0.00000000   0.00000000  -2.20979482
+   1   1
+  3.501599e-02 -7.311989e-13 -8.941376e-12
+ -7.311989e-13  3.501599e-02  3.206256e-11
+ -8.941376e-12  3.206256e-11  1.042343e+00
+   1   2
+ -7.001817e-02 -5.485621e-12  2.501278e-11
+ -3.211930e-12 -7.001817e-02 -2.341738e-11
+ -3.124223e-11 -3.615378e-11 -9.594793e-01
+   1   3
+  3.500217e-02 -8.681691e-13 -1.846564e-11
+  8.681691e-13  3.500217e-02 -1.245331e-11
+ -1.846599e-11  1.245327e-11 -8.286417e-02
+   2   1
+ -7.001817e-02 -3.211930e-12 -3.124223e-11
+ -5.485621e-12 -7.001817e-02 -3.615378e-11
+  2.501278e-11 -2.341738e-11 -9.594793e-01
+   2   2
+  1.400363e-01  1.883207e-12  2.058909e-11
+  1.883207e-12  1.400363e-01  4.005329e-11
+  2.058909e-11  4.005329e-11  1.918959e+00
+   2   3
+ -7.001817e-02  2.586772e-12  5.500370e-12
+  4.227571e-12 -7.001817e-02  3.602353e-12
+  3.495310e-11  1.591451e-11 -9.594793e-01
+   3   1
+  3.500217e-02  8.681691e-13 -1.846599e-11
+ -8.681691e-13  3.500217e-02  1.245327e-11
+ -1.846564e-11 -1.245331e-11 -8.286417e-02
+   3   2
+ -7.001817e-02  4.227571e-12  3.495310e-11
+  2.586772e-12 -7.001817e-02  1.591451e-11
+  5.500370e-12  3.602353e-12 -9.594793e-01
+   3   3
+  3.501599e-02  7.311989e-13 -8.940090e-12
+  7.311989e-13  3.501599e-02 -3.206153e-11
+ -8.940090e-12 -3.206153e-11  1.042343e+00
+###############################################################################
+
+The dym files are not required to be sorted in any particular order, they retain
+the atom order of the program that generated the dynamical matrix. In this case,
+the order is O, C and O, with the C atom at the origin. Since FEFF internally
+sorts the atoms according to their distance to the absorber, if this dym file is
+used as is to compute the EXAFS/XANES for the C atom, the results would be
+incorrect. We can generate the appropriate FEFF input file and associated dym
+file with the following command:
+
+dym2feffinp --c 2 --f CO2_C_feff.inp --d CO2_C_feff.dym CO2.dym
+
+This creates the following CO2_C_feff.dym file:
+
+###############################################################################
+    1
+    3
+    6
+    8
+    8
+   12.000000
+   15.994915
+   15.994915
+    0.00000000    0.00000000    0.00000000
+    0.00000000    0.00000000    2.20979482
+    0.00000000    0.00000000   -2.20979482
+    1    1
+  1.400363E-01  1.883207E-12  2.058909E-11
+  1.883207E-12  1.400363E-01  4.005329E-11
+  2.058909E-11  4.005329E-11  1.918959E+00
+    1    2
+ -7.001817E-02 -3.211930E-12 -3.124223E-11
+ -5.485621E-12 -7.001817E-02 -3.615378E-11
+  2.501278E-11 -2.341738E-11 -9.594793E-01
+    1    3
+ -7.001817E-02  2.586772E-12  5.500370E-12
+  4.227571E-12 -7.001817E-02  3.602353E-12
+  3.495310E-11  1.591451E-11 -9.594793E-01
+    2    1
+ -7.001817E-02 -5.485621E-12  2.501278E-11
+ -3.211930E-12 -7.001817E-02 -2.341738E-11
+ -3.124223E-11 -3.615378E-11 -9.594793E-01
+    2    2
+  3.501599E-02 -7.311989E-13 -8.941376E-12
+ -7.311989E-13  3.501599E-02  3.206256E-11
+ -8.941376E-12  3.206256E-11  1.042343E+00
+    2    3
+  3.500217E-02 -8.681691E-13 -1.846564E-11
+  8.681691E-13  3.500217E-02 -1.245331E-11
+ -1.846599E-11  1.245327E-11 -8.286417E-02
+    3    1
+ -7.001817E-02  4.227571E-12  3.495310E-11
+  2.586772E-12 -7.001817E-02  1.591451E-11
+  5.500370E-12  3.602353E-12 -9.594793E-01
+    3    2
+  3.500217E-02  8.681691E-13 -1.846599E-11
+ -8.681691E-13  3.500217E-02  1.245327E-11
+ -1.846564E-11 -1.245331E-11 -8.286417E-02
+    3    3
+  3.501599E-02  7.311989E-13 -8.940090E-12
+  7.311989E-13  3.501599E-02 -3.206153E-11
+ -8.940090E-12 -3.206153E-11  1.042343E+00
+###############################################################################
+
+
+This dym file is now centered on the C atom and the atoms are sorted correctly.
+The associated CO2_C_feff.inp FEFF input file has the following structure
+section:
+
+###############################################################################
+POTENTIALS
+    0    6    C
+    1    8    O
+
+ATOMS
+    0.00000    0.00000    0.00000    0    C  0.00000    0
+    0.00000    0.00000    1.16937    1    O  1.16937    1
+    0.00000    0.00000   -1.16937    1    O  1.16937    2
+END
+###############################################################################
+
+which is correctly centered and has the same structure as the dym file.
+
+  ** XANES and EXAFS calculations
+
+  A typical FEFF input file that uses ab initio DW factors in a XANES
+  calculation looks as follows:
+  
+###############################################################################
+* This feff9 input file was generated by dym2feffinp
+
+ TITLE absorbing atom:   0
+
+ EDGE      K
+ S02       1.0000
+
+*              pot    xsph     fms   paths  genfmt  ff2chi
+CONTROL          1       1       1       1       1       1
+PRINT            1       0       0       0       0       0
+
+*          ixc  [ Vr  Vi ]
+EXCHANGE     0
+
+*            r_scf  [ l_scf   n_scf   ca ]
+SCF          4.000
+
+*             kmax   [ delta_k  delta_e ]
+XANES        4.000
+
+*            r_fms     l_fms
+FMS          6.000
+
+DEBYE    500.0  1073.0  5 feff.dym  6  0  1
+
+POTENTIALS
+    0    8    O
+    1    1    H
+
+ATOMS
+    0.00000    0.00000    0.00000    0    O  0.00000    0
+    0.96141   -0.12674    0.00000    1    H  0.96972    1
+   -0.12674    0.96141    0.00000    1    H  0.96972    2
+END
+###############################################################################
+
+  This input file results in the XANES O K edge spectrum of a single water
+  molecule. (If an EXAFS calculation is required, the same DEBYE card parameters
+  apply, but the XANES card should be substituted by the EXAFS one.) It uses ab
+  initio DW factors at 500K and a dynamical matrix stored in the file
+  "feff.dym". The number of Lanczos recursion iterations is set to 6, the type
+  of DW calculation is to calculate parallel s^2, and it asks that all single
+  scattering paths from the absorber be calculated independently in the "dmdw"
+  module. The input generated for this module is:
+
+###############################################################################
+   6
+   1    500.000    500.000
+   0
+feff.dym
+   1
+   2   1   0           3.20
+###############################################################################  
+
+  The first line corresponds to the number of Lanczos iterations. The second
+  defines the temperature, in this case a grid with a single point. The third
+  defines the type of DW calculation and the fourth the name of the dynamical
+  matrix file. The fifth line declares that the input contains a single path
+  descriptor, which is included in the next line. This descriptor defines all
+  single scattering paths from the absorber that are less than 3.2 Bohr long.
+
+  A dynamical matrix file for this calculation looks like this:
+
+###############################################################################
+    1
+    3
+    8
+    1
+    1
+   15.994915
+    1.007825
+    1.007825
+    0.00000000    0.00000000    0.00000000
+    1.81679640   -0.23950080    0.00000240
+   -0.23950080    1.81679640    0.00000240
+    1    1
+  5.398996E-01 -1.171079E-01  5.031484E-07
+ -1.171079E-01  5.399060E-01  9.690730E-07
+  5.031484E-07  9.690730E-07 -1.841479E-03
+    1    2
+ -4.941835E-01  3.022460E-02 -6.064138E-07
+  8.687800E-02 -4.571081E-02 -1.155657E-07
+ -6.583932E-07  7.894155E-08  9.207451E-04
+    1    3
+ -4.571614E-02  8.688332E-02  1.032683E-07
+  3.022992E-02 -4.941952E-01 -8.535212E-07
+  1.552287E-07 -1.048028E-06  9.207340E-04
+    2    1
+ -4.941835E-01  8.687800E-02 -6.583932E-07
+  3.022460E-02 -4.571081E-02  7.894155E-08
+ -6.064138E-07 -1.155657E-07  9.207451E-04
+    2    2
+  5.034834E-01 -7.711698E-02  6.431492E-07
+ -7.711698E-02  5.501543E-02 -7.759238E-08
+  6.431492E-07 -7.759238E-08 -8.716053E-04
+    2    3
+ -9.299924E-03 -9.761022E-03  1.524317E-08
+  4.689238E-02 -9.304625E-03 -1.349708E-09
+ -3.672524E-08  1.931636E-07 -4.913982E-05
+    3    1
+ -4.571614E-02  3.022992E-02  1.552287E-07
+  8.688332E-02 -4.941952E-01 -1.048028E-06
+  1.032683E-07 -8.535212E-07  9.207340E-04
+    3    2
+ -9.299924E-03  4.689238E-02 -3.672524E-08
+ -9.761022E-03 -9.304625E-03  1.931636E-07
+  1.524317E-08 -1.349708E-09 -4.913982E-05
+    3    3
+  5.501607E-02 -7.712230E-02 -1.185055E-07
+ -7.712230E-02  5.034998E-01  8.548785E-07
+ -1.185055E-07  8.548785E-07 -8.715942E-04
+###############################################################################
+
+  ** Calculating DW factors with the standalone version
+
+[NOT WRITTEN YET]
+
+  ** Creating dynamical matrix files from third-party programs
+
+[NOT WRITTEN YET]
+
+-------------------------------------------------------------------------------
+* Troubleshooting common problems
+  ** Structure problems
+
+[NOT WRITTEN YET]
+
+  ** Lanczos problems
+
+* If the code warns that there are less poles than Lanczos iterations, it
+  usually means that the iteration order is to high. Try with a smaller
+  number.
+
+* When the structure associated with a dynamical matrix is not sufficiently
+  optimized, the program is likely to report that certain paths result in
+  poles associated with imaginary frequencies. The code currently ignores
+  these poles by setting their weight to zero. Usually this doesn't affect the
+  results significantly, but they should be considered very carefully anyway.
+
+* The code checks the symmetry of the dynamical matrix. If isn't sufficiently
+  symmetric, the results should be examined carefully.
+
+-------------------------------------------------------------------------------
+* Future developments
+  ** Performance improvements
+
+[NOT WRITTEN YET]
+Parallelization of calculation of DW factors in XANES, if running under MPI.
+
+  ** Expected changes in FEFF input format
+
+[NOT WRITTEN YET]
+
+  ** Expected changes in DMDW input format
+
+[NOT WRITTEN YET]
+
+  ** Expected changes in dynamical matrix file format
+
+Inclusion of forces (to use with less than optimal structures)
+Inclusion of a title (for bookkeeping purposes)
+
+[NOT WRITTEN YET]
+

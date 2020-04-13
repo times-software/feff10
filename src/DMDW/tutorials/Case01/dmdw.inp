@@ -1,0 +1,7 @@
+ 1              # Output level: 0 - Terse, 1 - Verbose
+ 10             # Lanczos recursion order
+20 1.0 300.0    # Temperature grid: Number of temps, T min, T max
+ 0              # Type of output: 0 - s^2, 1 - VFE, 2 - SE, 3 - u^2
+feff.dym        # Dynamical matrix file name
+1               # Number of paths descriptors
+2 1 2     30.0  # Single scatt. descriptor from 1 to 2, ignore if R_Path>30 au

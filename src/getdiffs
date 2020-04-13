@@ -1,0 +1,11 @@
+#!/bin/bash
+dirs=`cat dirs`
+for dir in $dirs
+do
+	isdiff=`diff -EZBbw $dir ../../feff9-FT/src/$dir |nl |awk '{print $1}'`
+	if [ "X$isdiff" != "X" ]
+	then
+		echo $dir
+		diff --brief -EZBbw $dir ../../feff9-FT/src/$dir |sed -e's/Files//g' -e's/and//g' -e's/differ//g'
+	fi
+done

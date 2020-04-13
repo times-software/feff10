@@ -1,0 +1,58 @@
+#!/bin/csh -f
+
+# take an xmu.dat file and divide the spectrum by 3.
+
+if ( $1 != ) then
+   set old = $1.dat
+else
+   set old = xmu.dat
+endif
+
+if (! -e $old || -z $old ) then
+   echo file $old does not exist in athird - check input options ; aborting now.
+   exit 1
+endif
+set new = $1.new
+set div = 3.0
+
+#set nheader = 21
+set nheader = `grep \# $old | wc -l`
+set nheader = $nheader[1]
+#echo nheader $nheader
+
+
+#echo athird handling file $old in `pwd`
+
+rm -f $new
+head -n $nheader $old > $new
+set nspec = `wc -l $old`
+set nspec = $nspec[1]
+set nspec = `echo $nspec - $nheader | bc -l`
+tail -n $nspec $old > $new.tmp
+
+set e1 = `awk '{print $1}' ${new}.tmp `
+set e2 = `awk '{print $2}' ${new}.tmp `
+set e3 = `awk '{print $3}' ${new}.tmp `
+set s1 = `awk '{print $4}' $new.tmp`
+set s2 = `awk '{print $5}' $new.tmp`
+set s3 = `awk '{print $6}' $new.tmp`
+
+set i = 0
+while ( $i < $nspec )
+@ i ++
+set h = $s1[$i]
+set s1[$i] = `echo $h / $div | bc -l`
+set h = $s2[$i]
+set s2[$i] = `echo $h / $div | bc -l`
+set h = $s3[$i]
+set s3[$i] = `echo $h / $div | bc -l`
+
+echo $e1[$i] $e2[3] $e3[3] $s1[$i] $s2[$i] $s3[$i]  >> $new
+end
+
+rm -f $new.tmp
+mv $old $old.old
+mv $new $old
+
+exit 0
+

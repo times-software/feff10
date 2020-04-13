@@ -1,0 +1,8 @@
+COMMON=.
+PAR=.
+KSPACE=.
+ERROR=.
+INPGEN=.
+INST_DIR=../bin
+INST_DIR2=../bin
+TEST_DIR=../examples

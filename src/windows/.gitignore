@@ -1,0 +1,7 @@
+*.obj
+*.mod
+BuildLog.htm
+*\*\*.obj
+*\*\*.mod
+*/*/*.obj
+*/*/*.mod

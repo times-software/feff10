@@ -1,0 +1,14 @@
+#!/bin/csh -f
+set bin = '../../bin/Seq/'
+set bin = './bin/'
+set F77 = 'ifort -mp -prec-div -O0'
+set mods = 'rdinp rhorrp pot opconsat compton ldos xsph fms path genfmt mkgtr atomic ff2x screen sfconv eels dmdw dym2feffinp'
+
+foreach mod ( $mods )
+        echo $F77 ${mod}_tot.f90 -o ${bin}/$mod
+	$F77 ${mod}_tot.f90 -o ${bin}/$mod
+end
+
+echo -e "\n\n\tYou can use the script"
+echo -e "\t\tfeff"
+echo -e "\tlocated in ../ to run feff"

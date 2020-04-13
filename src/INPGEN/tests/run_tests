@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Script to run all the tets.
+
+# NOTE: At some point I will add a automatic check against the reference outs.
+
+# Define the program to test
+export PROG=../pot_generator_test
+
+# Check if the executable is present
+if [[ ! -x ${PROG}.exe || ! -x $PROG ]]; then
+  echo "No executable ../pot_generator_test.exe"
+  exit 1
+fi
+
+for i in test.????.inp
+  do
+    cat $i | $PROG > ${i%.*}.out
+  done

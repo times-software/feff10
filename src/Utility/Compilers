@@ -1,0 +1,94 @@
+# Here is where we save all of the compiler information that
+# goes into Compiler.mk. Lines starting with "#$compiler" will
+# end up as comments (in Compiler.mk) for the specified compiler while lines
+# starting with "#@compiler" will end up as commands.
+
+#$header#### This file contains compiler settings for the FEFF9 project
+#$header# Define below:
+#$header# - F90    :  choice of fortran90 compiler
+#$header# - FLAGS  :  compilation options
+#$header# - MPIF90 :  mpif90 compiler (optional)
+#$header# - USE_MKL:  blas/lapack libraries (optional)
+
+
+########################################
+#              ifort
+########################################
+#@ifort F90 = ifort 
+#$ifort for a MacBook1,1 with a 32-bit Intel Core Duo processor ("Yonah") running Snow Leopard - generate 32bit executable:
+#$ifort FLAGS = -O3  -L/Developer/SDKs/MacOSX10.6.sdk/usr/lib/ -m32 -O2 -axsse4.2,sse3 -prec_div -132  -g 
+#$ifort Regular 64-bit code e.g. for iMac, (recent-ish) MacBook Pro, etc. (10.7, 10.6) :
+#$ifort Full-on debugging mode for ifort:  (note this catches different things depending on optimization settings)
+#$ifort FLAGS = -O3 -check arg_temp_created -gen-interfaces -warn interfaces -g -fp-stack-check -traceback  -FR -heap-arrays -check bounds 
+#$ifort FLAGS = -O0  -g -fp-stack-check -traceback -heap-arrays -check bounds 
+#$ifort Production code Mac: (note this runs for Leopard and higher without performance sacrifice compared to 10.8 optimizations) :
+#@ifort FLAGS =   -O3 -mmacosx-version-min=10.5 $(FCINCLUDE)
+#$ifort Production code Linux:
+#$ifort FLAGS = -O3
+
+
+########################################
+#              mpi
+########################################
+#@mpi MPIF90 = mpif90
+#@mpi MPIFLAGS =  -g -O3 
+#$mpi MPIFLAGS = -O3 -check arg_temp_created -gen-interfaces -warn interfaces -g -fp-stack-check -traceback  -heap-arrays -check bounds
+
+
+########################################
+#              mkl 
+########################################
+#$mkl # MAIN SWITCH (toggle mkl on/off) :
+#$mkl uncomment to use MKL
+#$mkl comment to use standard FEFF blas/lapack (MATH/lu.f90)
+#$mkl USE_MKL = "on"
+#@mkl
+#$mkl Must edit for local mkl installation
+#$mkl $MKLROOT must exist (optionally you can define it here)
+#@mkl
+#$mkl# Mac MKL:
+#@mkl MKLSEQUENTIALMAC = $(MKLROOT)/lib/libmkl_blas95_lp64.a $(MKLROOT)/lib/libmkl_lapack95_lp64.a $(MKLROOT)/lib/libmkl_intel_lp64.a $(MKLROOT)/lib/libmkl_sequential.a $(MKLROOT)/lib/libmkl_core.a -lpthread -lm
+#@mkl MKLTHREADEDMAC =   $(MKLROOT)/lib/libmkl_blas95_lp64.a $(MKLROOT)/lib/libmkl_lapack95_lp64.a $(MKLROOT)/lib/libmkl_intel_lp64.a $(MKLROOT)/lib/libmkl_intel_thread.a $(MKLROOT)/lib/libmkl_core.a -liomp5 -lpthread -lm
+#$mkl# Intel MKL:
+#@mkl MKLSEQUENTIALLINUX =  $(MKLROOT)/lib/em64t/libmkl_blas95_lp64.a $(MKLROOT)/lib/em64t/libmkl_lapack95_lp64.a -Wl,--start-group  $(MKLROOT)/lib/em64t/libmkl_intel_lp64.a $(MKLROOT)/lib/em64t/libmkl_sequential.a $(MKLROOT)/lib/em64t/libmkl_core.a -Wl,--end-group -lpthread -lm
+#$mkl # Windows MKL:
+#$mkl    On Windows I use Visual Studio rather than this Makefile/Compiler.mk structure.
+#$mkl    Just enable "Use math libraries - MKL - Sequential" in the Project Settings
+#$mkl    For the time-consuming modules (pot, fms, screen, ldos, compton)
+#@mkl
+#$mkl  Choose the right OS here :
+#@mkl MKL_LDFLAGS = $(MKLSEQUENTIALMAC)
+#$mkl MKL_LDFLAGS = $(MKLSEQUENTIALLINUX)
+#@mkl MKL_FCINCLUDE = -I$(MKLROOT)/include/em64t/lp64 -I$(MKLROOT)/include
+#@mkl
+#$mkl  If no MKL, use these defaults instead (lu.f90 provides non-optimized blas/lapack)
+#@mkl FEFF_LDFLAGS = 
+#@mkl FEFF_FCINCLUDE =
+#@mkl
+#$mkl #### Settings derived here :
+#@mklifdef USE_MKL
+#$mkl  1/ Use the MKL settings defined above:
+#@mkl	LDFLAGS = $(MKL_LDFLAGS)
+#@mkl	FCINCLUDE = $(MKL_FCINCLUDE)
+#@mkl	DEPTYPE = _MKL
+#@mklelse
+#$mkl  2/ Use the standard FEFF blas/lapack (slower but no need to install MKL):
+#@mkl	LDFLAGS = 
+#@mkl	FCINCLUDE = 
+#@mkl	DEPTYPE = 
+#@mklendif
+
+########################################
+#              pgf90
+########################################
+#@pgf90 F90 = pgf90
+#@pgf90 FLAGS = -O3
+
+
+########################################
+#              gfortran
+########################################
+#@gfortran F90 =  gfortran
+#@gfortran FLAGS = -O3 -ffree-line-length-none -finit-local-zero -g 
+
+

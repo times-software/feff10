@@ -1,0 +1,66 @@
+#!/bin/sh
+
+# Script to generate the input files to test different parts of the 
+# potential generator
+
+# NOTE: This script should only be run by developers.
+#       Tests should always be added at the end, never inserted between the
+#       older tests. This way we keep everything nicely ordered as we grow
+#       the test suite.
+
+# Write the test input file
+write_input() {
+  export TEST=`pad 4 $TEST`
+  Rule=$1; Center=$2; XYZ=$3;
+  Out=test.$TEST.inp;
+  echo $Rule   > $Out;
+  echo $Center >> $Out;
+  cat  $XYZ    >> $Out;
+  export TEST=`next_test $TEST`
+}
+
+pad() {
+  gawk '
+  function pad(n,i)
+    {
+     if ( i > 10^n-1 )
+       {
+        print "Error in pad function";
+        exit;
+       }
+     st = i "";
+     nchar = length(st);
+     for(j=1;j<=(n-nchar);j++)
+       st = "0" st;
+     return st;
+    }
+  END{
+    print pad(N,I);
+  }
+  ' N=$1 I=$2 /dev/null
+}
+
+next_test() {
+  declare -i n
+  n=$TEST+1
+  echo $n
+}
+
+# Initialize the test index
+export TEST=1
+
+# Test rule atomnum with single center
+write_input "atomnum" "1" "mn3phenylterpycl3_geomopt.xyz"
+
+# Test rule atomnum with multi center
+write_input "atomnum" "2" "mn3phenylterpycl3_geomopt.xyz"
+
+# Test absorber out of range
+write_input "atomnum" "124" "mn3phenylterpycl3_geomopt.xyz"
+
+# Test absorber out of range
+write_input "atomnum" "-14" "mn3phenylterpycl3_geomopt.xyz"
+
+# Test default rule
+write_input "unkrule" "1" "mn3phenylterpycl3_geomopt.xyz"
+

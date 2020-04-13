@@ -1,0 +1,25 @@
+TITLE Molecular_SF6
+
+POTENTIALS
+* absorbing atom must be unique pot 0
+*	ipot	z	tag
+	0	16	S
+	1	9	F
+
+CONTROL 1 1 1 1 1 1
+
+EXAFS 20
+RPATH 10
+EDGE K
+
+ATOMS
+*	x	y	z	ipot
+	0	0	0	0	S absorber
+	1.56	0	0	1	F backscatters
+	0	1.56	0	1
+	0	0	1.56	1
+	-1.56	0	0	1
+	0	-1.56	0	1
+	0	0	-1.56	1
+
+END

@@ -1,0 +1,54 @@
+This directory contains the subroutines and functions necessary to 
+compile the program SO2CONV.  SO2CONV will convolute the single
+particle XAS files from feff with a many body spectral function to
+include many body effects on the spectra, including an ab-initio 
+calculation of the amplitude reduction S_0^2.  SO2CONV uses 
+Hedin Lundqvist self energies, so it will probably work best with
+XAS files calculated using FEFF's HL self energies.
+
+The program can be easily changed to a 
+subroutine by modifying the first and last lines in the file 
+so2conv.f, commenting the line stating it is a program and uncoomenting 
+the line stating it is a subroutine, and likewise commenting the
+line that stops the program, and uncommenting the return statement 
+at the end.
+
+Input:
+so2conv.inp - Contians control inputs for running the program.
+list.dat - The FEFF output file for the run that produced the files to be
+  modified.  This file is only needed if the chipNNNN.dat or feffNNNN.dat
+  files were produced.
+
+Input AND output:
+FEFF XAS files - The xmu.dat, chi.dat, chipNNNN.dat, or feffNNNN.dat files
+  from the run produced by the feff.inp file used for input into SO2CONV.
+  In this form, SO2CONV overwrites these XAS files with the files
+  containing the many body convolution of the spectra.  The headers are
+  unchanged.
+specfunct.dat - A binary file containing the spectral function.  If not
+  present, SO2CONV will create it, but it slows things down.  Every time
+  the material is changed, specfunct.dat will be recomputed.
+
+Files:
+ffmod9.f - The main program that reads control files and calls the rest of 
+  the subroutines.
+so2conv.f - The main subroutine for computing s02.
+conv.f - Performs the convolution of the many body spectral function with 
+  the spectra.
+mkspectf.f - Calculates the spectral function.
+senergies.f - Contains subroutines and functions for 
+  calculating the self energy and its derivatives.
+ppole - Contains functions used for finding dispersion relations 
+  and potentials in the plasmon pole, free electron gas.
+qlimits - Identifies limiting values of the momentum to be integrated 
+  over in the subroutines in senergies.f.
+mksat.f - Functions for computing the various terms in the spectral
+  function.
+mkrmu.f - Finds an approximate form for the imaginary part of the x-ray
+  absorption mu.
+interpsf.f - Interpolates the spectral function onto a different grid.
+grater.f - The workhorse integration routine in this program.
+croots.f - Finds the roots of a cubic polynomial.
+
+To Run SO2CONV from FEFF:
+Put the card SO2CONV into the feff.inp file.

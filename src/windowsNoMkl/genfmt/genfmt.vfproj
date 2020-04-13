@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{F6720347-39B7-4308-B9EF-B368D8C7B048}">
+	<Platforms>
+		<Platform Name="Win32"/></Platforms>
+	<Configurations>
+		<Configuration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" WarnInterfaces="true" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug" Interfaces="true"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
+		<Configuration Name="Release|Win32" OutputDirectory="..\bin">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" EnableEnhancedInstructionSet="codeArchIA32"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="..\bin" SubSystem="subSystemConsole" StackReserveSize="10000000" AdditionalDependencies="fefflib.lib"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+	<Files>
+		<Filter Name="Header Files" Filter="fi;fd"/>
+		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+		<File RelativePath="..\..\XSPH\bcoefjas.f90"/>
+		<File RelativePath="..\..\COMMON\m_constants.f90"/>
+		<File RelativePath="..\..\KSPACE\m_controls.f90"/>
+		<File RelativePath="..\..\COMMON\m_dimsmod.f90"/>
+		<File RelativePath="..\..\ERRORMODS\m_errorfile.f90"/>
+		<File RelativePath="..\..\COMMON\m_inpmodules.f90"/>
+		<File RelativePath="..\..\KSPACE\m_kklist.f90"/>
+		<File RelativePath="..\..\COMMON\m_nrixs.f90"/>
+		<File RelativePath="..\..\PAR\m_par.f90"/>
+		<File RelativePath="..\..\KSPACE\m_strfacs.f90"/>
+		<File RelativePath="..\..\KSPACE\m_struct.f90"/></Filter>
+		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\..\GENFMT\fmtrxi.f90"/>
+		<File RelativePath="..\..\GENFMT\genfmt.f90"/>
+		<File RelativePath="..\..\GENFMT\genfmtjas.f90"/>
+		<File RelativePath="..\..\GENFMT\genfmtsub.f90"/>
+		<File RelativePath="..\..\GENFMT\mmtr.f90"/>
+		<File RelativePath="..\..\GENFMT\mmtrjas.f90"/>
+		<File RelativePath="..\..\GENFMT\mmtrjas0.f90"/>
+		<File RelativePath="..\..\GENFMT\mmtrxi.f90"/>
+		<File RelativePath="..\..\GENFMT\mmtrxijas.f90"/>
+		<File RelativePath="..\..\GENFMT\mmtrxijas0.f90"/>
+		<File RelativePath="..\..\GENFMT\rdpath.f90"/>
+		<File RelativePath="..\..\GENFMT\regenf.f90"/>
+		<File RelativePath="..\..\GENFMT\rot3i.f90"/>
+		<File RelativePath="..\..\GENFMT\sclmz.f90"/>
+		<File RelativePath="..\..\GENFMT\setlam.f90"/>
+		<File RelativePath="..\..\GENFMT\snlm.f90"/>
+		<File RelativePath="..\..\GENFMT\xstar.f90"/></Filter></Files>
+	<Globals/></VisualStudioProject>

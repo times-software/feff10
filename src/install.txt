@@ -1,0 +1,106 @@
+
+Note: This set of instructions was updated 12/03/2010 
+
+
+Installation instructions for Feff9:
+
+Feff9 is distributed as fortran source code, and must be compiled and linked
+to make an executable program.  There are two different forms for the
+distributed code here:
+
+   1. feff9.tar.gz:
+        A unix-style distribution of broken-apart code, with Makefile.
+        Recommended for those interested in further customization, and
+        those used to the 'make' utility.  To use this form, 
+        unpack the distribution kit:
+           > gunzip -c feff9.tar.gz | tar xvf -
+        move into the src directory,  
+           > cd src
+        You may want to alter the F90 definition in the Compiler.mk file, and 
+        compilation constants in src/COMMON/m_dimsmod.f90 (as noted below).  Then build feff9:
+           > make
+        for the serial version; or 
+           > make mpi
+        for the MPI-parallellized version (requires MPI installed at runtime).
+        Issue 
+           > make clean
+        when switching between serial and parallellized version.
+
+    2. JFEFF GUI with precompiled executables:
+        Relax.  Everything's already where it needs to be.  Frankly, we're surprised you're
+        even reading this.
+
+
+----------------------------------------------------------------------
+Customizing Feff9 dimensions:
+
+      
+Certain array sizes are hardcoded in FEFF9.  The two main dimensioning parameters,
+nclusx (max number of atoms in the cluster) and lx (maximum angular momentum l) are
+now set on the fly.  However, other parameters, including the maximum number of potentials
+and the maximum number of atoms for the paths list, are still static.  If higher limits are needed,
+you must
+
+- edit src/COMMON/m_dimsmod.f90 and change the appropriate parameter.
+- recompile feff9 using the 'make' command from feff90/src
+
+Maximum memory considerations must be taken into account when setting upper boundaries.
+
+If you are not very sure of what a dimsmod parameter does, it's best to leave it alone.  It's unlikely
+that you should need to change the majority of them.
+
+Further information is available in the appendices of the feff9 users guide (feff90/doc/UG.pdf).
+
+
+
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+
+The feff90/src  directory contains the FEFF9 source code
+----------------------------------------------------------------------
+The following commands are available through the Makefile
+----------------------------------------------------------------------
+Use commands:
+   make        - compiles sequential modular code (see script 'feff')
+   make mpi    - compiles parallel modular code (see script 'feffmpi')
+                 edit POT/Makefile to change number of processors
+   make src    - generate sequential modular code  (files below)
+                ff2x_tot.f    genfmt_tot.f  path_tot.f    rdinp_tot.f
+                fms_tot.f     ldos_tot.f    pot_tot.f     xsph_tot.f
+   make srcmpi - generate parallel modular code  (file above)
+   make clean  - to switch between parallel and sequential version,
+                 also to clean directories from *.o files
+
+The Compiler.mk defines the Fortran compiler and its options.  It is not necessary
+to edit the Makefile, unless you are a developer.
+
+_______________________________________________________________________
+Explanation of the  Directory Tree
+(not updated)
+-----------------------------------------------------------------------
+----------------------------
+Directories with FORTRAN subroutines
+----------------------------
+ATOM  - single configuration atomic code subroutines
+COMMON - set of general use routines to write warnings, headers,
+          make string operations, etc..
+DEBYE - Debye-Waller factors subroutines: correlated Debye model,
+        equation of motion and recursion methods for DW factors;
+EXCH  - various models (LDA, (HF+LDA)/2) for ground and EXCITED state
+        exchange-correlation potential
+FF2X - various spectroscopy calculations (absorption, emission, scattering)
+FMS - full multiple scattering routines
+FOVRG - finds regular and irregular solution of Dirac equation
+        for spherically symmetric potential
+GENFMT - Rehr-Albers scattering F-matrix routines
+HEADERS - routines for the headers, written into output files
+LDOS - DOS calculations
+MATH - math routines: bessel fuctions, rotation matrices, 3j, etc..
+PAR - parallel processing routines ( or dummy routines)
+PATH - pathfinder
+POT - routines for SCF calculation of potential
+RDINP - reads feff.inp file and transform to standard (feffinp.xml ?)
+XSPH - Matrix elements (E1,E2, M1) and t-matrix calculation
+

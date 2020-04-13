@@ -1,0 +1,313 @@
+#!/bin/sh
+
+fchk_file=$1
+
+gawk '
+#  Reminder of n/m
+function mod(n,m){
+  return n - m*int(n/m);
+}
+# Minimum of x and y
+function min(x,y){
+  if ( x < y )
+    return x
+  else
+    return y
+  endif
+}
+# Distance between points v1 and v2
+function dist(v1,v2){
+  return sqrt( (v2[1]-v1[1])^2 + (v2[2]-v1[2])^2 + (v2[3]-v1[3])^2 );
+}
+function size(Data){
+  j = 0;
+  for ( i in Data )
+    j++;
+  return j;
+}
+function sort(Data,Ind){
+# Get the size of the array
+  n = size(Data);
+# Initialize the swapped indices array
+  for(i=1;i<=n;i++)
+    Ind[i] = i;
+  for(i=1;i<=n-1;i++)
+    for(j=i+1;j<=n;j++)
+      if ( Data[Ind[j]] < Data[Ind[i]] )
+        {
+         t      = Ind[j];
+         Ind[j] = Ind[i];
+         Ind[i] = t;
+        }
+}
+# Print out a symmetric array in column form
+function Prn_SMat(Size,A){
+  nCol = 5;
+  nl = int(Size/nCol);
+  nr = mod(Size,nCol);
+
+  for(k=1;k<=nl;k++)
+    {
+     printf "     ";
+     for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=(k-1)*nCol+1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=(k-1)*nCol+1;j<=min(k*nCol,i);j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+    }
+
+  if (nr != 0) then
+    {
+     printf "     ";
+     for(j=nl*nCol+1;j<=Size;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=nl*nCol+1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=nl*nCol+1;j<=min(Size,i);j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+    }
+}
+# Print out an arbitrary array in column form
+function Prn_Mat(Size,A){
+  nCol = 5;
+  nl = int(Size/nCol);
+  nr = mod(Size,nCol);
+
+  for(k=1;k<=nl;k++)
+    {
+     printf "     ";
+     for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+     printf " \n";
+    }
+
+  if (nr != 0) then
+    {
+     printf "     ";
+     for(j=nl*nCol+1;j<=Size;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=nl*nCol+1;j<=Size;j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+     printf " \n";
+    }
+}
+BEGIN{
+# Define conversion between AU and Ang
+  au2ang = 0.52917706;
+# Define conversion from atomi units of force to N/m
+# auf2npm = 1556.89279161;
+# Define the force scaling factor
+# FSca = (0.9806)^2;
+  FSca = 1.0;
+}
+# Find the number of atoms
+/Number of atoms/{
+  nAtoms = $5;
+# Debug
+# printf "%3d\n", nAtoms;
+}
+# Get the atomic numbers
+/Atomic numbers/{
+  getline;
+  iAtom = 1;
+  while(iAtom<=nAtoms)
+    {
+     for(iF=1;iF<=NF;iF++)
+       {
+        AN[iAtom] = $iF;
+        iAtom++;
+       }
+     getline;
+    }
+# Debug
+# for(iAtom=1;iAtom<=nAtoms;iAtom++)
+#   printf "%3d\n", AN[iAtom];
+}
+# Read the cartesian coordinates of the system
+/Current cartesian coordinates/{
+  getline;
+  iAtom = 1;
+  p     = 1;
+  while(iAtom<=nAtoms)
+    {
+     for(iF=1;iF<=NF;iF++)
+       {
+        if ( p > 3 )
+          {
+           p = 1;
+           iAtom++;
+          }
+        XYZ[iAtom,p] = $iF;
+        gsub("D","e",XYZ[iAtom,p]);
+#       XYZ[iAtom,p] = au2ang*XYZ[iAtom,p];
+        p++;
+       }
+     getline;
+    }
+# Debug
+# for(iAtom=1;iAtom<=nAtoms;iAtom++)
+#   {
+#    for(p=1;p<=3;p++)
+#      printf " %15.8e", XYZ[iAtom,p];
+#    printf "\n";
+#   }
+}
+# Get the real atomic weights
+/Real atomic weights/{
+  getline;
+  iAtom = 1;
+  while(iAtom<=nAtoms)
+    {
+     for(iF=1;iF<=NF;iF++)
+       {
+        AW[iAtom] = $iF;
+        iAtom++;
+       }
+     getline;
+    }
+# Debug
+# for(iAtom=1;iAtom<=nAtoms;iAtom++)
+#   printf "%16.10f\n", AW[iAtom];
+}
+# Read the cartesian force constants of the system
+/Cartesian Force Constants/{   
+  nE = $6;
+  iE = 0;
+  while ( iE < nE )
+    {
+     getline;
+     for(j=1;j<=NF;j++)
+       {
+        iE++;
+        BufferFC[iE] = $j;
+        gsub("D","e",BufferFC[iE]);
+       }
+    }
+}
+# Read the dipole derivatives
+/Dipole Derivatives/{   
+  nE = $5;
+  iE = 0;
+  while ( iE < nE )
+    {
+     getline;
+     for(j=1;j<=NF;j++)
+       {
+        iE++;
+        BufferDD[iE] = $j;
+        gsub("D","e",BufferDD[iE]);
+       }
+    }
+}
+# Print the extracted information
+END{
+# Calculate the number of coordinates
+  nCoord = 3*nAtoms
+
+# Transform the cartesian force constants vector buffer into a symmetric array
+  iE = 0;
+  for(j=1;j<=nCoord;j++)
+    {
+     for(i=1;i<=j;i++)
+       {
+        iE++;
+        FC[i,j] = BufferFC[iE];
+        FC[j,i] = FC[i,j];
+       }
+    }
+
+# Transform the dipole derivatives vector buffer into a properly indexed array
+  iE = 0;
+  for(iAt=1;iAt<=nAtoms;iAt++)
+    for(p=1;p<=3;p++)
+      {
+       for(q=1;q<=3;q++)
+         {
+          iE++;
+          DD[q,iAt,p] = BufferDD[iE];
+         }
+      }
+
+# Print the kind of information in this "dym" file:
+# This will likely change in the future.. :-)
+# 0: old incomplete format
+# 1: new complete format, no fancy cell info
+# 2: new complete format WITH cell info (for self energy calculations)
+# 3: experimental format including Gaussians dipole derivatives
+  printf " %3d\n", 3;
+
+# Print the number of atoms
+  printf " %3d\n", nAtoms;
+
+# Print the atomic number of the atoms
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    printf " %3d\n", AN[iAtom];
+
+# Print the atomic weights of the atoms
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    printf " %14.8f\n", AW[iAtom];
+
+# Print out the coordinates
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    {
+     for(p=1;p<=3;p++)
+       printf " %12.8f", XYZ[iAtom,p];
+     printf "\n";
+    }
+
+# Print the blocked dynamical matrix for each pair of atoms
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    for(jAtom=1;jAtom<=nAtoms;jAtom++)
+      {
+
+# Print the atoms
+       printf " %3d %3d\n", iAtom, jAtom;
+
+# Print the dynamical matrix block
+       for(p=1;p<=3;p++)
+         {
+          for(q=1;q<=3;q++)
+            printf " %13.6e", FSca*FC[3*(iAtom-1)+p,3*(jAtom-1)+q];
+          printf "\n";
+         }
+      }
+
+# Print an empty line for clarity
+  printf "\n";
+
+# Print the dipole derivatives
+  for(iAt=1;iAt<=nAtoms;iAt++)
+    for(p=1;p<=3;p++)
+      {
+       for(q=1;q<=3;q++)
+         {
+          printf " %13.6e", DD[q,iAt,p];
+         }
+       printf "\n";
+      }
+
+}
+' $fchk_file

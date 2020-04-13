@@ -1,0 +1,30 @@
+* Define the material:
+CIF CeO2.cif
+
+* For O K edge
+EDGE K
+TARGET 2
+POTENTIAL
+* ipot Z element l_scmt l_fms stochiometry
+   0   8   O     1       1      0.001   0
+   1   58  Ce    3       3        4     3
+   2   8   O     1       1        4     0
+* For Ce L3 edge
+* EDGE L3
+* TARGET 1
+* Check the syntax of the Hubbard card?
+HUBBARD 6.0 0.3 0.0 3
+LDOS -25 23 0.1
+UNFREEZEF
+
+* For quality calculations, increase SCF and FMS radii, e.g. to 6 and 8
+SCF 6.0 0 100 0.2 1 
+COREHOLE FSR
+XANES 20.0 0.07 0.0
+
+FMS 8.0 0     
+END
+
+
+
+

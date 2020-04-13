@@ -1,0 +1,92 @@
+#!/bin/bash
+# Here we are going to name the include file by directory and program, i.e.
+# ATOM/atomic_pot.f90 will have a dependency file named ATOM-atomic_pot.mk
+
+mkname=`basename $1` # Find the directory for this program.
+#mkname=${mkname}-${1##$mkname/} # Set mkname = Dir-progfile
+mkname=${mkname%%.f90} # Get rid of the .f90
+
+echo "Now making ${mkname}.mk"
+echo
+echo
+
+# Set the mkfile name
+mkfile="DEP/${mkname}"
+egrep -iw -e'^[a-zA-Z\ \*0-9]*function' -e'^\ *	*subroutine' */*.f90 \
+	| grep -v ':\ *!' \
+	|sed -e 's/(.*//g' -e 's/subroutine//g' -e 's/SUBROUTINE//g' -e's/\:.*\ function/:\ /g' -e's/\:.*\ FUNCTION/:\ /g' \
+	|grep -v BAND |grep -v END > routines.dep #|grep -v PAR|grep -v END > routines.dep
+egrep -iw -e'^\ *	*module' */*.f90 |grep -v BAND >> modules.dep
+echo $1:
+echo -n "$1 " > ${mkfile}.mk
+files=`Utility/mkdep1file $1 ${mkfile}`
+while true
+do
+	files2=''
+	for fl in $files
+	do
+		echo $fl: 		
+		tmp=`Utility/mkdep1file $fl ${mkfile}`
+		if [ "X$tmp" != "Xexit" ]
+		then
+			files2="$files2 $tmp"
+		fi
+	done
+	if [ "X$files2" = "X" ]
+	then
+		break
+	fi
+	files=$files2
+done
+modfiles=`cat ${mkfile}.mk | sort -ub |grep 'm_'`
+srcfiles=`cat ${mkfile}.mk | sort -ub |grep -v 'm_'`
+rm ${mkfile}.mk
+n=0
+echo "# Source files for dependencies that do not contain modules." > ${mkfile}.mk
+echo "${mkname}SRC = \\" >> ${mkfile}.mk
+for srcfl in $srcfiles
+do
+	let n=n+1
+	if [ $n -eq 3 ]
+	then
+		echo -e "${srcfl} \\" >> ${mkfile}.mk
+		n=0
+	else
+		echo -n "$srcfl " >> ${mkfile}.mk
+	fi
+done
+
+echo -e "\n\n# Source files for $1 that contain modules." >> ${mkfile}.mk
+echo -e "${mkname}_MODULESRC = \\" >> ${mkfile}.mk
+rm mods.list
+for modfl in $modfiles
+do
+	./Utility/findmodslist $modfl
+#	let n=n+1
+	# See if this module file uses other module files.
+#	UseStatements=`grep -ic '^\ *	*use' $modfl`
+
+#	if [ $n -eq 3 ]
+#	then
+#		echo -e "${modfl} \\">> ${mkfile}.mk
+#		n=0
+#	else
+#		echo -n "$modfl " >> ${mkfile}.mk
+#	fi
+done
+modfiles=`cat mods.list`
+for modfl in $modfiles
+do
+       let n=n+1
+       # See if this module file uses other module files.
+
+       if [ $n -eq 3 ]
+       then
+               echo -e "${modfl} \\">> ${mkfile}.mk
+               n=0
+       else
+               echo -n "$modfl " >> ${mkfile}.mk
+       fi
+done
+
+rm routines.dep modules.dep

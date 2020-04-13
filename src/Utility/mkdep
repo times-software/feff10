@@ -1,0 +1,293 @@
+#!/bin/bash
+# Define functions
+function ReorderMods( )
+{
+        local modfl=$1
+        # if this mod is not already in the list
+        if [ `grep -wc $modfl orderedmods.tmp` -eq 0 ]
+        then
+
+                # find used mods and corresponding files.
+                egrep -i -e'^[[:blank:]]*use' $modfl | \
+                        sed -e's/!.*//g' -e's/,.*//g' -e's/.*[Uu][Ss][Ee]//g' -e's/\ *//g' | \
+                        sort -ubf > usedMods.dep
+                local mods=`egrep -iw -f usedMods.dep mods.dep | sed -e's/:.*//g' |sort -ubf |egrep -v $modfl`
+
+                if [ "X$mods" = "X" ]
+                then
+                        # if no used mods, add this modfl to the list
+                        echo $modfl >> orderedmods.tmp
+                else
+                        # if mods are used,
+                        # for each mod
+                        for mod in $mods
+                        do
+                                if [ `grep -wc $mod orderedmods.tmp` -eq 0 ]
+                                then
+                                        # if mod is not already in the list call this 
+                                        # function recursively on mod, then add it to list
+                                        ReorderMods $mod
+                                fi
+                        done
+                        if [ `grep -wc $modfl orderedmods.tmp` -eq 0 ]
+			then
+                                echo $modfl >> orderedmods.tmp
+			fi
+                fi
+        fi 
+}
+
+
+function FindFiles( )
+{
+    local files=''
+    # Find all functions used by file. Functions must use the external statement.
+    # line could start with any number of blanks followed by the word external.
+    # 1. Replace all continued lines with single long lines
+    # 2. Search for external statements.
+    # 3. Get space delimited lists of functions.
+    sed -n '
+      # if the first line copy the pattern to the hold buffer
+      1h
+      # if not the first line then append the pattern to the hold buffer
+      1!H
+      # if the last line then ...
+      $ {
+        # copy from the hold to the pattern buffer
+        g
+        # do the search and replace
+        s/[ \t]*&[^\r\n&]*[\r\n][ \t]*&[ \t]*/ /g
+        # print
+        p
+      }' $1 | \
+       egrep -i -e'^[[:blank:]]*external[[:blank:]]+' \
+       -e"^[^!']*,[[:blank:]]*external" \
+       -e'^[^!]*call[ \t]' \
+       | sed -e"s/[!'].*$//g" \
+       -e"s/^[ \t]*[Ee][Xx][Tt][Ee][Rr][Nn][Aa][Ll]//g" \
+       -e"s/.*,[ \t]*[Ee][Xx][Tt][Ee][Rr][Nn][Aa][Ll]//g" \
+       -e's/::/ /g' \
+       -e's/[ \t]*//g' \
+       -e's/,/\n/g' \
+       -e's/.*[Cc][Aa][Ll][Ll]//g' \
+       -e's/(.*//g' \
+       | sort -ubf |sed -e's/^/\.\*\:\\ */g' -e's/$/\\ *$/g' > usedRoutines.dep
+    
+    # Now find the files that correspond to these routines.
+    files=`egrep -iw -f usedRoutines.dep routines.dep | sed -e's/:.*//g' |sort -ubf |egrep -v -f files.tmp |grep -iv 'm_' |grep -iv $1`
+
+    # Also find the files that correspond to the use statements in this file
+    egrep -i -e'^[[:blank:]]*use' $1 | sed -e's/!.*//g' -e's/,.*//g' -e's/.*[Uu][Ss][Ee]//g' -e's/\ *//g' |sort -ubf > usedMods.dep
+    mods=`egrep -iw -f usedMods.dep mods.dep | sed -e's/:.*//g' |sort -ubf |egrep -v -f mods.tmp`
+    
+    if [ "X$mods" != "X" ]
+	then
+	echo -e $mods |sed -e's/\ /\n/g' >> mods.tmp
+    fi
+
+    files="$files $mods"
+
+    # if files is not empty
+    if [ "X$files" != "X" ]
+	then
+	echo -e $files |sed -e's/\ \ */\n/g' |egrep -v -e'^[[:blank:]]*$' >> files.tmp
+    fi
+    
+    for file in $files
+      do
+      echo "Finding files for $file" >> mkdep.log
+      FindFiles $file
+      let NFiles=NFiles+1
+      if [ $NFiles -ge 3 ]
+	  then
+	  echo -n '.'
+	  NFiles=1
+      fi
+    done 
+}
+# End of function FindFiles
+
+# Find all routines in all .f90 files. The format of the output will be
+# file: routine_name
+
+# The folling lines are
+# 1. Grep for all lines that contain any number of interspersed
+#    alphanumeric, blank, colon, comma, parenthesis, or asterix characters,
+#    followed by the word function.
+# 2. Grep for all lines that contain any number of blanks followed by the
+#    word subroutine
+# 3. Grep for all lines that contain any number of blanks followed by the
+#    word interface.
+# 4. Get rid of any comments.
+# 5. Replace everything between end of file name and end of word 'subroutine'
+#    with ': '.
+# 6. Replace everything between end of file name and end of word 'interface'
+#    with ': '.
+# 7. Replace everything between end of file name and end of word 'entry'
+#    with ': '.
+# 8. Replace everything between end of file name and end of word 'function'
+#    with ': '.
+# 9. Get rid of everything after the routine name 
+# 10. Sort, keeping only unique list in case we have
+#     END SUBROUTINE routine_name statements
+f90files=`find ./ -name *.f90 |grep -v Drivers`
+egrep -i \
+    -e'^[a-zA-Z[:blank:]*,0-9():]*function' \
+    -e'^[[:blank:]]*subroutine' \
+    -e'^[[:blank:]]*interface' \
+    -e'^[[:blank:]]*entry' $f90files \
+    | sed -e 's/!.*//g' \
+    -e's/:.*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]/:\ /g' \
+    -e's/:.*[Ii][Nn][Tt][Ee][Rr][Ff][Aa][Cc][Ee]/:\ /g' \
+    -e's/:.*[Ee][Nn][Tt][Rr][Yy]/:\ /g' \
+    -e's/:.*[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]/:\ /g' \
+    -e 's/(.*//g' \
+    | sort -ubf > routines.dep
+
+# Also find all module files
+egrep -i \
+    -e'^[[:blank:]]*module' $f90files\
+    | egrep -iv -e'^[[:blank:]]*module[[:blank:]]+procedure' \
+    | sed -e's/!.*//g' \
+          -e's/:.*[Mm][Oo][Dd][Uu][Ll][Ee][ \t]/: /g' \
+          -e's/:[ \t]*/: /g' |sort -ubf > mods.dep
+
+# Now go through the executables specified on the command line and make dependency files.
+mkdep=0
+if [ $# -eq 0 ]
+then
+  programs=`cat Utility/programs`
+  programs="$programs dep"
+else
+  programs=$*
+fi
+echo -n '' > mkdep.log
+for prog in $programs
+do
+  if [ "$prog" = "dep" ]
+  then
+      mkdep=1
+  else
+
+  # Define mkfile name.
+      mkfile=`basename $prog`
+      mkfile=${mkfile%%.f90}.mk
+      
+      echo "${mkfile%%.mk}SRC = \\" > DEP/$mkfile
+      
+      echo -n '' > files.tmp
+      echo -n '' > mods.tmp
+      echo -n '' > orderedmods.tmp
+  # Call the function FindFiles which finds all files needed by the $prog file.
+      echo
+      echo '#######################################'
+      echo "   Finding files for $prog"
+      echo '#######################################'
+      NFiles=1
+      FindFiles $prog
+      srcfiles="$prog `cat files.tmp |grep -v '/m_'`"
+      
+  # Now all the source files have been found for $prog. Start making the .dep file
+      i=1
+      ifl=1
+      a=( $srcfiles )
+      nfl=${#a[@]}
+      echo -e "\nNumber of source files: $nfl"
+      for fl in $srcfiles
+	do
+	echo -n "${fl} " >> DEP/$mkfile
+	let i=i+1
+	if [ $i -gt 3 ] && [ $ifl -lt $nfl ]
+	    then
+	    i=1
+	    echo \\ >> DEP/$mkfile
+	fi
+      done
+      echo >> DEP/$mkfile
+      
+  # Now the module files.
+      modfiles=`cat mods.tmp`
+      for mfl in $modfiles
+	do
+  	ReorderMods $mfl
+      done
+      
+      modfiles=`cat orderedmods.tmp`
+      
+      a=( $modfiles )
+      nfl=${#a[@]}
+      echo "${mkfile%%.mk}_MODULESRC = \\" >> DEP/$mkfile  
+      
+      for fl in $modfiles
+	do
+	echo -n "${fl} " >> DEP/$mkfile
+	let i=i+1
+	let ifl=ifl+1
+	if [ $i -gt 3 ] && [ $ifl -lt $nfl ]
+	    then
+	    i=1
+	    echo \\ >> DEP/$mkfile
+	fi
+      done
+  fi
+done
+
+if [ $mkdep -eq 1 ]
+then
+    # Now make the dependency list.
+    rm -f DEP/dependencies.mk
+    f90files=`find ./ -name *.f90 |grep -v Drivers`
+    fls=`egrep -il -e'^[[:blank:]].*use[[:blank:]]+' -e'^[[:blank:]].*include[[:blank:]]+' $f90files`
+    fls2=`egrep -iL -e'^[[:blank:]].*use[[:blank:]]+' -e'^[[:blank:]].*include[[:blank:]]+' $f90files`
+    mkdep=0
+    ifl=0
+    totfls=`echo $fls |wc |awk '{print $2}'`
+    n=0
+    for fl in $fls
+      do
+ 	  let ifl=ifl+1
+          let n=n+1
+          if [ $n -eq 10 ]
+          then
+             percent=`echo "$ifl $totfls" |awk '{printf "%3.0f", $1/$2*100.0}'`          
+             echo -n "=>$percent% done"
+             echo -en "\b\b\b\b\b\b\b\b\b\b"
+             n=0
+          elif [ $ifl -eq $totfls ]
+          then
+             echo  "=>100% done"
+          fi
+	  echo -n "${fl%%.f90}.o: " >> DEP/dependencies.mk
+	  
+          # header file *.h
+	  HFiles=`egrep -i '^[[:blank:]]*include[[:blank:]]+' $fl |sed -e's/!.*//g' -e's/include//g' -e's/[ \t]//g' -e"s/'//g" |sort -ubf`
+	  for hfl in $HFiles
+	    do
+	    bhfl=`basename $hfl`
+	    headerfile=`find ./ -name $bhfl`
+	    echo -n "$headerfile " >> DEP/dependencies.mk
+	  done
+	  
+          # module files m_*.f90
+	  egrep -i '^[[:blank:]]*use[[:blank:]]+' $fl | \
+	      sed -e's/!.*//g' -e's/,.*//g' -e's/[ \t][Uu][Ss][Ee][ \t]//g' -e's/[ \t]//g' -e's/^/.*: /g'| \
+	      sort -ubf > mods.tmp
+	  modfls=`egrep -if mods.tmp mods.dep |sed -e's/:.*//g' |sort -ubf`
+	  for modfl in $modfls
+	    do    
+	    if [ "X$modfl" != "X$fl" ]
+		then
+		echo -n "${modfl%%.f90}.o " >> DEP/dependencies.mk
+	    fi
+	  done
+	  echo "Compiler.mk" >> DEP/dependencies.mk
+    done
+    
+    for fl in $fls2
+      do
+      echo "${fl%%.f90}.o: Compiler.mk" >> DEP/dependencies.mk
+    done
+fi
+
+# clean up
+rm -f files.tmp mods.tmp orderedmods.tmp routines.dep usedMods.dep usedRoutines.dep mods.dep

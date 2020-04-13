@@ -1,0 +1,68 @@
+#!/bin/csh -f
+
+# to compare a whole feff installation :
+
+### USER specifies two installation directories here :
+set ppad1 = ~/feff86/src
+set ppad2 = ~/soft/feff86/src
+set ppad1 = ~/feff90/src
+set ppad2 = ~/feffmbp/src
+### END user input ; now everything happens by magic ...
+
+
+set wdir = `pwd`
+set report = $wdir/diff.report
+
+set dirs = `ls  $ppad1`
+if (-e $report) rm $report
+
+foreach idir (ATOM COMMON DEBYE EELS EXCH FF2X FMS FOVRG GENFMT HEADERS KSPACE LDOS MATH PAR PATH POT RDINP SCREEN SFCONV TDLDA Utility XSPH) #($dirs)
+   echo $idir
+   if (-d $ppad1/$idir && -d $ppad2/$idir) then
+      set pad1=$ppad1/$idir
+      set pad2=$ppad2/$idir
+      echo "*******************" >> $report
+      echo $idir >> $report
+
+      cd $pad1
+
+      set dirtest = `ls  *.f90 *.f *.F *.frc *.for *.h `
+      if ($#dirtest != 0) then
+	 foreach i (*.f90 *.f *.F *.frc *.for *.h)
+	    if (! -e $pad2/$i ) then
+	      echo FILE $i is new >> $report
+	    else
+	      echo  FILE $i :  >> $report
+	      diff $i $pad2/$i >> $report
+	      echo " " >> $report
+	    endif
+	 end
+      endif
+
+      cd $pad2
+
+      set dirtest = `ls  *.f90 *.f *.F *.frc *.for *.h `
+      if ($#dirtest != 0) then
+	 foreach i (*.f90 *.f *.F *.frc *.for *.h)
+	    if (! -e $pad1/$i )then
+	      echo FILE $i has disappeared >> $report
+	    endif
+	 end
+      endif
+
+   endif
+
+end
+
+if(-e $ppad1/Makefile && -e $ppad2/Makefile) then
+   echo "*******************" >> $report
+   echo  FILE Makefile :  >> $report
+   diff $ppad1/Makefile $ppad2/Makefile >> $report
+   echo " " >> $report
+endif
+
+
+exit 0
+
+
+

@@ -1,0 +1,6 @@
+# Runmode
+1
+# LossFile PoleFile
+loss.dat exc.dat egrid.dat
+# Dielectric constant
+5.5

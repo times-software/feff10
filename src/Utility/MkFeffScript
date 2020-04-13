@@ -1,0 +1,88 @@
+#!/bin/bash 
+#
+cd ../bin/
+if [ "X$1" = "Xmpi" ]
+then
+	pd=`pwd`
+#KJ	echo $pd
+	echo '#!/bin/bash' > feffmpi	
+	echo "FeffPath=$pd/MPI" >> feffmpi
+        echo 'MPICOMMAND="mpirun -np $1 "' >> feffmpi
+#	echo 'lamboot ${FeffPath}/mynodes;' >> feffmpi
+	echo '$MPICOMMAND $FeffPath/rdinp' >> feffmpi 
+	echo '$MPICOMMAND $FeffPath/atomic' >> feffmpi 
+	echo '$MPICOMMAND $FeffPath/dmdw' >> feffmpi 
+	echo '$MPICOMMAND $FeffPath/opconsat' >> feffmpi 
+	echo '$MPICOMMAND $FeffPath/pot' >> feffmpi 
+	echo '$MPICOMMAND $FeffPath/ldos' >> feffmpi 
+	echo '$MPICOMMAND $FeffPath/screen' >> feffmpi
+	echo '$MPICOMMAND $FeffPath/xsph'  >> feffmpi
+	echo '$MPICOMMAND $FeffPath/fms'  >> feffmpi
+	echo '$MPICOMMAND $FeffPath/mkgtr'  >> feffmpi
+	echo '$MPICOMMAND $FeffPath/path'  >> feffmpi
+	echo '$MPICOMMAND $FeffPath/genfmt' >> feffmpi
+	echo '$MPICOMMAND $FeffPath/ff2x' >> feffmpi
+	echo '$MPICOMMAND $FeffPath/sfconv' >> feffmpi
+	echo '$MPICOMMAND $FeffPath/compton'  >> feffmpi
+	echo '$MPICOMMAND $FeffPath/eels' >> feffmpi
+	echo '$MPICOMMAND $FeffPath/rhorrp'  >> feffmpi
+#	echo 'wipe' >> feffmpi
+	chmod u+x feffmpi
+elif [ "X$1" = "Xseq" ]
+then
+	pd=`pwd`
+	echo '#!/bin/bash' > feff	
+        echo "FeffPath=$pd/Seq" >> feff
+	echo '$FeffPath/rdinp' >> feff
+	echo '$FeffPath/dmdw' >> feff
+	echo '$FeffPath/atomic' >> feff
+	echo '$FeffPath/pot' >> feff
+	echo '$FeffPath/ldos' >> feff
+	echo '$FeffPath/screen' >> feff
+        echo '$FeffPath/crpa'  >> feff
+	echo '$FeffPath/opconsat' >> feff
+	echo '$FeffPath/xsph' >> feff
+	echo '$FeffPath/fms' >> feff
+	echo '$FeffPath/mkgtr' >> feff
+	echo '$FeffPath/path' >> feff
+	echo '$FeffPath/genfmt' >> feff
+	echo '$FeffPath/ff2x' >> feff
+	echo '$FeffPath/sfconv' >> feff
+	echo '$FeffPath/compton' >> feff
+	echo '$FeffPath/eels' >> feff
+	echo '$FeffPath/rhorrp' >> feff
+	chmod u+x feff
+else
+	pd=`pwd`
+	echo '#!/bin/bash' > feff	
+        l1="FeffPath=${pd}/Mono" >> feff
+	l2='$FeffPath/feff' >> feff
+	echo -e "${l1}\n${l2}" >> feff
+	chmod u+x feff
+fi
+
+
+exit 0
+#KJ Feb 2013 - skip the stuff below.  We don't need it anymore.
+
+cd Seq
+for i in ffmod1 ffmod2 ffmod3 ffmod4 ffmod5 ffmod6
+do
+   echo '#!/bin/csh -f' > $i
+   echo "set FeffPath = $pd/Seq" >> $i
+   cat $i.seed >> $i
+   chmod u+x $i
+done
+
+cd ../MPI
+for i in ffmod1 ffmod2 ffmod3 ffmod4 ffmod5 ffmod6
+do
+   echo '#!/bin/csh -f' > $i
+   echo "set FeffPath = $pd/MPI" >> $i
+   cat $i.seed >> $i
+   chmod u+x $i
+done
+cd ..
+
+
+cd -	

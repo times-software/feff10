@@ -1,0 +1,65 @@
+#!/bin/bash 
+rm -f srcfiles
+# Get the routines that are undefined.
+routines=`grep undefined err.log |grep -v _mp_ |grep ^: |awk '{print $5}' |sed -e"s/_'/\\\\\n/g" -e's/\`//g'`
+
+# Sort them and list only once.
+routines=`echo -e $routines |sort -ub`
+
+echo -e "Now finding files that correspond to the following routines:\n"
+echo ${routines}
+echo
+
+for routine in $routines
+do
+	# find the file that contains routine
+	echo
+	echo "#########################################################################"
+	echo -e "Finding file for ${routine}.\n"
+	subfile=`egrep -irw -e"^[\ a-zA-Z\*0-9]*\ +function\ +${routine}" -e"^\ +subroutine\ +${routine}" */*.f90 |sed -e's/:.*/\n/g' |sort -ub`
+	nfiles=`echo $subfile |wc -w`
+	if [ $nfiles -gt 1 ]
+	then
+		echo "More than one file found for $routine : $subfile"
+		for subfl in $subfile	
+		do
+			echo "Do you want to use ${subfl}? (y/n) [y]"
+			read answer
+			if [ "$answer" == "n" ]
+			then
+				true
+			else
+				subfile=$subfl
+				break
+			fi
+		done
+	elif [ $nfiles -eq 0 ]
+	then
+		echo "No file found for ${routine}."
+		echo -n "Ignore? (y/n) [y]: "
+		read answer
+		if [ "$answer" == "n" ]
+		then
+			echo -n "Please type the name of the file you wish to use: "
+			read subfile
+		fi
+	fi
+	echo "$routine is in $subfile"
+	echo $subfile >> srcfiles
+	echo "#########################################################################"
+done
+cat srcfiles |sort -ub > tmp
+mv tmp srcfiles
+dirs=`ls -F |grep \/ |sed -e's/\///g'`
+for dir in $dirs
+do
+	deps=`cat srcfiles |grep $dir`
+	ndeps=`echo $deps |wc -w`
+	if [ $ndeps -gt 0 ]
+	then
+		echo '#########################################################################'
+		echo $dir
+		echo $deps
+		echo '#########################################################################'
+	fi
+done

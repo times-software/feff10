@@ -1,0 +1,7 @@
+*             resolution     a_cut     wmax  vdosfit   
+  VDOS            0.03         3       0.5      1
+
+ * type     
+  STRETCHES  
+ * i       j    alpha(N/m)  dR_ij (%)  
+   0       1      27.9        2.

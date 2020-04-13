@@ -1,0 +1,51 @@
+#!/usr/bin/perl -w
+#
+# replace "include" lines with the file to be included, works recursively.
+# special support for .f, .tex, .inp, and .conf files
+use Getopt::Std;
+getopts('bi:');
+$i = 0;
+$comment = "!=" ; 
+$comment = "!=" if  ($opt_b);
+$ignore  = "" unless ($opt_i);
+$ignore  = $opt_i if ($opt_i);
+
+foreach $file (@ARGV) {
+    &parseinclude($file, $i);
+}
+
+sub parseinclude {
+    $i++;
+    local($fh) = $i;
+    if (open($fh, $_[0])) {
+	while (<$fh>) {	
+	    if (/^[     ](\s*)in(clude|put)\s*["{'\s*]([^"{'\s]*)(["}'\s])\s*/o) { #"
+		$t_file = $3;
+		if ($t_file ne $ignore) {
+		    $newfile[$i] = $t_file;
+		    print "$comment"."{$newfile[$i]\n";
+		    if (&parseinclude($newfile[$i])) { 
+			print "$comment"." $newfile[$i]}\n";
+		    } else {
+			print $_;
+			print "$comment"." not found}\n";
+		    }
+		} else {
+		    print $_;
+		}
+	    } elsif (($opt_b and ($i > 1)) and 
+#
+# remove end-of-line comments from included files ($i > 1 for included files!!)
+#
+		     (/^[      ]\s*parameter\s*(.*)\)\s*!.*/gi)) {
+		print "       parameter $1)\n";
+	    } else {
+		print;
+	    }
+	}
+	close($fh);
+	return $i--;
+    } 
+}
+
+

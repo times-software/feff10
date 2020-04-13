@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{644A707C-C715-4689-A67F-7D9C9F735905}">
+	<Platforms>
+		<Platform Name="Win32"/></Platforms>
+	<Configurations>
+		<Configuration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" WarnInterfaces="true" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug" Interfaces="true"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
+		<Configuration Name="Release|Win32" OutputDirectory="..\bin">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" OmitFramePointers="false" EnableEnhancedInstructionSet="codeArchIA32"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="..\bin" SubSystem="subSystemConsole" AdditionalDependencies="fefflib.lib"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+	<Files>
+		<Filter Name="Header Files" Filter="fi;fd"/>
+		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+		<File RelativePath="..\..\FMS\fmspack_h.f90"/>
+		<File RelativePath="..\..\FMS\gglu_h.f90"/>
+		<File RelativePath="..\..\COMMON\m_afctr.f90"/>
+		<File RelativePath="..\..\KSPACE\m_boundaries.f90"/>
+		<File RelativePath="..\..\COMPTON\m_compton.f90"/>
+		<File RelativePath="..\..\COMMON\m_config.f90"/>
+		<File RelativePath="..\..\COMMON\m_constants.f90"/>
+		<File RelativePath="..\..\KSPACE\m_controlkgen.f90"/>
+		<File RelativePath="..\..\KSPACE\m_controls.f90"/>
+		<File RelativePath="..\..\COMMON\m_dimsmod.f90"/>
+		<File RelativePath="..\..\KSPACE\m_energygrid.f90"/>
+		<File RelativePath="..\..\ERRORMODS\m_errorfile.f90"/>
+		<File RelativePath="..\..\ERRORMODS\m_errormod.f90"/>
+		<File RelativePath="..\..\FMS\m_fms.f90"/>
+		<File RelativePath="..\..\COMMON\m_ifuns.f90"/>
+		<File RelativePath="..\..\COMMON\m_inpmodules.f90"/>
+		<File RelativePath="..\..\IOMODS\m_iofiles.f90"/>
+		<File RelativePath="..\..\IOMODS\m_iomod.f90"/>
+		<File RelativePath="..\..\KSPACE\m_kgenwork.f90"/>
+		<File RelativePath="..\..\KSPACE\m_kklist.f90"/>
+		<File RelativePath="..\..\COMMON\m_lnlm.f90"/>
+		<File RelativePath="..\..\COMMON\m_nrixs.f90"/>
+		<File RelativePath="..\..\IOMODS\m_padio.f90"/>
+		<File RelativePath="..\..\PAR\m_par.f90"/>
+		<File RelativePath="..\..\COMPTON\m_rotation.f90"/>
+		<File RelativePath="..\..\COMMON\m_rotx.f90"/>
+		<File RelativePath="..\..\COMMON\m_stkets.f90"/>
+		<File RelativePath="..\..\KSPACE\m_strfacs.f90"/>
+		<File RelativePath="..\..\KSPACE\m_struct.f90"/>
+		<File RelativePath="..\..\COMMON\m_t3j.f90"/>
+		<File RelativePath="..\..\KSPACE\m_tetrahedra.f90"/>
+		<File RelativePath="..\..\KSPACE\m_trafo.f90"/>
+		<File RelativePath="..\..\KSPACE\m_wigner3j.f90"/>
+		<File RelativePath="..\..\KSPACE\m_workstrfacs.f90"/>
+		<File RelativePath="..\..\KSPACE\m_workstrfacs2.f90"/>
+		<File RelativePath="..\..\KSPACE\m_workstrfacssimple.f90"/>
+		<File RelativePath="..\..\COMMON\m_xstruc.f90"/>
+		<File RelativePath="..\..\RDINP\rdline.f90"/></Filter>
+		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\..\POT\fermi.f90"/>
+		<File RelativePath="..\..\LDOS\ff2rho.f90"/>
+		<File RelativePath="..\..\LDOS\ff2rho_h.f90"/>
+		<File RelativePath="..\..\LDOS\fmsdos.f90"/>
+		<File RelativePath="..\..\LDOS\fmsdos_h.f90"/>
+		<File RelativePath="..\..\FMS\fmskspace.f90"/>
+		<File RelativePath="..\..\FMS\fmspack.f90"/>
+		<File RelativePath="..\..\FMS\ggbi.f90"/>
+		<File RelativePath="..\..\FMS\gggm.f90"/>
+		<File RelativePath="..\..\FMS\gglu.f90"/>
+		<File RelativePath="..\..\FMS\gglufullpot.f90"/>
+		<File RelativePath="..\..\FMS\ggrm.f90"/>
+		<File RelativePath="..\..\FMS\ggtf.f90"/>
+		<File RelativePath="..\..\POT\istprm.f90"/>
+		<File RelativePath="..\..\FMS\kkrintegral.f90"/>
+		<File RelativePath="..\..\FMS\kprep.f90"/>
+		<File RelativePath="..\..\LDOS\ldos.f90"/>
+		<File RelativePath="..\..\LDOS\ldossub.f90"/>
+		<File RelativePath="..\..\LDOS\ldossub_h.f90"/>
+		<File RelativePath="..\..\POT\movrlp.f90"/>
+		<File RelativePath="..\..\POT\ovp2mt.f90"/>
+		<File RelativePath="..\..\FMS\reafms.f90"/>
+		<File RelativePath="..\..\LDOS\reldos.f90"/>
+		<File RelativePath="..\..\LDOS\reldos_h.f90"/>
+		<File RelativePath="..\..\LDOS\rhol.f90"/>
+		<File RelativePath="..\..\LDOS\rhol_h.f90"/>
+		<File RelativePath="..\..\POT\sidx.f90"/>
+		<File RelativePath="..\..\FMS\xstaff.f90"/>
+		<File RelativePath="..\..\FMS\yprep.f90"/></Filter></Files>
+	<Globals/></VisualStudioProject>

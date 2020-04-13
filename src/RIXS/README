@@ -1,0 +1,14 @@
+To calculate the rixs, we will need the transition matrix elements,
+d'(Omega)*K(Omega,omega) from eq 34 in the ms.
+
+1. Read in dipole matrix elements d'_{Lb} corresponding to deep core hole, 
+   and phase shifts for both core holes (delta'_{l} and delta_{l}. 
+
+2. Also read in LDOS' and rhoc', LDOS and rhoc.
+
+3. For each energy E1, calculate 
+   K(E1,E2) = <k|delta V|k'>/(E-E')*LDOS'/rhoc'
+   For this we will need to calculate the wave functions |RL'(E1)> and 
+   |RL(E2)> 
+
+4. Now form RIXS(E1,E2) = sum_{L} |d'_{Lb}(E1)*K(E1,E2)|**2 LDOS(E2)/rhoc(E2)

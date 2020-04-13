@@ -1,0 +1,6 @@
+1. Read in feff.inp file
+2. Find all atomic types specified by POTENTIALS card.
+   Do not distinguish between absorbing atom potential and other potentials
+   of the same type.
+3. Find the number densities. Use stoichiometry if possible. 
+   Allow number density to be input using a card?

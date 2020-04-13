@@ -1,0 +1,82 @@
+#!/bin/csh -f
+
+# The script assumes that the "edgec" program, the FEFF9 modules, and the "feff9mpi" script are all known (i.e. in $path).
+# It is run simply as     runedgec [n [start]]
+# where n is the number of processor to be passed on to feff9mpi [default: n=1]
+# and start is the section of this script to start from (nohole, hole, edgec, feff9)
+# Both n and start are optional ; you can't give start without giving n.
+
+
+
+
+# Does feff.inp exist?
+if (! -e feff.inp || -z feff.inp) then
+echo no feff.inp found
+exit 1
+endif
+
+# Input options:
+if ($#argv > 0) then
+   set nprocs = $1
+   if($#argv > 1) then
+      goto $2
+   endif
+else
+   set nprocs = 1
+endif
+
+# Getting ready:
+grep -i -v CONTROL feff.inp | grep -i -v COREHOLE > feff.inp.stripped
+mv feff.inp feff.inp.orig
+
+# Set up the calculation of phase shifts with corehole
+nohole:
+echo CONTROL 1 1 0 0 0 0 > feff.inp
+echo COREHOLE RPA >> feff.inp
+cat feff.inp.stripped >> feff.inp
+
+feff9mpi $nprocs
+
+sed -e "s/#//g" xsect.dat > xsectf.bin
+grep '#' xsect.dat > xsect.dat.header.rpa
+cp phase.bin phasef.bin
+
+# Set up the calculation of phase shifts without corehole
+hole:
+head -n 1 pot.bin | awk '{print "   ",$1,"  ",$2,"  ",$3,"   0   ",$5,"  ",$6,"  ",$7,"  ",$8,"  ",$9}' > pot.bin.temp
+set nlines = `wc -l pot.bin`
+set nlines = `echo $nlines[1] - 1 | bc`
+tail -n $nlines  pot.bin >> pot.bin.temp
+cp pot.bin pot.bin.orig
+mv pot.bin.temp pot.bin
+
+echo CONTROL 0 1 0 0 0 0 > feff.inp
+echo COREHOLE NONE >> feff.inp
+cat feff.inp.stripped >> feff.inp
+rdinp #makes sure "1" set in xsph.inp
+xsph
+
+grep '#' xsect.dat > xsect.dat.header.noh
+sed -e "s/#//g" xsect.dat > xsecti.bin
+cp phase.bin phasei.bin
+
+# Run the edgec code
+edgec:
+~/bin/edgec
+# cat xsect.dat.header.rpa xsect.bin > xsect.dat
+set nlines = `wc -l xsect.bin`
+set nlines2 = `wc -l xsect.dat.header.rpa`
+set nlines = `echo $nlines[1] - $nlines2[1] | bc`
+head -n $nlines2[1] xsect.bin | sed -e "s/^/#/g" > xsect.dat
+tail -n $nlines xsect.bin >> xsect.dat
+
+# Run FEFF9
+feff9:
+echo CONTROL 0 0 1 1 1 1 > feff.inp
+echo COREHOLE RPA >> feff.inp
+cat feff.inp.stripped >> feff.inp
+
+feff9mpi $nprocs
+
+
+exit 0

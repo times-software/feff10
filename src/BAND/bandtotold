@@ -1,0 +1,504 @@
+      subroutine bandtot    
+
+  use DimsMod
+  !use controls,only : spacy,sprkkrpot,sprkkrklist,fullpot
+  use kklist,only: bk !KJ for debugging only
+  !use kgenwork,only: nka
+  use boundaries,only : maxl,msize
+  !use IOMod
+  !use ErrorMod
+  use constants
+  use par
+  !use stkets
+  !use rotx
+  use fms_inp,rclust=>rfms2,sigma2=>sig2g
+  !use global_inp,only: ipol,ispin,le2,angks,ptz,do_nrixs,nq
+  !use atoms_inp,only: nat,iphat,ratdbl=>rat
+  !use nrixs_inp,only: jmax,kfinmax,jinit,indmax,lgind
+  !use errorfile
+  !use fms_mod, only: gg_full
+  use fitting
+  use band_inp
+
+  implicit none
+  
+
+!   Variables for program control ::
+    logical,parameter :: calculate=.true.
+	logical,parameter :: interpolate=.false.
+	logical,parameter :: diagonalize=.true.
+	logical,parameter :: writeout=.false.
+    logical,parameter :: readfile=.false.
+	logical,parameter :: debug=.false.
+	logical,parameter :: findzeroes=.false.
+	logical,parameter :: findminima=.false.
+	!logical,parameter :: freeprop=.true.
+	logical,parameter :: newkmesh=.true.
+  
+  real rpart,aipart
+  integer ne, ne1, ne3, ihole
+  integer :: iz(0:nphx)
+  character*512 :: slog
+  complex*16, allocatable :: ph(:,:,:,:)
+  integer, allocatable    :: lmax(:,:)
+  complex*16, allocatable :: rkk(:,:,:)
+  complex, allocatable, dimension(:,:,:)   :: xphase
+  complex ck(nspx)
+  complex*16 ene
+  character*6, allocatable  :: potlbl(:)
+  integer :: npot, nsp, ie, iverb
+  complex*16, allocatable  :: em(:), eref(:,:)
+  complex*16 :: dck
+  complex, allocatable, dimension(:,:,:,:) :: gg
+  integer :: kinit,linit
+  real*8,external :: brent
+  
+  complex,allocatable :: eival(:),eigen(:,:,:),trace(:,:),diagonal(:,:,:)
+  complex*16,allocatable :: bs(:,:),bs2(:,:,:)
+  real*8,allocatable :: efit(:),cof(:),zeroes(:,:),xx(:),yy(:), zeroesan(:,:,:)
+  real*8 norm,ebroad
+  real*8 ax,bx,cx,ya,yb,yc,xmin,ymin,lastsol,yr,yi
+  integer nbandsmin,nbandsmax,nbandmin,nbandmax
+  integer,allocatable :: nzeroes(:),n_pos(:,:)
+  character*10 filename
+  integer n_pos_eigenval
+  real*8,allocatable :: bands(:,:)
+  integer,allocatable :: nbands(:)
+
+  integer :: i,iph0,ik,ik0,lmaxp1,ib,n,i0,isp,ill,ipp
+  real*8  :: rnrmav,xmu,edge
+
+  integer :: ldim
+  ldim = nspx * (lx+1)**2
+
+  ! Allocate local variables
+  allocate(em(nex), eref(nex, nspx))
+  allocate(potlbl(0:nphx))
+  allocate(ph(nex, -ltot:ltot, nspx, 0:nphx))
+  allocate(lmax(nex, 0:nphx))
+  allocate(rkk(nex,8,nspx))
+  allocate(xphase(nspx, -lx:lx, 0:nphx))
+  allocate(gg(ldim, ldim, 0:nphx, nex))
+
+
+      xphase = cmplx(0,0)
+      iph0 = 0
+      iverb=0
+
+      call rdxsph (ne, ne1, ne3, nph, ihole, rnrmav, xmu, edge, ik0, em, eref, iz, potlbl, ph, rkk, lmax, lmaxp1)
+      call setkap (ihole, kinit, linit)  !KJ now this makes sense - we finally know ihole !!
+      npot = nph
+
+      call kprep(em,ne,nex,.true.)
+      call wlog('kprep complete')
+      nsp = 1
+      if (abs(ispin).eq.1 ) nsp = nspx
+
+
+!      open(29,file='phaseshifts_band.dat',form='formatted')
+!      open(30,file='phaseshifts_fms.dat',form='formatted')
+
+
+
+
+!CCCCCCCCCC SET UP ENERGY AND K-SPACE GRID TO SEARCH FOR BANDS : CCCCCCCCCCCCC
+    call wlog('Solving band structure.')
+!   Following variables ought to come from input files :
+	!emin=dble(eref(1,1))+dble(0.001)  !in Ha
+	!emax=emin+dble(1.0)
+	!estep=dble(0.003)
+!   Cut off grid to range for which phase shifts are available :
+	allocate(efit(ne1))
+	efit=dble(em(1:ne1))
+	emax=min(emax,dble(em(ne1)))
+	emin=max(emin,dble(em(1)))
+!   Use broadening of em-grid
+	ebroad=dimag(em(1))*dble(0)
+!	ebroad=dble(0.01)
+	write(*,*) 'Broadening ebroad=',ebroad
+!   Construct remaining variables :
+	nep=nint((emax-emin)/estep)+1
+	estep=(emax-emin)/dble(nep-1)
+	write(*,*) 'Energy range',emin,' to ', emax,'using ',nep,'steps of size',estep
+
+	if(newkmesh) then
+	    !nkp=40;
+		deallocate(bk);allocate(bk(3,nkp))
+		do ik=-nkp/2,nkp/2 -1
+	      bk(:,ik+1+nkp/2)=dble(0)
+	      bk(3,ik+1+nkp/2)=dble(ik)/dble(nkp)
+	    enddo
+	endif
+	write(*,*) 'Using ',nkp,' k-points.'
+
+    allocate(bs(nep,nkp),eival(msize),bs2(nep,nkp,(1+maxl)**2))
+	allocate(eigen(nep,nkp,msize),trace(nep,nkp),diagonal(nep,nkp,msize))
+	allocate(n_pos(nep,nkp))
+	bs=dcmplx(1,0)
+
+!CCCCCCCCCCCCCCCCCCCCCC GRIDS READY CCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+	if(readfile.and.calculate) stop 'This is ridiculous!'
+
+	if(readfile) then
+!       Read bandstructure from file
+        open(99,file='bandstructure.txt',form='formatted',status='old')
+	    allocate(xx(4),yy(2))
+	    do ie=1,nep
+	    do ik=1,nkp
+	       read(99,'(100(e16.5E5,x))') xx,yy  
+		   ! xx contains kx,ky,kz,Re(energy) ; yy contains Im(det Gk),Re(det Gk)
+	       bs(ie,ik)=dcmplx(yy(2),yy(1))
+	    enddo
+	    enddo
+	    close(99)
+        deallocate(xx,yy)
+	endif  ! readfile
+
+
+    if(calculate) then
+      !CCCCCCCCCCCCCCCCCCCCCCCCCCCC START LOOP OVER K-POINTS CCCCCCCCCCCCCCCCCCCCCCCCCC
+      do ie=1,nep
+         if(mod(ie,20).eq.1) write(*,*) 'energy point',ie
+
+         !CCCCCCCCCCCCCCCCCCCCCCCCCCCC LOOP OVER ENERGY POINTS CCCCCCCCCCCCCCCCCCCCCCCCCCC
+         do ik=1,nkp
+
+	       ene=dcmplx(emin+(ie-1)*estep,ebroad)
+           do  isp = 1, nsp
+               dck=sqrt(2*(ene-eref(1,isp)))  !Assuming reference energy to be constant w.r.t. ie
+               rpart  = real( dble(dck))
+               aipart = real(dimag(dck))
+               ck(isp) = cmplx(rpart, aipart)
+           enddo
+
+!          Get the phase shifts for this energy by interpolation
+           do ipp = 0,nph
+           do isp = 1, nsp
+           do ill = -lmaxph(ipp), lmaxph(ipp)
+               call terp(efit,dble(ph(:,ill,isp,ipp)),ne1,3,dble(ene),yr)
+               call terp(efit,dimag(ph(:,ill,isp,ipp)),ne1,3,dble(ene),yi)
+               xphase(isp,ill,ipp)=cmplx(yr,yi)
+           enddo
+	       enddo
+	       enddo
+
+!           if(ik.eq.1) then
+!	          write(29,'(20f12.5)') ene,ene-eref(1,1),xphase(1,0:lmaxph(1),1)
+!	          if(ie.le.ne1)   write(30,'(20f12.5)') em(ie),em(ie)-eref(1,1),ph(ie,0:lmaxph(1),1,1)
+!	       endif
+
+!          Get the eigenvalues of [1-Gt]^-1 G   for bk(:,ik) and ene(ie), returned in eival :
+           !call fmskspace(bk(:,ik),ispin,xphase,ene-eref(1,1),eival,bs2(ie,ik,:),diagonalize,free)  ! KJ
+           call fmsband(ispin,xphase,ene-eref(1,1),eival(:),bk(:,ik),diagonalize,freeprop)
+
+           eigen(ie,ik,:)=eival(:)
+		   
+!          So far, so good; but what metric do we use to determine an eigenstate?
+!          copied from SPRKKR : count the number of positive eigenvalues; an increase means we're at an E(k).
+!          Is it done this way because broadening spreads the band??
+
+           n_pos_eigenval=0
+		   do i=1,msize
+		      if(dble(eival(i)).gt.0) n_pos_eigenval=n_pos_eigenval+1
+		   enddo
+		   n_pos(ie,ik)=n_pos_eigenval
+		   
+
+!          The determinant of a matrix is an invariant ; in diagonalized form, its eigenvalues
+!          are on the diagonal ; hence, the "product" of eival gives the determinant.
+!           do i=1,msize
+!	          bs(ie,ik)=bs(ie,ik)*eival(i)
+!	       enddo
+!          Use this code to use the trace instead of the determinant
+!          bs(ie,ik)=bs2(ie,ik,1)
+!          bs(ie,ik)=dcmplx(0,0)
+!	       do i=1,msize
+!	            bs(ie,ik)=bs(ie,ik)+eival(i)
+!	       enddo
+!          Use this code to select the largest eigenvalue:
+!		   bs(ie,ik)=dcmplx(0,0)
+!	       do i=1,msize
+!	          bs(ie,ik)=max(dble(bs(ie,ik)),dble(eival(i)))
+!	       enddo
+
+	          
+	     enddo  ! ik
+         !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC END OF LOOP OVER K-POINTS CCCCCCCCCCCCCCCCCCCC
+
+          
+	enddo  ! ie
+    !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC END OF LOOP OVER ENERGY POINTS  CCCCCCCCCCCCCCCCCCCCCCCC
+
+  endif  ! calculate
+
+
+
+  !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC  IDENTIFY BANDS CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+  allocate(bands(nep,nkp),nbands(nkp))  !first dimension of bands will index bands ; "nep" is merely an absolute upper limit for this.
+  bands=0.d0
+  nbands=0
+  
+  do ik=1,nkp
+     do ie=2,nep
+	    if(n_pos(ie,ik).gt.n_pos(ie-1,ik)) then
+		   ! We found another E(k) !!
+		   do i=1,(n_pos(ie,ik)-n_pos(ie-1,ik))
+		      nbands(ik)=nbands(ik)+1
+		      bands(nbands(ik),ik)=emin+(ie-1)*estep
+		   enddo
+		endif
+	 enddo
+  enddo
+  
+  ! Count minimum/maximum number of bands
+  nbandsmin=100000
+  nbandsmax=0
+  do ik=1,nkp
+     if(nbands(ik).gt.nbandsmax) nbandsmax=nbands(ik)
+	 if(nbands(ik).lt.nbandsmin) nbandsmin=nbands(ik)
+  enddo
+		   
+  ! Output to bandstructure.dat
+  open(42,file='bandstructure.dat',form='formatted')
+  write(42,*) '# grid of ',nkp,' k-points.'
+  write(42,*) '# grid of ',ne,' energy points  emin= ',emin,' , emax= ',emax,' , estep= ',estep
+  write(42,*) '# Found between ',nbandsmin,' and ',nbandsmax,' number of bands.'
+  do ik=1,nkp
+     write(42,'(i5,x,3(f8.4,x),i4,x,300(f8.4,x))') ik,bk(:,ik),nbands(ik),bands(1:nbands(ik),ik)
+  enddo
+  close(42)
+  
+  
+  
+  
+  ! We're done.  The code that follows either writes temporary data; or is old junk.
+  
+
+
+ !	     bs=-bs  ! look for maxima instead
+
+      if(writeout) then
+
+!     Now provide output :
+
+      if(.not.readfile) then
+!       No point in overwriting it with the same stuff
+         open(99,file='bandstructure.txt',form='formatted')
+	     write(99,*) nkp,nep
+	     do ie=1,nep
+	     do ik=1,nkp
+!	        norm=dexp(dsqrt(dble(cdlog(bs(ie,ik)))**2+  dimag(cdlog(bs(ie,ik)))**2))
+!	        write(99,111) bk(:,ik),emin+(ie-1)*estep,dimag(bs(ie,ik)), dble(bs(ie,ik)),norm !,eival
+		    write(99,111) bk(1:2,ik),dble(ik),emin+(ie-1)*estep,dimag(bs(ie,ik)),dble(bs(ie,ik)) !,norm !,eival
+	     enddo
+	     enddo
+	     close(99)
+	  endif
+111   format(100(e16.5E5,x))
+      if(.not.interpolate) then
+         open(99,file='bandstructureb.txt',form='formatted')
+	     write(99,*) '# ',nkp,'k-points'
+	     write(99,*) '# between',nbandsmin,'and',nbandsmax,'bands found.'
+	     do ib=1,nbandsmax
+	     do ik=1,nkp
+	        if(nzeroes(ik).ge.ib) write(99,'(4f14.5)') bk(:,ik),zeroes(ib,ik)
+	     enddo
+	     enddo
+	     close(99)
+	  endif
+
+
+	if(debug) then
+      open(99,file='gk00.txt',form='formatted')
+	do ie=1,nep
+	do ik=1,nkp
+	   norm=dsqrt(dble(bs2(ie,ik,1))**2+dimag(bs2(ie,ik,1))**2)
+	   write(99,111) bk(:,ik),emin+(ie-1)*estep,dimag(bs2(ie,ik,1)),dble(bs2(ie,ik,1)),norm !,eival
+	enddo
+	enddo
+	close(99)
+
+      open(99,file='gk11.txt',form='formatted')
+	do ie=1,nep
+	do ik=1,nkp
+	   norm=dsqrt(dble(bs2(ie,ik,4))**2+dimag(bs2(ie,ik,4))**2)
+	   write(99,111) bk(:,ik),emin+(ie-1)*estep,dimag(bs2(ie,ik,4)),dble(bs2(ie,ik,4)),norm !,eival
+	enddo
+	enddo
+	close(99)
+      endif !debug
+
+      endif  ! writeout
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+
+return
+
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC FIND ZEROES == BANDS CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+      if(interpolate) then
+!    To do this, the determinant needs to be interpolated, so that we can find zeroes.
+!    Two possibilities :
+!           1/  For each k, find minimal energies ;
+
+
+      n=2  !order of interpolation
+	nbandmax=1000
+	allocate(zeroes(nbandmax,nkp),nzeroes(nkp),xx(n+1),yy(n+1))
+	zeroes=dble(0)
+	allocate(cof(0:n))
+	filename='bands .txt'
+
+
+      do ik=1,nkp
+	   i0=0  ! counts the number of states for this k-point
+
+	   if(ik.lt.10) then
+	      filename(6:6)=char(48+ik)
+            open(44,file=filename)
+	      do ie=1,nep
+	         write(44,'(4e14.5)') emin+(ie-1)*estep,bs(ie,ik),dble(cdabs(bs(ie,ik)))
+	      enddo
+	      close(44)
+	   endif
+
+
+
+	   if(findminima) then
+
+!    Prepare an analytic fit of the function |det(E)|
+!    Interpolation order is given by n.
+            fitorder=n
+	      fitmeshsize=nep
+	      if(ik.eq.1) allocate(fitx(nep),fity(nep))
+	      do ie=1,nep
+	         fitx(ie)=emin+(ie-1)*estep
+!	         fity(ie)=cdabs(bs(ie,ik))
+	         fity(ie)=dabs(dimag(bs(ie,ik)))
+	         fity(ie)=-dabs(dble(bs(ie,ik)))
+	      enddo  ! nep
+            
+	      lastsol=fitx(1)
+	      ymin=fity(1)
+ 
+            do while (lastsol.lt.fitx(nep))  !scan this interval for solutions
+                  do ie=1,nep
+	               if(fitx(ie+1).gt.lastsol) exit
+	            enddo
+	            ax=lastsol
+	            ya=ymin
+	            bx=fitx(ie+1)
+	            yb=fity(ie+1)
+	            do i=ie+2,nep
+	               cx=fitx(i)
+	               yc=fity(i)
+	               if(yb.lt.ya.and.yb.lt.yc) exit
+	               if(ya.lt.yb) then
+	                  ax=bx
+	                  ya=yb
+	                  bx=cx
+	                  yb=yc
+	               elseif(yc.lt.yb) then
+	                  bx=cx;yb=yc
+	               endif
+	            enddo
+                  if(yb.gt.ya.or.yb.gt.yc) exit
+	               
+	            ymin=brent(ax,bx,cx,dble(0.00001),xmin)
+	            if(xmin.le.fitx(nep)) then
+	               i0=i0+1
+	               zeroes(i0,ik)=xmin
+	            endif
+                  lastsol=xmin+dble(0.0001)
+            enddo
+
+         endif  ! findminima
+
+
+	   nzeroes(ik)=i0
+         write(6,*) 'ik,nzeroes',ik,nzeroes(ik)
+	enddo  ! nkp
+      if(findminima) deallocate(fitx,fity)
+
+
+!    Count the number of bands :
+      nbandsmin=nzeroes(1)
+	nbandsmax=nzeroes(1)
+	do ik=1,nkp
+	   if(nzeroes(ik).gt.nbandsmax) nbandsmax=nzeroes(ik)
+	   if(nzeroes(ik).lt.nbandsmin) nbandsmin=nzeroes(ik)
+	enddo
+	write(*,*) 'Number of bands found, depending on k-point :'
+	write(*,*) 'between',nbandsmin,'and',nbandsmax
+	      
+      endif  ! interpolate
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC ZEROES FOUND ! CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+      allocate(zeroesan(nbandsmax,nkp,2))
+	zeroesan=dble(0)
+	do ik=1,nkp
+	i=1
+      do ib=1,nbandsmax
+	   if(ib.eq.1) then
+	      ax=bk(3,ik)
+	      zeroesan(1,ik,1)=ax**2/2+eref(1,1)
+	      bx=dble(0.5)**2/2
+!    Get the phase shifts for this energy by interpolation
+               call terp(efit,dble(ph(:,0,1,1)),ne1,3,zeroesan(1,ik,1),yr)
+               call terp(efit,dimag(ph(:,0,1,1)),ne1,3,zeroesan(1,ik,1),yi)
+               dck=dcmplx(yr,yi)
+	         dck= (exp(2*coni*dck)-one)/(2*coni)
+!     1		 /cdsqrt(2*dcmplx(zeroesan(i,ik,1),ebroad))
+	         ax=dble(1)/(dble(1)/zeroesan(1,ik,1) + dble(dck))
+               zeroesan(1,ik,2)=ax
+	   elseif(ib.gt.1) then
+	      i=i+1
+	      if(i.le.nbandsmax) then
+            ax=2*dabs(dabs(bk(3,ik))-dble(0.5))+dabs(bk(3,ik))
+            zeroesan(i,ik,1)=ax**2/2+eref(1,1)
+!    Get the phase shifts for this energy by interpolation
+               call terp(efit,dble(ph(:,0,1,1)),ne1,3,zeroesan(i,ik,1),yr)
+               call terp(efit,dimag(ph(:,0,1,1)),ne1,3,zeroesan(i,ik,1),yi)
+               dck=dcmplx(yr,yi)
+	         dck= (exp(2*coni*dck)-one)/(2*coni) /cdsqrt(2*dcmplx(zeroesan(i,ik,1),ebroad))
+!	         zeroesan(i,ik,2)=zeroesan(i,ik,1) + dble(dck)
+	      endif
+	      i=i+1
+	      if(i.le.nbandsmax) then
+	      ax=dabs(bk(3,ik))+2*dble(0.5)
+	      zeroesan(i,ik,1)=ax**2/2+eref(1,1)
+!    Get the phase shifts for this energy by interpolation
+               call terp(efit,dble(ph(:,0,1,1)),ne1,3,zeroesan(i,ik,1),yr)
+               call terp(efit,dimag(ph(:,0,1,1)),ne1,3,zeroesan(i,ik,1),yi)
+               dck=dcmplx(yr,yi)
+	         dck= (exp(2*coni*dck)-one)/(2*coni)  
+!     1		 /cdsqrt(2*dcmplx(zeroesan(i,ik,1),ebroad))
+	         zeroesan(i,ik,2)=zeroesan(i,ik,1) + dble(dck)
+	      endif
+
+	   endif
+	enddo
+	enddo
+
+
+      open(99,file='bandstructureb.txt',form='formatted')
+	write(99,*) '# ',nkp,'k-points'
+	write(99,*) '# between',nbandsmin,'and',nbandsmax,'bands found.'
+	do ib=1,nbandsmax
+	do ik=1,nkp
+	if(nzeroes(ik).ge.ib) write(99,'(4f14.5,i6,2f14.5)')   bk(:,ik),zeroes(ib,ik),ik,zeroesan(ib,ik,:)
+	enddo
+	enddo
+	close(99)
+
+
+
+
+      close(29)
+
+      return
+      end

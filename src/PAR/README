@@ -1,0 +1,6 @@
+This directory contains routines for MPI parallel processing.
+ parallel.f - routines for MPI parallel processing
+ sequential.f - dummy routines for sequential calculations
+
+All routines in this directory are covered by the LICENSE inside
+license.h file.

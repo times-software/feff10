@@ -1,0 +1,8 @@
+COMMON=../COMMON
+PAR=../PAR
+ERROR=../ERRORMODS
+KSPACE=../KSPACE
+INPGEN=../INPGEN
+INST_DIR=../../bin/Seq
+TEST_DIR=./Test
+TUT_DIR=./tutorials

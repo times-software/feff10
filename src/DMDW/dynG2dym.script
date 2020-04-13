@@ -1,0 +1,241 @@
+#!/bin/sh
+
+fchk_file=$1
+
+gawk '
+#  Reminder of n/m
+function mod(n,m){
+  return n - m*int(n/m);
+}
+# Minimum of x and y
+function min(x,y){
+  if ( x < y )
+    return x
+  else
+    return y
+  endif
+}
+# Distance between points v1 and v2
+function dist(v1,v2){
+  return sqrt( (v2[1]-v1[1])^2 + (v2[2]-v1[2])^2 + (v2[3]-v1[3])^2 );
+}
+function size(Data){
+  j = 0;
+  for ( i in Data )
+    j++;
+  return j;
+}
+function sort(Data,Ind){
+# Get the size of the array
+  n = size(Data);
+# Initialize the swapped indices array
+  for(i=1;i<=n;i++)
+    Ind[i] = i;
+  for(i=1;i<=n-1;i++)
+    for(j=i+1;j<=n;j++)
+      if ( Data[Ind[j]] < Data[Ind[i]] )
+        {
+         t      = Ind[j];
+         Ind[j] = Ind[i];
+         Ind[i] = t;
+        }
+}
+# Print out a symmetric array in column form
+function Prn_SMat(Size,A){
+  nCol = 5;
+  nl = int(Size/nCol);
+  nr = mod(Size,nCol);
+
+  for(k=1;k<=nl;k++)
+    {
+     printf "     ";
+     for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=(k-1)*nCol+1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=(k-1)*nCol+1;j<=min(k*nCol,i);j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+    }
+
+  if (nr != 0) then
+    {
+     printf "     ";
+     for(j=nl*nCol+1;j<=Size;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=nl*nCol+1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=nl*nCol+1;j<=min(Size,i);j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+    }
+}
+# Print out an arbitrary array in column form
+function Prn_Mat(Size,A){
+  nCol = 5;
+  nl = int(Size/nCol);
+  nr = mod(Size,nCol);
+
+  for(k=1;k<=nl;k++)
+    {
+     printf "     ";
+     for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+     printf " \n";
+    }
+
+  if (nr != 0) then
+    {
+     printf "     ";
+     for(j=nl*nCol+1;j<=Size;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=nl*nCol+1;j<=Size;j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+     printf " \n";
+    }
+}
+BEGIN{
+# Define conversion between AU and Ang
+  au2ang = 0.52917706;
+# Define conversion from atomic units of mass (in Ryd) to AMU
+  auR2AMU = 0.00109715982114;
+# Define conversion from atomic units of force (H) to N/m
+# auf2npm = 1556.89279161;
+# Define conversion from atomic units of force (R) to atomic units of force (H)
+  aufR2aufH = 0.5;
+# Define the force scaling factor
+# FSca = (0.9806)^2;
+  FSca = 1.0;
+}
+# Find the number of atom types, number of atoms,
+# QE file type (?) and coordinate cell scaling factor
+NR==3{
+  nAtomT = $1;
+  nAtoms = $2;
+  File_Type = $3;
+  Coord_Sca = $4;
+# Set the number of lines skipped depending on the file type
+  if ( File_Type == 0 )
+    Skip_NLines = 7
+  if ( File_Type == 1 )
+    Skip_NLines = 3
+# Debug
+# printf "%3d %3d %3d %11.7f\n", nAtomT, nAtoms, File_Type, Coord_Sca;
+}
+# Get the atomic weights for each atom type
+NR==Skip_NLines+1{
+  iAtomT = 1;
+  for(iAtomT=1;iAtomT<=nAtomT;iAtomT++)
+    {
+     AWT[iAtomT] = $4*auR2AMU;
+     if (iAtomT<nAtomT) getline;
+    }
+# Debug
+# for(iAtomT=1;iAtomT<=nAtomT;iAtomT++)
+#   printf "%16.10f\n", AWT[iAtomT];
+}
+# Read the atomic types and cartesian coordinates of the system
+NR==Skip_NLines+1+nAtomT{
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    {
+     AW[iAtom] = AWT[$2];
+     for(p=1;p<=3;p++)
+       {
+        XYZ[iAtom,p] = Coord_Sca*$(p+2)*au2ang;
+       }
+     if (iAtom<nAtoms) getline;
+    }
+# Debug
+# for(iAtom=1;iAtom<=nAtoms;iAtom++)
+#   printf "%16.10f\n", AW[iAtom];
+# Debug
+# for(iAtom=1;iAtom<=nAtoms;iAtom++)
+#   {
+#    for(p=1;p<=3;p++)
+#      printf " %15.8e", XYZ[iAtom,p];
+#    printf "\n";
+#   }
+}
+# Read the cartesian force constants of the system
+/Dynamical  Matrix in cartesian axes/{   
+# Skip some lines
+  for(iSkip=1;iSkip<=3;iSkip++)
+    getline;
+  for(iBlock=1;iBlock<=nAtoms^2;iBlock++)
+    {
+     getline;
+     iAt = $1; jAt = $2;
+     getline;
+     FC[iAt,1,jAt,1] = $1; FC[iAt,1,jAt,2] = $3; FC[iAt,1,jAt,3] = $5;
+     getline;
+     FC[iAt,2,jAt,1] = $1; FC[iAt,2,jAt,2] = $3; FC[iAt,2,jAt,3] = $5;
+     getline;
+     FC[iAt,3,jAt,1] = $1; FC[iAt,3,jAt,2] = $3; FC[iAt,3,jAt,3] = $5;
+    }
+}
+# Print the extracted information
+END{
+
+# Print the kind of information in this "dym" file:
+# 1: Full dynamical matrix (for molecules)
+# 2: Partial dynamical matrix (for crystals)
+  printf " %3d\n", 1;
+
+# Print the number of atoms
+  printf " %3d\n", nAtoms;
+
+# Print the atomic number of the atoms
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    printf " %3d\n", AN[iAtom];
+
+# Print the atomic weights of the atoms
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    printf " %14.8f\n", AW[iAtom];
+
+# Print out the coordinates
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    {
+     for(p=1;p<=3;p++)
+       printf " %12.8f", XYZ[iAtom,p]/au2ang;
+     printf "\n";
+    }
+
+# Print the blocked dynamical matrix for each pair of atoms
+  for(iAtom=1;iAtom<=nAtoms;iAtom++)
+    for(jAtom=1;jAtom<=nAtoms;jAtom++)
+      {
+
+# Print the atoms
+       printf " %3d %3d\n", iAtom, jAtom;
+
+# Print the dynamical matrix block
+       for(p=1;p<=3;p++)
+         {
+          for(q=1;q<=3;q++)
+            printf " %13.6e", FSca*FC[iAtom,p,jAtom,q]*aufR2aufH;
+          printf "\n";
+         }
+      }
+
+}
+' $fchk_file

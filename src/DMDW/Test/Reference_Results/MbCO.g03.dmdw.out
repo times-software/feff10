@@ -1,0 +1,380 @@
+# Lanczos recursion order:    3
+# Temperature:   77.00
+# Dynamical matrix file: MbCO.g03.dym
+
+--------------------------------------------------------------
+ Path Indices:    1   2
+ pDOS Centroid (THz):   24.599
+ pDOS Poles:     Freq. (THz)    Weight
+                   8.130       0.60083
+                  37.459       0.39752
+                  67.983       0.00165
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.016   3.857
+--------------------------------------------------------------
+ Path Indices:    1   3
+ pDOS Centroid (THz):   21.495
+ pDOS Poles:     Freq. (THz)    Weight
+                 -17.406       0.00000
+                  36.625       0.45659
+                  67.280       0.00294
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.015   0.565
+--------------------------------------------------------------
+ Path Indices:    1   4
+ pDOS Centroid (THz):   24.623
+ pDOS Poles:     Freq. (THz)    Weight
+                   8.048       0.59885
+                  37.438       0.39951
+                  67.828       0.00164
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.018   3.885
+--------------------------------------------------------------
+ Path Indices:    1   5
+ pDOS Centroid (THz):   21.467
+ pDOS Poles:     Freq. (THz)    Weight
+                 -17.463       0.00000
+                  36.622       0.45644
+                  67.148       0.00299
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.015   0.564
+--------------------------------------------------------------
+ Path Indices:    1   6
+ pDOS Centroid (THz):   30.911
+ pDOS Poles:     Freq. (THz)    Weight
+                   9.861       0.45483
+                  39.880       0.53974
+                  98.623       0.00543
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.053   3.065
+--------------------------------------------------------------
+ Path Indices:    1   7
+ pDOS Centroid (THz):   30.896
+ pDOS Poles:     Freq. (THz)    Weight
+                   9.762       0.45443
+                  39.866       0.54014
+                  98.620       0.00543
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.053   3.088
+--------------------------------------------------------------
+ Path Indices:    1   8
+ pDOS Centroid (THz):   31.081
+ pDOS Poles:     Freq. (THz)    Weight
+                  10.016       0.44381
+                  39.569       0.54998
+                  98.591       0.00622
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.051   2.989
+--------------------------------------------------------------
+ Path Indices:    1   9
+ pDOS Centroid (THz):   31.039
+ pDOS Poles:     Freq. (THz)    Weight
+                   9.792       0.44213
+                  39.549       0.55193
+                  98.580       0.00595
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.051   3.037
+--------------------------------------------------------------
+ Path Indices:    1  10
+ pDOS Centroid (THz):   30.913
+ pDOS Poles:     Freq. (THz)    Weight
+                   9.613       0.45373
+                  39.882       0.54076
+                  98.626       0.00551
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.054   3.123
+--------------------------------------------------------------
+ Path Indices:    1  11
+ pDOS Centroid (THz):   30.891
+ pDOS Poles:     Freq. (THz)    Weight
+                   9.393       0.45292
+                  39.869       0.54158
+                  98.621       0.00550
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.054   3.178
+--------------------------------------------------------------
+ Path Indices:    1  12
+ pDOS Centroid (THz):   30.990
+ pDOS Poles:     Freq. (THz)    Weight
+                   9.403       0.43934
+                  39.453       0.55467
+                  98.577       0.00599
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.051   3.126
+--------------------------------------------------------------
+ Path Indices:    1  13
+ pDOS Centroid (THz):   31.064
+ pDOS Poles:     Freq. (THz)    Weight
+                  10.243       0.44638
+                  39.587       0.54741
+                  98.593       0.00620
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.051   2.947
+--------------------------------------------------------------
+ Path Indices:    1  14
+ pDOS Centroid (THz):   33.423
+ pDOS Poles:     Freq. (THz)    Weight
+                  11.955       0.63806
+                  37.043       0.29272
+                  94.966       0.06922
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.429   3.175
+--------------------------------------------------------------
+ Path Indices:    1  15
+ pDOS Centroid (THz):   33.395
+ pDOS Poles:     Freq. (THz)    Weight
+                  11.591       0.63251
+                  36.903       0.29829
+                  94.965       0.06919
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.429   3.246
+--------------------------------------------------------------
+ Path Indices:    1  16
+ pDOS Centroid (THz):   33.413
+ pDOS Poles:     Freq. (THz)    Weight
+                  11.706       0.63278
+                  36.920       0.29809
+                  94.959       0.06913
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.429   3.219
+--------------------------------------------------------------
+ Path Indices:    1  17
+ pDOS Centroid (THz):   33.390
+ pDOS Poles:     Freq. (THz)    Weight
+                  11.158       0.62495
+                  36.761       0.30588
+                  94.958       0.06917
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.429   3.333
+--------------------------------------------------------------
+ Path Indices:    1  18
+ pDOS Centroid (THz):   34.316
+ pDOS Poles:     Freq. (THz)    Weight
+                  13.561       0.56516
+                  38.436       0.37943
+                  96.234       0.05540
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.281   2.667
+--------------------------------------------------------------
+ Path Indices:    1  19
+ pDOS Centroid (THz):   34.319
+ pDOS Poles:     Freq. (THz)    Weight
+                  13.579       0.56518
+                  38.436       0.37942
+                  96.234       0.05540
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.281   2.664
+--------------------------------------------------------------
+ Path Indices:    1  20
+ pDOS Centroid (THz):   34.140
+ pDOS Poles:     Freq. (THz)    Weight
+                   7.877       0.49565
+                  37.202       0.44893
+                  96.259       0.05542
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.280   3.913
+--------------------------------------------------------------
+ Path Indices:    1  21
+ pDOS Centroid (THz):   34.143
+ pDOS Poles:     Freq. (THz)    Weight
+                   7.801       0.49447
+                  37.185       0.45015
+                  96.263       0.05538
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.280   3.941
+--------------------------------------------------------------
+ Path Indices:    1  22
+ pDOS Centroid (THz):   34.330
+ pDOS Poles:     Freq. (THz)    Weight
+                  13.583       0.56512
+                  38.444       0.37943
+                  96.234       0.05544
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.282   2.663
+--------------------------------------------------------------
+ Path Indices:    1  23
+ pDOS Centroid (THz):   34.337
+ pDOS Poles:     Freq. (THz)    Weight
+                  13.610       0.56511
+                  38.446       0.37944
+                  96.234       0.05545
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.282   2.659
+--------------------------------------------------------------
+ Path Indices:    1  24
+ pDOS Centroid (THz):   34.152
+ pDOS Poles:     Freq. (THz)    Weight
+                   7.832       0.49367
+                  37.155       0.45091
+                  96.263       0.05542
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.280   3.924
+--------------------------------------------------------------
+ Path Indices:    1  25
+ pDOS Centroid (THz):   34.108
+ pDOS Poles:     Freq. (THz)    Weight
+                   7.278       0.49323
+                  37.183       0.45139
+                  96.257       0.05538
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.280   4.192
+--------------------------------------------------------------
+ Path Indices:    1  26
+ pDOS Centroid (THz):   90.416
+ pDOS Poles:     Freq. (THz)    Weight
+                  13.015       0.06852
+                  38.464       0.03206
+                  94.993       0.89942
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.520   7.948
+--------------------------------------------------------------
+ Path Indices:    1  27
+ pDOS Centroid (THz):   90.416
+ pDOS Poles:     Freq. (THz)    Weight
+                  12.756       0.06802
+                  38.352       0.03253
+                  94.992       0.89945
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.520   7.991
+--------------------------------------------------------------
+ Path Indices:    1  28
+ pDOS Centroid (THz):   90.413
+ pDOS Poles:     Freq. (THz)    Weight
+                  13.030       0.06848
+                  38.503       0.03205
+                  94.987       0.89946
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.520   7.944
+--------------------------------------------------------------
+ Path Indices:    1  29
+ pDOS Centroid (THz):   90.411
+ pDOS Poles:     Freq. (THz)    Weight
+                  12.521       0.06768
+                  38.335       0.03289
+                  94.987       0.89943
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.520   8.033
+--------------------------------------------------------------
+ Path Indices:    1  30
+ pDOS Centroid (THz):   84.973
+ pDOS Poles:     Freq. (THz)    Weight
+                  20.684       0.12475
+                  41.570       0.12454
+                  96.230       0.75072
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.255   8.591
+--------------------------------------------------------------
+ Path Indices:    1  31
+ pDOS Centroid (THz):   84.973
+ pDOS Poles:     Freq. (THz)    Weight
+                  20.672       0.12467
+                  41.564       0.12460
+                  96.230       0.75073
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.255   8.592
+--------------------------------------------------------------
+ Path Indices:    1  32
+ pDOS Centroid (THz):   84.976
+ pDOS Poles:     Freq. (THz)    Weight
+                  18.471       0.11401
+                  40.960       0.13558
+                  96.269       0.75041
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.254   8.820
+--------------------------------------------------------------
+ Path Indices:    1  33
+ pDOS Centroid (THz):   84.995
+ pDOS Poles:     Freq. (THz)    Weight
+                  18.389       0.11343
+                  40.901       0.13583
+                  96.274       0.75075
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.254   8.825
+--------------------------------------------------------------
+ Path Indices:    1  34
+ pDOS Centroid (THz):   84.990
+ pDOS Poles:     Freq. (THz)    Weight
+                  20.587       0.12377
+                  41.481       0.12512
+                  96.231       0.75111
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.257   8.594
+--------------------------------------------------------------
+ Path Indices:    1  35
+ pDOS Centroid (THz):   84.989
+ pDOS Poles:     Freq. (THz)    Weight
+                  20.543       0.12350
+                  41.477       0.12540
+                  96.231       0.75109
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.257   8.597
+--------------------------------------------------------------
+ Path Indices:    1  36
+ pDOS Centroid (THz):   84.994
+ pDOS Poles:     Freq. (THz)    Weight
+                  18.540       0.11378
+                  40.923       0.13557
+                  96.275       0.75066
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.254   8.804
+--------------------------------------------------------------
+ Path Indices:    1  37
+ pDOS Centroid (THz):   84.979
+ pDOS Poles:     Freq. (THz)    Weight
+                  18.379       0.11357
+                  40.944       0.13595
+                  96.267       0.75049
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.254   8.829
+--------------------------------------------------------------
+ Path Indices:    1  38
+ pDOS Centroid (THz):   28.887
+ pDOS Poles:     Freq. (THz)    Weight
+                  16.884       0.56878
+                  39.405       0.43071
+                  82.994       0.00051
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.101   2.014
+--------------------------------------------------------------
+ Path Indices:    1  39
+ pDOS Centroid (THz):   32.929
+ pDOS Poles:     Freq. (THz)    Weight
+                  11.168       0.48472
+                  44.527       0.51497
+                  95.184       0.00032
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.073   2.816
+--------------------------------------------------------------
+ Path Indices:    1  40
+ pDOS Centroid (THz):   31.192
+ pDOS Poles:     Freq. (THz)    Weight
+                  11.867       0.52329
+                  43.337       0.47615
+                  94.030       0.00056
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.145   2.821
+--------------------------------------------------------------
+ Path Indices:    1  41
+ pDOS Centroid (THz):   35.454
+ pDOS Poles:     Freq. (THz)    Weight
+                  15.028       0.60388
+                  40.822       0.35024
+                 108.185       0.04588
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.247   2.220
+--------------------------------------------------------------
+ Path Indices:    1  42
+ pDOS Centroid (THz):   38.558
+ pDOS Poles:     Freq. (THz)    Weight
+                  15.695       0.56207
+                  43.528       0.37007
+                  97.652       0.06786
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.304   2.302
+--------------------------------------------------------------
+ Path Indices:    1  43
+ pDOS Centroid (THz):   44.482
+ pDOS Poles:     Freq. (THz)    Weight
+                  16.927       0.48762
+                  51.709       0.00208
+                  59.940       0.51030
+ Path Length (Ang), s^2 (1e-3 Ang^2):  1.731   1.911
+--------------------------------------------------------------
+ Path Indices:    1  44
+ pDOS Centroid (THz):   35.509
+ pDOS Poles:     Freq. (THz)    Weight
+                  16.859       0.70223
+                  32.583       0.00324
+                  59.931       0.29453
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.897   1.896
+--------------------------------------------------------------
+ Path Indices:    1  45
+ pDOS Centroid (THz):   44.960
+ pDOS Poles:     Freq. (THz)    Weight
+                  23.162       0.26393
+                  40.356       0.64975
+                  97.560       0.08632
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.322  14.488
+--------------------------------------------------------------
+ Path Indices:    1  46
+ pDOS Centroid (THz):   47.763
+ pDOS Poles:     Freq. (THz)    Weight
+                  22.213       0.22113
+                  40.594       0.66597
+                  97.569       0.11290
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.296  14.048
+--------------------------------------------------------------
+ Path Indices:    1  47
+ pDOS Centroid (THz):   95.959
+ pDOS Poles:     Freq. (THz)    Weight
+                  20.592       0.09762
+                  41.888       0.14046
+                 108.202       0.76192
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.157   7.727
+--------------------------------------------------------------
+ Path Indices:    1  48
+ pDOS Centroid (THz):   89.334
+ pDOS Poles:     Freq. (THz)    Weight
+                  21.537       0.10428
+                  41.482       0.07790
+                  97.649       0.81782
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.332   7.706

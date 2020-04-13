@@ -1,0 +1,20 @@
+#!/bin/bash
+currversion=`grep vfeff HEADERS/vers.h |grep -i parameter |awk '{print $3}'`
+currrevision=`grep revision HEADERS/vers.h |grep -i parameter |awk '{print $3}'`
+echo "Current version is FEFF V${currversion}, revision ${currrevision}."
+nextversion=$currversion
+nextrevision=`echo ${currrevision} |sed -e's/\./\  /g' | awk 'BEGIN{r=0.0}{r=$1*1000+$2*100+$3+1}END{print (r-r%1000)/1000"."(r-r%100)/100"."r%100}'`
+if [ "X$1" = "X-v" ]
+then
+	nextversion=`echo ${currversion} |sed -e's/\./\  /g' | awk '{print $1"."($2+1)-($2+1)%10($2+1)%10}'`
+        nextrevision=0.0.01
+elif [ "X$1" = "X-t" ] 
+then
+	echo $currversion
+	echo $currrevision
+	exit
+fi
+echo "Will update to FEFF V${nextversion}, revision ${nextrevision}."
+sed -e"s/.*vfeff=.*/      PARAMETER (vfeff='FEFF V${nextversion} ')/g" \
+    -e"s/.*revision=.*/      PARAMETER (revision='Revision ${nextrevision} ')/g" HEADERS/vers.h > HEADERS/vers.new
+mv HEADERS/vers.new HEADERS/vers.h

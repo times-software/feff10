@@ -1,0 +1,100 @@
+#!/bin/bash 
+# Find all of the subroutines and functions called within this file. Do not include commented lines.
+# Note: Functions are found by looking at an external statement, so make sure to declare functions 
+# as external unless they are part of a module which is being included via "USE <modname>".
+
+# subroutines
+grep -v '^\ *!' $1 | grep -iw call |sed -e's/^.*call\ //' -e's/^.*CALL\ //' -e's/(.*//' |awk '{print $1}' > subcalls.dep
+
+# functions
+grep -i -e'^[a-zA-Z\ \*0-9_,	]*external[\ 	:]'  $1 |sed -e's/.*external//g' -e's/.*EXTERNAL//g' -e's/:://g' -e's/,/\n/g' |sort -ub > funccalls.dep
+
+# modules
+grep -iw '^\ *	*use' $1 |sed -e's/\ \ */\ /g' |sort -ub |sed -e's/^\ *	*use//g' -e's/,.*//g' -e's/!.*//g'> modcalls.dep
+
+# Initialize srcfiles
+srcfiles=''
+
+# Go through each subroutine and find the file it corresponds to.
+for sub in `cat subcalls.dep`
+do
+	# Find
+	srcfile=`egrep -iw -e"${sub}" routines.dep |sed -e's/:.*/\n/g' |sort -ub`
+#	echo $sub $srcfile >> mkdep.err
+	if [ `echo "$srcfile" |wc -w` -eq 1 ]
+	then
+		if [ `grep -c $srcfile $2.mk` -eq 0 ]
+		then
+			srcfiles="${srcfiles} ${srcfile}"
+		fi
+	else
+		#echo "multiple definitions for $sub: $srcfile" >> mkdep.err
+		for fl in $srcfile
+		do
+			if [ `grep -c $fl $2.mk` -eq 0 ]
+			then
+				srcfiles="${srcfiles} ${fl}"
+			fi
+		done
+	fi	
+done
+
+for func in `cat funccalls.dep`
+do
+	srcfile=`grep -iw -e"${func}" routines.dep |sed -e's/:.*/\n/g' |sort -ub`
+#	echo $func $srcfile >> mkdep.err
+	if [ `echo "$srcfile" |wc -w` -eq 1 ]
+        then
+                if [ `grep -c $srcfile $2.mk` -eq 0 ]
+                then
+                        srcfiles="${srcfiles} ${srcfile}"
+                fi
+        else
+                #echo "multiple definitions for $sub: $srcfile" >> mkdep.err
+                for fl in $srcfile
+                do
+                        if [ `grep -c $fl $2.mk` -eq 0 ]
+                        then
+                                srcfiles="${srcfiles} ${fl}"
+                        fi
+                done
+        fi
+done
+
+for mod in `cat modcalls.dep`
+do
+	srcfile=`grep -iw "${mod}" modules.dep |sed -e's/:.*/\n/g' |sort -ub`
+	if [ `echo "$srcfile" |wc -w` -eq 1 ]
+        then
+                if [ `grep -c $srcfile $2.mk` -eq 0 ]
+                then
+                        srcfiles="${srcfiles} ${srcfile}"
+                fi
+        else
+                #echo "multiple definitions for $sub: $srcfile" >> mkdep.err
+                for fl in $srcfile
+                do
+                        if [ `grep -c $fl $2.mk` -eq 0 ]
+                        then
+                                srcfiles="${srcfiles} ${fl}"
+                        fi
+                done
+        fi
+done
+
+srcfiles=`echo $srcfiles |sed -e's/^\ *//g' -e's/\ /\n/g' |grep -v $1 |sort -ub`
+objfiles=''
+for srcfl in $srcfiles
+do
+	objfile=${srcfl%%.f90.o}
+	objfiles="$objfiles ${objfile}\n"
+done
+if [ "X$srcfiles" == "X$1" ] || [ "X$srcfiles" == "X" ]
+then
+	echo 'exit'
+else
+	echo -e $srcfiles |sed -e's/\ /\n/g' >> $2.mk
+	echo $srcfiles
+fi
+
+rm subcalls.dep funccalls.dep modcalls.dep

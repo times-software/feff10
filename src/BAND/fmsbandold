@@ -1,0 +1,218 @@
+
+      subroutine fmsband(kk,ispin,xphase,em,eival,haha,diag,free)  ! KJ
+      use struct
+	use strfacs,only : eimag
+	use boundaries
+	use wigner3j
+	use trafo,only : mrotr
+      implicit none
+
+      include '../HEADERS/dim.h'
+
+!  OUTPUT
+      complex,intent(out) :: eival(msize)
+	complex*16,intent(out) :: haha((1+maxl)**2)
+!  INPUT
+      integer,intent(in) ::    ispin
+      complex,intent(in) ::    xphase(nspx, -lx:lx, 0:nphx) ! array of partial wave phase shifts for each unique potential
+	real*8,intent(in)  ::    kk(3) ! k-vector 
+	complex*16,intent(in) :: em !energy at which we work - one point, not a mesh
+	logical,intent(in)    :: free
+	logical,intent(in)    :: diag
+c********************************************************************
+!  LOCAL
+      complex*16 hihi
+      real*8,parameter :: one=1_8
+      real*8,parameter :: pi = 3.14159 26535 89793 23846 26433d0
+      complex,parameter :: coni=cmplx(0,1)
+	complex,parameter :: c0=cmplx(0,0),c1=cmplx(1,0)
+	complex Gfms(msize,msize),Gtemp(msize,msize)  ! the fms-matrix of the Green's function
+      complex tmatrx(nsp,msize+mls)   ! scattering matrix; defined otherwise than in real space calculation
+	complex Tmat(msize,msize)   ! scattering matrix of the perfect lattice (without corehole)
+	complex Cmat(mls,mls)       ! core hole matrix (Cmat = t_gs - t_ch )
+	complex,allocatable :: work(:)
+	real,allocatable :: rwork(:)
+	logical,allocatable :: lwork(:)
+	integer ist1,ist2,iat1,l1,m1,m2,isp1,iph,i,j,isp2,info
+
+!    Set program control :
+	logical,parameter :: hole=.false.
+	logical,parameter :: onlytrace=.true.
+
+
+
+********************** TAKE CARE OF THE T-MATRIX :
+
+
+      if(free) goto 1357  ! Skip preparation of t-matrix
+! Make tmatrx
+      ist1=0
+      do iat1=1,nats+1  ! last field is for core hole potential
+	   if(iat1.le.nats) then
+	      iph=ppot(iat1)
+	   else
+	      iph=0
+	   endif
+	   do l1=0,maxl   !all potentials have same l now - replace by lpot(iph) - fix later
+	   do m1=-l1,l1
+	   do isp1=1,nsp
+	      ist1=ist1+1
+            if(nsp.eq.1.and.ispin.eq.0) then
+	         tmatrx(1,ist1)= (exp(2*coni*xphase(isp1,l1,iph))-one)
+     1			                             /(2*coni)
+	      elseif(nsp.eq.1.and.ispin.gt.0) then
+	         tmatrx(1,ist1)=  ( exp(2*coni*xphase(isp1,l1,iph)) - one)
+     $                    / (2*coni) * t3jm (l1, m1, 2)**2  + 
+     $                    ( exp(2*coni*xphase(isp1,-l1,iph)) - one )
+     $                    / (2*coni) * t3jp (l1, m1, 2)**2 
+	      elseif(nsp.eq.1.and.ispin.lt.0) then
+	         tmatrx(1,ist1)=  ( exp(2*coni*xphase(isp1,l1,iph)) - one)
+     $                    / (2*coni) * t3jm (l1, m1, 1)**2  + 
+     $                    ( exp(2*coni*xphase(isp1,-l1,iph)) - one )
+     $                    / (2*coni) * t3jp (l1, m1, 1)**2 
+	      else  ! nsp=2
+
+	         tmatrx(1,ist1)=  ( exp(2*coni*xphase(isp1,l1,iph)) - one) ! for l1=l2,m1=m2,isp1=isp2 diagonal
+     $                    / (2*coni) * t3jm (l1, m1, isp1)**2  + 
+     $                    ( exp(2*coni*xphase(isp1,-l1,iph)) - one )
+     $                    / (2*coni) * t3jp (l1, m1, isp1)**2 
+               if(isp1.eq.1) then
+	            isp2=2
+	         else
+	            isp2=1
+	         endif
+	         m2=m1+isp1-isp2
+
+	         tmatrx(2,ist1)= ( exp(2*coni*xphase(isp1, l1,iph)) - one  ! for l1=l2,m1+isp1=m2+isp2 off-diagonal
+     $             + exp(2*coni*xphase(isp2,l1,iph)) - one ) / (4*coni)
+     1             * t3jm (l1, m1, isp1) * t3jm (l1, m2, isp2)  + 
+     $             ( exp(2*coni*xphase(isp1,-l1,iph)) - one +
+     $               exp(2*coni*xphase(isp2,-l1,iph)) - one ) / (4*coni) 
+     1             * t3jp (l1, m1, isp1) * t3jp (l1, m2, isp2)
+
+	      endif  ! which case
+	   enddo  ! isp1
+	   enddo  ! m1
+	   enddo  ! l1
+      enddo  ! iat1
+
+!  Blow up t-matrix to T-matrix.
+      Tmat=cmplx(0,0)
+	ist1=0
+	do iat1=1,nats
+	do l1=0,maxl
+      do m1=-l1,l1
+	do isp1=1,nsp
+	  ist1=ist1+1
+	  Tmat(ist1,ist1)=tmatrx(1,ist1)
+	  if(nsp.eq.2) then
+	    if(isp1.eq.1) then
+	      isp2=2
+	      ist2=ist1-1
+	    else
+	      isp2=1
+	      ist2=ist1+1
+	    endif
+	    if(ist2.le.msize.and.ist2.gt.0) Tmat(ist1,ist2)=tmatrx(2,ist1)
+	  endif  ! nsp=2
+      enddo
+	enddo 
+	enddo
+	enddo
+
+      if(hole) then
+!  Make core hole matrix Cmat
+         i=ppot(absorber)
+	   do j=1,nats
+	      if(ppot(j).eq.i) exit
+	   enddo
+	   i=(j-1)*mls
+
+	   do l1=0,maxl
+	   do m1=-l1,l1
+	   do isp1=1,nsp
+	      ist1=ist1+1
+	      Cmat(ist1,ist1)=tmatrx(1,ist1)
+	      if(nsp.eq.2) then
+	         if(isp1.eq.1) then
+	            isp2=2
+	            ist2=ist1-1
+	         else
+	            isp2=1
+	            ist2=ist1+1
+	         endif
+	         if(ist2.le.msize.and.ist2.gt.0) 
+     1                               Cmat(ist1,ist2)=tmatrx(2,ist1)
+	      endif  ! nsp=2
+         enddo
+	   enddo 
+	   enddo
+         Cmat=Tmat(1+i:mls+i,1+i:mls+i)-Cmat
+      endif
+
+1357  continue
+
+
+
+!*************************  NOW CALCULATE GG USING STRUCTURE FACTORS AND T-MATRIX
+
+	call recinv2(Gfms,Tmat,free,em,kk)
+
+!      if(onlytrace) then
+!     Calculate the trace :
+!      hihi=dcmplx(0,0)
+!	do i=1,msize
+!	   hihi=hihi+Gfms(i,i)
+!	enddo
+!	haha(1)=-hihi/pi
+!	return !if you just want the trace - no need to diagonalize
+!     endif
+
+
+!      write(*,*) 'hihi',hihi
+      if(diag) then
+!    Diagonalize Gfms by finding its eigenvalues :
+         Gtemp=Gfms
+	   allocate(work(10*msize),rwork(msize),lwork(msize))
+         call cgees('N','N',.false.,msize,Gtemp,msize,i,eival,Tmat,
+     $                  msize,work,10*msize,rwork,lwork,info)
+!        i,Tmat  : dummy arguments for options used - will not be overwritten ??
+         if(info.ne.0) then
+	      write(*,*) 'info',info
+	      stop
+	   endif
+
+! order eigenvalues small to large
+         do i=1,msize
+	   do j=i,msize
+	      if(dabs(dble(eival(j))).lt.dabs(dble(eival(i))))then
+	         hihi=eival(j)
+	         eival(j)=eival(i)
+	         eival(i)=hihi
+	      endif
+	   enddo
+	   enddo
+
+      endif
+
+      do i=1,(1+maxl)**2
+         haha(i)=dcmplx(Gfms(i,i))
+      enddo
+!!     Verify the trace :
+!      hihi=dcmplx(0,0)
+!	do i=1,msize
+!	   hihi=hihi+haha(i)
+!	enddo
+!      write(*,*) 'hihi',hihi
+!     Verify the trace :
+!      hihi=dcmplx(0,0)
+!	do i=1,msize
+!	   hihi=hihi+eival(i)
+!	enddo
+!      write(*,*) 'hihi',hihi
+!	if(cdabs(haha(1)).gt.dble(0.0001))stop
+!      if(cdabs(em).gt.dble(0.15)) stop
+
+      return
+	end   !  subroutine fms2
+

@@ -1,0 +1,32 @@
+# Lanczos recursion order:    2
+# Temperature:   77.00
+# Dynamical matrix file: H2O.g03.dym
+
+--------------------------------------------------------------
+ Path Indices:    1   2
+ pDOS Centroid (THz):  113.517
+ pDOS Poles:     Freq. (THz)    Weight
+                  77.357       0.00827
+                 113.771       0.99173
+ Path Length (Ang), s^2 (1e-3 Ang^2):  0.970   4.704
+--------------------------------------------------------------
+ Path Indices:    1   3
+ pDOS Centroid (THz):  113.519
+ pDOS Poles:     Freq. (THz)    Weight
+                  77.347       0.00827
+                 113.772       0.99173
+ Path Length (Ang), s^2 (1e-3 Ang^2):  0.970   4.704
+--------------------------------------------------------------
+ Path Indices:    2   1   3
+ pDOS Centroid (THz):  108.546
+ pDOS Poles:     Freq. (THz)    Weight
+                  46.250       0.07150
+                 111.915       0.92850
+ Path Length (Ang), s^2 (1e-3 Ang^2):  1.739   8.967
+--------------------------------------------------------------
+ Path Indices:    1   2   3
+ pDOS Centroid (THz):  108.546
+ pDOS Poles:     Freq. (THz)    Weight
+                  46.250       0.07150
+                 111.915       0.92850
+ Path Length (Ang), s^2 (1e-3 Ang^2):  1.739   8.967

@@ -1,0 +1,44 @@
+TITLE graphite
+* C K edge energy = 284.20 eV
+
+EDGE	K	0.0
+COREHOLE	RPA
+CONTROL	1 1 1 1 1 1
+
+ELNES	5.0 0.05 0.05
+300	* beam energy in keV
+0 0 1	* beam direction in the crystal frame
+1.10 0.3 * collection semiangle, convergence semiangle (in mrad)
+100 1	* q-integration mesh : radial size, angular size
+0.0 0.0	* position of the detector (x,y angle in mrad)
+
+MAGIC 40	* create a plot that shows the magic angle.  Evaluate at 40 eV above threshold
+
+FMS	6.0 2
+EXCHANGE	0 1 0.4
+SCF	4.5
+RPATH	2
+
+POTENTIALS
+*	ipot	z	element	l_scmt	l_fms	stoichiometry
+	0	6	C	3	2	0.01
+	1	6	C	3	2	2
+	2	6	C	3	2	2
+
+
+RECIPROCAL
+KMESH	1000 0
+TARGET	1
+LATTICE	P 2.456
+	0.86603	-0.5000	0.00000
+	0.00000	1.00000	0.00000
+	0.00000	0.00000	2.72638
+
+ATOMS
+*	x	y	z	ipot	tag
+	0.00000	0.00000	0.68160	1	C1
+	0.00000	0.00000	2.04479	1	C1
+	0.57735	0.00000	0.68160	2	C2
+	0.28868	0.50000	2.04479	2	C2
+
+END

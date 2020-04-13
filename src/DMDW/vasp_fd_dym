@@ -1,0 +1,777 @@
+#!/usr/bin/env python
+
+import sys
+import os.path
+import shutil
+import glob
+from xml.dom import minidom
+
+# Define conversion from Ang to au
+ang2au = 1.0/0.52917706
+
+# Define dictionaries for the periodic table
+AN2Sym = {
+   1:'H' ,   2:'He',   3:'Li',   4:'Be',   5:'B' ,   6:'C' ,   7:'N' ,   8:'O' ,
+   9:'F' ,  10:'Ne',  11:'Na',  12:'Mg',  13:'Al',  14:'Si',  15:'P' ,  16:'S' ,
+  17:'Cl',  18:'Ar',  19:'K' ,  20:'Ca',  21:'Sc',  22:'Ti',  23:'V' ,  24:'Cr',
+  25:'Mn',  26:'Fe',  27:'Co',  28:'Ni',  29:'Cu',  30:'Zn',  31:'Ga',  32:'Ge',
+  33:'As',  34:'Se',  35:'Br',  36:'Kr',  37:'Rb',  38:'Sr',  39:'Y' ,  40:'Zr',
+  41:'Nb',  42:'Mo',  43:'Tc',  44:'Ru',  45:'Rh',  46:'Pd',  47:'Ag',  48:'Cd',
+  49:'In',  50:'Sn',  51:'Sb',  52:'Te',  53:'I' ,  54:'Xe',  55:'Cs',  56:'Ba',
+  57:'La',  58:'Ce',  59:'Pr',  60:'Nd',  61:'Pm',  62:'Sm',  63:'Eu',  64:'Gd',
+  65:'Tb',  66:'Dy',  67:'Ho',  68:'Er',  69:'Tm',  70:'Yb',  71:'Lu',  72:'Hf',
+  73:'Ta',  74:'W' ,  75:'Re',  76:'Os',  77:'Ir',  78:'Pt',  79:'Au',  80:'Hg',
+  81:'Tl',  82:'Pb',  83:'Bi',  84:'Po',  85:'At',  86:'Rn',  87:'Fr',  88:'Ra',
+  89:'Ac',  90:'Th',  91:'Pa',  92:'U' ,  93:'Np',  94:'Pu',  95:'Am',  96:'Cm',
+  97:'Bk',  98:'Cf',  99:'Es', 100:'Fm', 101:'Md', 102:'No', 103:'Lr'
+}
+
+Sym2AN = {
+'H' :  1, 'He':  2, 'Li':  3, 'Be':  4, 'B' :  5, 'C' :  6, 'N' :  7, 'O' :  8,
+'F' :  9, 'Ne': 10, 'Na': 11, 'Mg': 12, 'Al': 13, 'Si': 14, 'P' : 15, 'S' : 16,
+'Cl': 17, 'Ar': 18, 'K' : 19, 'Ca': 20, 'Sc': 21, 'Ti': 22, 'V' : 23, 'Cr': 24,
+'Mn': 25, 'Fe': 26, 'Co': 27, 'Ni': 28, 'Cu': 29, 'Zn': 30, 'Ga': 31, 'Ge': 32,
+'As': 33, 'Se': 34, 'Br': 35, 'Kr': 36, 'Rb': 37, 'Sr': 38, 'Y' : 39, 'Zr': 40,
+'Nb': 41, 'Mo': 42, 'Tc': 43, 'Ru': 44, 'Rh': 45, 'Pd': 46, 'Ag': 47, 'Cd': 48,
+'In': 49, 'Sn': 50, 'Sb': 51, 'Te': 52, 'I' : 53, 'Xe': 54, 'Cs': 55, 'Ba': 56,
+'La': 57, 'Ce': 58, 'Pr': 59, 'Nd': 60, 'Pm': 61, 'Sm': 62, 'Eu': 63, 'Gd': 64,
+'Tb': 65, 'Dy': 66, 'Ho': 67, 'Er': 68, 'Tm': 69, 'Yb': 70, 'Lu': 71, 'Hf': 72,
+'Ta': 73, 'W' : 74, 'Re': 75, 'Os': 76, 'Ir': 77, 'Pt': 78, 'Au': 79, 'Hg': 80,
+'Tl': 81, 'Pb': 82, 'Bi': 83, 'Po': 84, 'At': 85, 'Rn': 86, 'Fr': 87, 'Ra': 88,
+'Ac': 89, 'Th': 90, 'Pa': 91, 'U' : 92, 'Np': 93, 'Pu': 94, 'Am': 95, 'Cm': 96,
+'Bk': 97, 'Cf': 98, 'Es': 99, 'Fm':100, 'Md':101, 'No':102, 'Lr':103,
+}
+
+# Define the names of the files we will use, to make it a bit more generic
+Files_Inc = { 'INCAR'    : 'INCAR'}
+
+Files_Unm = { 'KPOINTS'  : 'KPOINTS',
+              'POTCAR'   : 'POTCAR'}
+
+Files_Pos = { 'POSCAR'   : 'POSCAR'}
+
+Files_Que = { 'queuescr' : 'vasp_edison.slurm'}
+
+Files_Out = { 'OUTCAR'      : 'OUTCAR',
+              'OSZICAR'     : 'OSZICAR',
+              'vasprun.xml' : 'vasprun.xml',
+              'vasp.out'    : 'vasp.out',
+              'XDATCAR'     : 'XDATCAR'}
+
+Files_Inp = dict(Files_Inc.items() + 
+                 Files_Unm.items() + 
+                 Files_Pos.items() + 
+                 Files_Que.items())
+
+Files = dict(Files_Inp.items() + 
+             Files_Out.items())
+
+# Make sure all the input files are here, for sanity purposes only
+for File in Files_Inp:
+  if not(os.path.isfile(Files[File])):
+    sys.stderr.write('File not found: ' + Files[File] +'\n')
+    sys.exit()
+
+# NOTE: Here I should use pyparsing to get this information, but it will
+#       take me too long to learn. Will do a hack for now
+
+# Check in INCAR to see if IBRION = 5
+for lineraw in open(Files['INCAR'],'r'):
+# Remove front and trailing blanks and newline
+  line = lineraw.rstrip().lstrip()
+# Ignore the line if it is empty or starts with a hash (comment)
+  if len(line) == 0 or line[0] == '#':
+    continue
+# Eliminate any inline comments
+  try:
+    comm_pos = line.index('!')
+    line = line[0:comm_pos]
+  except:
+    pass
+  try:
+    comm_pos = line.index('#')
+    line = line[0:comm_pos]
+  except:
+    pass
+# Check if we have the required '='
+  try:
+    eq_pos = line.index('=')
+  except:
+    sys.stderr.write('There seems to be a syntax error in INCAR line:\n')
+    sys.stderr.write(lineraw)
+    sys.exit()
+  Tag   = line[0:eq_pos].rstrip().lstrip().upper()
+  Value = line[eq_pos+1:].rstrip().lstrip()
+  if Tag == 'IBRION':
+    IBRION = int(Value)
+    break
+else:
+  sys.stderr.write('Error: IBRION not found in INCAR file\n')
+  sys.exit()
+
+if not(IBRION==5):
+  sys.stderr.write('Error: IBRION must be = 5 (for now)\n')
+  sys.exit()
+
+# Read the POSCAR file
+POSCAR = [ line.rstrip() for line in open(Files['POSCAR'],'r') ]
+
+# Do some sanity checks to make sure it has the right format
+# 1) Check that line 7 has numbers
+try:
+  nAt_Typ = [ int(nAt) for nAt in POSCAR[6].split() ]
+except:
+  sys.stderr.write('Error: Wrong format in line 7 of '+Files['POSCAR']+':\n')
+  sys.stderr.write(POSCAR[6]+'\n')
+  sys.exit()
+
+# 2) Check that line 8 has "selective dynamics"
+if not(POSCAR[7].rstrip().lstrip().lower()=='selective dynamics'):
+  sys.stderr.write('Error: Line 8 of '+Files['POSCAR']+' should be ')
+  sys.stderr.write('\'Selective dynamics\', we found:\n')
+  sys.stderr.write(POSCAR[7]+'\n')
+  sys.exit()
+
+# 3) Check that line 9 has "direct"
+if not(POSCAR[8].rstrip().lstrip().lower()=='direct'):
+  sys.stderr.write('Error: Line 9 of '+Files['POSCAR']+' should be ')
+  sys.stderr.write('\'Direct\', we found:\n')
+  sys.stderr.write(POSCAR[8]+'\n')
+  sys.exit()
+
+# Calculate the total number of atoms
+nAt_Tot = sum(nAt_Typ)
+
+# Get the optimization flags from the POSCAR
+Buffer = [ line.split()[3:] for line in POSCAR[9:9+nAt_Tot]]
+At_Coord_Flags = [ [a in 'Tt',b in 'Tt',c in 'Tt'] for [a,b,c] in Buffer ]
+
+# Make sure that if an atom is 'free', all its coordinates are
+if not(all([ (sum(row)==0) or (sum(row)==3) for row in At_Coord_Flags ])):
+  sys.stderr.write('Error: '+Files['POSCAR']+' has partially frozen atoms\n')
+  sys.stderr.write('       Probably this is not what you want\n')
+  sys.exit()
+At_Flags_Tot = [ (sum(row)==3) for row in At_Coord_Flags ]
+nAt_Use_Tot = sum(At_Flags_Tot)
+
+# Up to here this script is very similar to the one used for generating the
+# locked vasp dym calculations. From here on we do things a bit different.
+
+# Find the Blk.??? directories to determine the number of blocks in this run.
+DirNameList = glob.glob('Blk.[0-9]*')
+
+if not DirNameList:
+  sys.stderr.write('Error: Could not find Blk.??? block directories\n')
+  sys.exit()
+
+# Find the indices
+BlkDirInd = [ int(Str.replace('Blk.','')) for Str in DirNameList ]
+BlkDirInd.sort()
+
+nBlk = max(BlkDirInd)
+
+if BlkDirInd != range(0,nBlk+1):
+  sys.stderr.write('Error: Missing Blk.??? block directories\n')
+  sys.exit()
+
+# Make sure make sure the nBlk is within the limits enforced by the blocking
+# script
+if nBlk > 100:
+  sys.stderr.write('Error: Number of blocks larger than max expected (100) \n')
+  sys.exit()
+
+if nBlk > nAt_Use_Tot:
+  sys.stderr.write('Error: Fround more blocks than free atoms.\n')
+  sys.exit()
+
+# Generate a well balanced partition
+Blk_Size = nAt_Use_Tot/nBlk
+nAt_Part = [ a+b for (a,b) in \
+             zip([Blk_Size]*nBlk,[1]*(nAt_Use_Tot%nBlk) + \
+                 [0]*(nBlk-nAt_Use_Tot%nBlk)) ]
+
+# Debug
+#print nAt_Use_Tot*3*2
+#print nAt_Part
+#sys.exit()
+
+# Remove the initial guess directory from the list (Blk.000) because we aren't
+# really interested in its contents
+DirNameList = filter(lambda a: a != 'Blk.000', DirNameList)
+
+# Make sure all block names are directories
+for Dir in DirNameList:
+  if not os.path.isdir(Dir):
+    sys.stderr.write('Error: One of the blocks is not a directory\n')
+    sys.exit()
+
+# Now we run a battery of check to make sure that the stuff in the different
+# block directories is what we should expect:
+
+# 0) Make sure all the input and output files are present
+for Dir in DirNameList:
+  for File in Files:
+    if not(os.path.isfile(Dir+'/'+Files[File])):
+      sys.stderr.write('File not found: '+ Dir +'/'+ Files[File] +'\n')
+      sys.exit()
+    
+
+# 1) Make sure that the POSCAR in the block corresponds to exactly what would
+#    have been generated by the other script for the number of blocks we have
+#    here. For each POSCAR we run a series of checks as we did for the 
+#    unblocked POSCAR above.
+nAt_Part_Used = []
+for Dir in DirNameList:
+  POSCAR_Blk = [ line.rstrip() for line in open(Dir+'/'+Files['POSCAR'],'r') ]
+
+# Do some sanity checks to make sure it has the right format
+# 1.1) Check that line 7 has numbers
+  try:
+    nAt_Typ_Blk = [ int(nAt) for nAt in POSCAR_Blk[6].split() ]
+  except:
+    sys.stderr.write('Error: Wrong format in line 7 of '+Files['POSCAR'])
+    sys.stderr.write(' in block '+Dir+':\n')
+    sys.stderr.write(POSCAR_Blk[6]+'\n')
+    sys.exit()
+
+# 1.2) Check that line 8 has "selective dynamics"
+  if not(POSCAR_Blk[7].rstrip().lstrip().lower()=='selective dynamics'):
+    sys.stderr.write('Error: Line 8 of '+Files['POSCAR'])
+    sys.stderr.write(' in '+Dir+' should be ')
+    sys.stderr.write('\'Selective dynamics\', we found:\n')
+    sys.stderr.write(POSCAR_Blk[7]+'\n')
+    sys.exit()
+
+# 1.3) Check that line 9 has "direct"
+  if not(POSCAR_Blk[8].rstrip().lstrip().lower()=='direct'):
+    sys.stderr.write('Error: Line 9 of '+Files['POSCAR'])
+    sys.stderr.write(' in '+Dir+' should be ')
+    sys.stderr.write('\'Direct\', we found:\n')
+    sys.stderr.write(POSCAR_Blk[8]+'\n')
+    sys.exit()
+
+# 1.4) Make sure that this POSCAR has the same total number of atoms
+  if nAt_Tot != sum(nAt_Typ_Blk):
+    sys.stderr.write('Error: '+Files['POSCAR']+' in '+Dir+' has different')
+    sys.stderr.write(' number of atoms:\n')
+    sys.stderr.write(str(sum(nAt_Typ_Blk)))
+    sys.stderr.write('\n')
+    sys.exit()
+
+# Get the optimization flags from the POSCAR
+  Buffer = [ line.split()[3:] for line in POSCAR_Blk[9:9+nAt_Tot]]
+  At_Coord_Flags_Blk = [ [a in 'Tt',b in 'Tt',c in 'Tt'] for [a,b,c] in Buffer ]
+
+# Make sure that if an atom is 'free', all its coordinates are
+  if not(all([ (sum(row)==0) or (sum(row)==3) for row in At_Coord_Flags_Blk ])):
+    sys.stderr.write('Error: '+Files['POSCAR']+' in '+Dir)
+    sys.stderr.write(' has partially frozen atoms\n')
+    sys.stderr.write('       This is not expected\n')
+    sys.exit()
+  At_Flags_Blk = [ (sum(row)==3) for row in At_Coord_Flags_Blk ]
+  nAt_Part_Used.append(sum(At_Flags_Blk))
+
+# Check that the partition generated from the original POSCAR and what we
+# found in the blocked POSCARs are the same
+if not nAt_Part == nAt_Part_Used:
+  sys.stderr.write('Error: Partition found on block directories is different\n')
+  sys.stderr.write('       than the one expected from the master ')
+  sys.stderr.write(Files['POSCAR']+'\n')
+  sys.exit()
+
+# 2) Make sure that all the block calculations finished correctly:
+#    We check the last lines of the OUTCAR and OSZICAR files for some
+#    expected text
+for Dir in DirNameList:
+  OSZICAR_Blk = [ line.rstrip() for line in open(Dir+'/'+Files['OSZICAR'],'r') ]
+  Ln = OSZICAR_Blk[-1].rstrip().lstrip().split()
+  if Ln[1]!='F=' or Ln[3]!='E0=':
+    sys.stderr.write('Error: Block in '+Dir)
+    sys.stderr.write(' seems to have not finished correctly\n')
+    sys.exit()
+  OUTCAR_Blk = [ line.rstrip() for line in open(Dir+'/'+Files['OUTCAR'],'r') ]
+  Ln = OUTCAR_Blk[-1].rstrip().lstrip().split()
+  if Ln[0]!='Voluntary' or Ln[1]!='context' or Ln[2]!='switches:':
+    sys.stderr.write('Error: Block in '+Dir)
+    sys.stderr.write(' seems to have not finished correctly\n')
+    sys.exit()
+
+# We read all the info we need from each of the vasprun.xml files
+POTIM_Blk          = []
+nAt_Tot_Blk        = []
+nTyp_Blk           = []
+At_AN_Blk          = []
+At_Sym_Blk         = []
+At_Typ_Blk         = []
+Typ_nAt_Blk        = []
+Typ_Sym_Blk        = []
+Typ_Mass_Blk       = []
+Typ_nValEl_Blk     = []
+Cell_Vec_Blk       = []
+At_Red_Blk         = []
+At_Coord_Flags_Blk = []
+At_Flags_Blk       = []
+nAt_Use_Blk        = []
+At_XYZ_Blk         = []
+Forces_Blk         = []
+for Dir in DirNameList:
+
+# Get the name of the vasp xml file to process
+  vasp_xml = Dir+'/'+Files['vasprun.xml']
+
+# Parse the xml output and get the exec_host data
+  xmldoc = minidom.parse(vasp_xml)
+
+# NOTE: A lot of the checks below are redundant, given the checks we performed
+#       above, but we keep them here just in case. In addition, most of the
+#       associated error messages should be expanded to include block info.
+
+# Get the INCAR information
+  incarinfolist = xmldoc.getElementsByTagName('incar')
+
+# Make sure it is there
+  if incarinfolist.length < 1:
+    sys.stderr.write('No INCAR info in xml\n')
+    sys.exit()
+
+# Print warning if it isn't unique
+  if incarinfolist.length > 1:
+    sys.stderr.write('Warning: incarinfo not unique, using first instance\n')
+
+  incarinfo = incarinfolist[0]
+
+# Debug
+# print incarinfo.toxml()
+
+# Get the IBRION value
+  for info in incarinfo.getElementsByTagName('i'):
+    if info.hasAttribute('name') & (info.getAttribute('name') == 'IBRION'):
+      break
+  else:
+    sys.stderr.write('Error: IBRION not found in INCAR\n')
+    sys.exit()
+
+  IBRION = int(info.firstChild.data)
+
+  if not( IBRION in [5] ):
+    sys.stderr.write('Error: IBRION must be 5\n')
+    sys.exit()
+
+# Debug
+# print IBRION
+
+# Get the value of the derivative step POTIM
+  for info in incarinfo.getElementsByTagName('i'):
+    if info.hasAttribute('name') & (info.getAttribute('name') == 'POTIM'):
+      break
+  else:
+    sys.stderr.write('Error: POTIM not found in INCAR\n')
+    sys.exit()
+
+  POTIM_Blk.append(float(info.firstChild.data))
+
+# Debug
+# print POTIM_Blk
+
+# Get the value of the number of derivative steps NFREE
+  for info in incarinfo.getElementsByTagName('i'):
+    if info.hasAttribute('name') & (info.getAttribute('name') == 'NFREE'):
+      break
+  else:
+    sys.stderr.write('Error: NFREE not found in INCAR\n')
+    sys.exit()
+
+  NFREE = int(info.firstChild.data)
+
+# For now we only handle simple centered difference (NFREE=2)
+  if NFREE != 2:
+    sys.stderr.write('Error: NFREE must be 2 (for now)\n')
+    sys.exit()
+
+# Debug
+# print NFREE
+
+# Get the atomic info
+  atominfolist = xmldoc.getElementsByTagName('atominfo')
+
+# Make sure it is there
+  if atominfolist.length < 1:
+    sys.stderr.write('No atoms info in xml\n')
+    sys.exit()
+
+# Print warning if it isn't unique
+  if atominfolist.length > 1:
+    sys.stderr.write('Warning: atominfo not unique, using first instance\n')
+
+  atominfo = atominfolist[0]
+
+# Debug
+# print atominfo.toxml()
+
+# Parse the atomic info to get the important stuff
+
+# Get the number of atoms
+  atomslist = atominfo.getElementsByTagName('atoms')
+
+# Make sure it is there
+  if atomslist.length < 1:
+    sys.stderr.write('No atoms in atoms info\n')
+    sys.exit()
+
+# Print warning if it isn't unique
+  if atomslist.length > 1:
+    sys.stderr.write('Warning: atoms in atoms list not unique, ')
+    sys.stderr.write('using first instance\n')
+
+  nAt_Tot_Blk.append(int(atomslist[0].firstChild.data))
+
+# Debug
+# print nAt_Tot_Blk
+
+# Get the number of atom types
+  typeslist = atominfo.getElementsByTagName('types')
+
+# Make sure it is there
+  if typeslist.length < 1:
+    sys.stderr.write('No types in atoms info\n')
+    sys.exit()
+
+# Print warning if it isn't unique
+  if typeslist.length > 1:
+    sys.stderr.write('Warning: types in atoms list not unique, ')
+    sys.stderr.write('using first instance\n')
+
+  nTyp_Blk.append(int(typeslist[0].firstChild.data))
+
+# Debug
+# print nTyp_Blk
+
+# Now we get the information from each of the arrays in atomicinfo
+  for array in atominfo.getElementsByTagName('array'):
+    if   array.getAttribute('name') == 'atoms':
+# Get a list of the atoms in the cell, and their types
+# Debug
+#   print 'atoms proc'
+      At_Sym = []
+      At_Typ = []
+      for arrayelem in array.getElementsByTagName('rc'):
+        atomelemlist = arrayelem.getElementsByTagName('c')
+        At_Sym.append(str(atomelemlist[0].firstChild.data))
+        At_Typ.append(int(atomelemlist[1].firstChild.data))
+      At_Sym_Blk.append(At_Sym)
+      At_Typ_Blk.append(At_Typ)
+    elif array.getAttribute('name') == 'atomtypes':
+# Get the atomic information for each type of atom.
+# This part is a bit hacky since to simplify I need to assume that the
+# order of the info won't change. This is probably good enough for now.
+# Debug
+#   print 'atomtypes proc'
+      typeelemlist = array.getElementsByTagName('rc')
+      if typeelemlist.length > nTyp_Blk[-1]:
+        sys.stderr.write('Inconsistent number of types\n')
+        sys.exit()
+# Initialize empty dictionaries for the info we will be gathering for each type
+      Typ_nAt    = {}
+      Typ_Sym    = {}
+      Typ_Mass   = {}
+      Typ_nValEl = {}
+# Type counter
+      iTyp = 1
+      for typeelem in typeelemlist:
+        typeinfolist = typeelem.getElementsByTagName('c')
+        if typeinfolist.length != 5:
+          sys.stderr.write('Expecting 5 elements in type set\n')
+          sys.exit()
+        Typ_nAt.update({iTyp:int(typeinfolist[0].firstChild.data)})
+        Typ_Sym.update({iTyp:str(typeinfolist[1].firstChild.data)})
+        Typ_Mass.update({iTyp:float(typeinfolist[2].firstChild.data)})
+        Typ_nValEl.update({iTyp:float(typeinfolist[3].firstChild.data)})
+        iTyp = iTyp + 1
+      Typ_nAt_Blk.append(Typ_nAt)
+      Typ_Sym_Blk.append(Typ_Sym)
+      Typ_Mass_Blk.append(Typ_Mass)
+      Typ_nValEl_Blk.append(Typ_nValEl)
+    else:
+      sys.stderr.write('array in atominfo has unknown name\n')
+      sys.exit()
+
+# Convert the atomic symbols into atomic numbers
+  At_AN_Blk.append([ Sym2AN[sym.strip()] for sym in At_Sym ])
+
+# Find the structure
+# NOTE: Using the initial position coordinates since the other coordiantes
+#       in the xml file are distorted by the calculation
+#       of the finite differences
+
+  for struc in xmldoc.getElementsByTagName('structure'):
+    if struc.hasAttribute('name') & (struc.getAttribute('name')=='initialpos'):
+      break
+
+# Collect the unit cell info from the initial positions
+  for array in struc.getElementsByTagName('varray'):
+    if array.hasAttribute('name') & (array.getAttribute('name') == 'basis'):
+      break
+
+  Cell_Vec = []
+  for vec in array.getElementsByTagName('v'):
+    Cell_Vec.append([float(Str) for Str in vec.firstChild.data.split()])
+  Cell_Vec_Blk.append(Cell_Vec)
+
+# Collect the atomic coordinates from the initial positions
+  for array in struc.getElementsByTagName('varray'):
+    if array.hasAttribute('name') & (array.getAttribute('name') == 'positions'):
+      break
+
+  At_Red = []
+  for vec in array.getElementsByTagName('v'):
+    At_Red.append([float(Str) for Str in vec.firstChild.data.split()])
+  At_Red_Blk.append(At_Red)
+
+# Collect the optimization/dynamical matrix flags
+  for array in struc.getElementsByTagName('varray'):
+    if array.hasAttribute('name') & (array.getAttribute('name') == 'selective'):
+      break
+
+  At_Coord_Flags = []
+  for vec in array.getElementsByTagName('v'):
+    At_Coord_Flags.append([ (Str=='T') for Str in vec.firstChild.data.split()])
+  At_Coord_Flags_Blk.append(At_Coord_Flags)
+
+  if not(all([ (sum(row)==0) or (sum(row)==3) for row in At_Coord_Flags ])):
+    sys.stderr.write('Error: IBRION = 5 has partially frozen atoms\n')
+    sys.stderr.write('       Probably this is not what you want\n')
+    sys.exit()
+  At_Flags = [ (sum(row)==3) for row in At_Coord_Flags ]
+  nAt_Use = sum(At_Flags)
+  At_Flags_Blk.append(At_Flags)
+  nAt_Use_Blk.append(nAt_Use)
+
+# Convert to cartesian coordinates
+  At_XYZ = []
+  for At in At_Red:
+    XYZ = [ 0, 0, 0 ]
+    for iCoor in range(0,3):
+      for jCoor in range(0,3):
+        XYZ[jCoor] = XYZ[jCoor] + ang2au*At[iCoor]*Cell_Vec[iCoor][jCoor]
+    At_XYZ.append(XYZ)
+  At_XYZ_Blk.append(At_XYZ)
+
+# Load the data for each displacement
+
+#print At_Coord_Flags
+  calclist = xmldoc.getElementsByTagName('calculation')
+
+# Collect all the forces for each displacement
+  icalc=0
+  Forces = []
+  for calc in calclist:
+    for array in calc.getElementsByTagName('varray'):
+      if array.hasAttribute('name') & (array.getAttribute('name') == 'forces'):
+        break
+    Forces.append([])
+    for vec in array.getElementsByTagName('v'):
+      Forces[icalc].append([float(Str) for Str in vec.firstChild.data.split()])
+    icalc += 1
+  Forces_Blk.append(Forces)
+
+# At this point we have collected all the information we need, but a bunch of
+# it is (or should) be redundant. Here we do some checks and simplify the
+# information to make it easier to use.
+# NOTE: This part of the code is super messy. Besides the obvious checks to
+#       ensure that the information that we got from the vasprun.xml files
+#       from each block is consistent with each other, we should also be
+#       checking the info versus what we got from the INCAR and POSCAR.
+#       I'll leave that for later and assume that there is consistency for now.
+
+# The POTIM should be the same for each block:
+if not(all([POTIM==POTIM_Blk[0] for POTIM in POTIM_Blk])):
+  sys.stderr.write('Error: Found wrong POTIM in one of the blocks\n')
+  sys.exit()
+POTIM = POTIM_Blk[0]
+
+# The At_AN should be the same for each block:
+if not(all([At_AN==At_AN_Blk[0] for At_AN in At_AN_Blk])):
+  sys.stderr.write('Error: Found wrong atom number in one of the blocks\n')
+  sys.exit()
+At_AN = At_AN_Blk[0]
+
+# The At_Sym should be the same for each block:
+if not(all([At_Sym==At_Sym_Blk[0] for At_Sym in At_Sym_Blk])):
+  sys.stderr.write('Error: Found wrong atom symbol in one of the blocks\n')
+  sys.exit()
+At_Sym = At_Sym_Blk[0]
+
+# The At_Typ should be the same for each block:
+if not(all([At_Typ==At_Typ_Blk[0] for At_Typ in At_Typ_Blk])):
+  sys.stderr.write('Error: Found wrong atom type in one of the blocks\n')
+  sys.exit()
+At_Typ = At_Typ_Blk[0]
+
+# The Typ_nAt should be the same for each block:
+if not(all([Typ_nAt==Typ_nAt_Blk[0] for Typ_nAt in Typ_nAt_Blk])):
+  sys.stderr.write('Error: Found wrong atom number ')
+  sys.stderr.write('per type in one of the blocks\n')
+  sys.exit()
+Typ_nAt = Typ_nAt_Blk[0]
+
+# The Typ_Sym should be the same for each block:
+if not(all([Typ_Sym==Typ_Sym_Blk[0] for Typ_Sym in Typ_Sym_Blk])):
+  sys.stderr.write('Error: Found wrong atom symbol ')
+  sys.stderr.write('in type in one of the blocks\n')
+  sys.exit()
+Typ_Sym = Typ_Sym_Blk[0]
+
+# The Typ_Mass should be the same for each block:
+if not(all([Typ_Mass==Typ_Mass_Blk[0] for Typ_Mass in Typ_Mass_Blk])):
+  sys.stderr.write('Error: Found wrong atom mass ')
+  sys.stderr.write('in type in one of the blocks\n')
+  sys.exit()
+Typ_Mass = Typ_Mass_Blk[0]
+
+# The Typ_nValEl should be the same for each block:
+if not(all([Typ_nValEl==Typ_nValEl_Blk[0] for Typ_nValEl in Typ_nValEl_Blk])):
+  sys.stderr.write('Error: Found wrong atom mass ')
+  sys.stderr.write('in type in one of the blocks\n')
+  sys.exit()
+Typ_nValEl = Typ_nValEl_Blk[0]
+
+# The Cell_Vec should be the same for each block:
+if not(all([Cell_Vec==Cell_Vec_Blk[0] for Cell_Vec in Cell_Vec_Blk])):
+  sys.stderr.write('Error: Found wrong cell vectors in one of the blocks\n')
+  sys.exit()
+Cell_Vec = Cell_Vec_Blk[0]
+
+# The At_Red should be the same for each block:
+if not(all([At_Red==At_Red_Blk[0] for At_Red in At_Red_Blk])):
+  sys.stderr.write('Error: Found wrong reduced ')
+  sys.stderr.write('coordinates in one of the blocks\n')
+  sys.exit()
+At_Red = At_Red_Blk[0]
+
+# The At_XYZ should be the same for each block:
+if not(all([At_XYZ==At_XYZ_Blk[0] for At_XYZ in At_XYZ_Blk])):
+  sys.stderr.write('Error: Found wrong cartesian ')
+  sys.stderr.write('coordinates in one of the blocks\n')
+  sys.exit()
+At_XYZ = At_XYZ_Blk[0]
+
+# nAt_Part and nAt_Use_Blk should be the same, if everything is correct
+if not nAt_Part == nAt_Use_Blk:
+  sys.stderr.write('Error: The number of atoms used in the different blocks\n')
+  sys.stderr.write('       does not agree with the expected partition\n')
+  sys.exit()
+
+# Check that the number of displacement calculations agrees with the number of
+# atoms in use for each block
+nForces = [ len(Forces) for Forces in Forces_Blk ]
+nPerts  = [ 3*nAt_Use*NFREE+1 for nAt_Use in nAt_Use_Blk ]
+if not nForces == nPerts:
+  sys.stderr.write('Error: The number of forces found does not agree\n')
+  sys.stderr.write('       with the number of displacements used\n')
+  sys.exit()
+
+#Check that all the forces have the right length
+for Forces in Forces_Blk:
+  for force in Forces:
+   if len(force) != nAt_Tot:
+     sys.stderr.write('Found wrong number of atoms in force\n')
+     sys.exit()
+
+# Finally, we can calculate the Hessian using finite differences, for each
+# of the blocks, to build a complete hessian.
+
+# NOTE: We assume that the POTIMs in the vasprun.xml are the same as in the
+#       INCAR. Checking for this would be a bit too much.
+
+Hessian = []
+for Forces in Forces_Blk:
+  nPert = len(Forces)
+  for (iFp, iFm) in zip(range(1,nPert,2),range(2,nPert,2)):
+    Buffer = []
+    for iAt in [ x for (x,y) in zip(range(0,nAt_Tot),At_Flags_Tot) if y ]:
+      Force_p = Forces[iFp][iAt]
+      Force_m = Forces[iFm][iAt]
+      print iAt, iFp, Force_p
+      print iAt, iFm, Force_m
+      for der in [ 0.5*(a-b)/POTIM for (a,b) in zip(Force_p,Force_m) ]:
+        Buffer.append(der)
+    Hessian.append(Buffer)
+
+sys.exit()
+
+# Symmetrize the second derivatives like it is done in VASP
+for iHes in range(0,nAt_Use_Tot*3):
+  for jHes in range(iHes+1,nAt_Use_Tot*3):
+    Hessian[iHes][jHes] = 0.5*(Hessian[iHes][jHes]+Hessian[jHes][iHes])
+    Hessian[jHes][iHes] = Hessian[iHes][jHes]
+
+# Convert the hessian into the blocked format we use in the output
+# NOTE: This is very ugly, but will have to do for now until I learn more
+Dyn_Mat = [[[] for i in range(0,nAt_Use_Tot)] for i in range(0,nAt_Use_Tot)]
+iAt_Use = 0
+for iAt in [ x for (x,y) in zip(range(0,nAt_Tot),At_Flags_Tot) if y ]:
+  jAt_Use = 0
+  for jAt in [ x for (x,y) in zip(range(0,nAt_Tot),At_Flags_Tot) if y ]:
+    Block = []
+    for iCoor in range(0,3):
+      Row = Hessian[3*iAt_Use+iCoor][3*jAt_Use:3*jAt_Use+3]
+#     Fac = -sqrt(Typ_Mass[At_Typ[iAt]]*Typ_Mass[At_Typ[jAt]])*0.0102908487617
+      Fac = -0.0102908487617
+      Block.append([Fac*fc for fc in Row])
+    Dyn_Mat[iAt_Use][jAt_Use] = Block
+    jAt_Use += 1
+  iAt_Use += 1
+
+# Now we have all the data we need, we print it out in the right format
+
+# In the future we will get options as to what format of dym to print. For
+# now we hardwire it here and print accordingly
+Dym_Type = 4
+
+# dym format label
+print '{:4d}'.format(Dym_Type)
+
+# Used number of atoms
+print '{:4d}'.format(nAt_Use_Tot)
+
+# Atomic numbers
+for AN in [ x for (x,y) in zip(At_AN,At_Flags_Tot) if y ]:
+  print '{:4d}'.format(AN)
+
+# Atomic masses
+for At in [ x for (x,y) in zip(At_Typ,At_Flags_Tot) if y ]:
+  print '{:14.7f}'.format(Typ_Mass[At])
+
+if   Dym_Type == 1:
+
+# Cartesian coordinates, in au
+  for At in [ x for (x,y) in zip(At_XYZ,At_Flags_Tot) if y ]:
+    print '{:14.8f}{:14.8f}{:14.8f}'.format(*At)
+
+elif Dym_Type == 4:
+
+# Reduced coordinates
+  for At in [ x for (x,y) in zip(At_Red,At_Flags_Tot) if y ]:
+    print '{:11.8f}{:11.8f}{:11.8f}'.format(*At)
+
+# Debug
+#print Dyn_Mat[0][0][0][0]*Typ_Mass[At_Typ[0]]*0.0102908487617
+#print Dyn_Mat[0][0][0][0]
+#exit()
+
+# Print the dynamical matrix blocks
+for iAt in range(0,nAt_Use_Tot):
+  for jAt in range(0,nAt_Use_Tot):
+    print ' {:4d} {:4d}'.format(iAt+1,jAt+1)
+    for Row in Dyn_Mat[iAt][jAt]:
+      print ' {:13.6e} {:13.6e} {:13.6e}'.format(*Row)
+
+# Print the cell vectors if this dym file type includes them
+if   Dym_Type == 4:
+
+# Print a separator line
+  print ''
+
+  for Vec in Cell_Vec:
+    print '{:14.8f}{:14.8f}{:14.8f}'.format(*[ang2au*x for x in Vec])
+

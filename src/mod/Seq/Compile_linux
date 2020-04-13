@@ -1,0 +1,16 @@
+#!/bin/bash 
+if [ "X$1" == "X" ]
+then
+	F90=ifort
+        FLAGS=-O3
+else
+	F90=$*
+fi
+mods="atomic_tot.f90 eels_tot.f90 opconsat_tot.f90 compton_tot.f90 ff2x_tot.f90 fms_tot.f90 genfmt_tot.f90 ldos_tot.f90 \
+mkgtr_tot.f90 path_tot.f90 pot_tot.f90 rdinp_tot.f90 screen_tot.f90 sfconv_tot.f90 xsph_tot.f90 dmdw_tot.f90 dym2feffinp_tot.f90"
+
+for mod in $mods
+do
+        echo $F90 $FLAGS $mod -o ../unix/${mod%%_tot.f90}
+	$F90 $FLAGS $mod -o ../unix/${mod%%_tot.f90}
+done

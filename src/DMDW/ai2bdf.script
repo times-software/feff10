@@ -1,0 +1,259 @@
+#!/bin/sh
+
+# Input files
+export ai_out=$1
+export ifc_out=$2
+
+# Verify that all the files are present
+if ! [ -e $ai_out ];
+  then
+    echo "File missing: " $ai_out
+fi
+if ! [ -e $ai_ifc ];
+  then
+    echo "File missing: " $ai_ifc
+fi
+
+gawk '
+$1=="natom"{
+  natom = $2;
+# Debug
+# printf " natom = %4d\n", natom;
+}
+$1=="ntypat"{
+  ntypat = $2;
+# Debug
+# printf " ntypat = %4d\n", ntypat;
+}
+$1=="typat"{
+  ntypat = NF - 1;
+  for(i=1;i<=ntypat;i++)
+    typat[i] = $(i+1);
+}
+$1=="znucl"{
+  nznucl = NF - 1;
+  for(i=1;i<=nznucl;i++)
+    znucl[i] = $(i+1);
+}
+/amu/{
+  namu = NF - 1;
+  for(i=1;i<=namu;i++)
+    amu[i] = $(i+1);
+}
+$1=="acell"{
+  acell = $2;
+}
+END{
+  printf "%4d\n", natom;
+  for(i=1;i<=natom;i++)
+    printf "%4d", znucl[typat[i]];
+  printf "\n";
+  for(i=1;i<=natom;i++)
+    printf "%16.8e", amu[typat[i]];
+  printf "\n";
+  printf " %17.10e\n", acell;
+}
+' $ai_out
+
+gawk '
+#  Reminder of n/m
+function mod(n,m){
+  return n - m*int(n/m);
+}
+# Minimum of x and y
+function min(x,y){
+  if ( x < y )
+    return x
+  else
+    return y
+  endif
+}
+# Distance between points v1 and v2
+function dist(v1,v2){
+  return sqrt( (v1[1]-v2[1])^2 + (v1[2]-v2[2])^2 + (v1[3]-v2[3])^2 );
+}
+# Print out a symmetric array in column form
+function Prn_SMat(Size,A){
+  nCol = 5;
+  nl = int(Size/nCol);
+  nr = mod(Size,nCol);
+
+  for(k=1;k<=nl;k++)
+    {
+     printf "     ";
+     for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=(k-1)*nCol+1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=(k-1)*nCol+1;j<=min(k*nCol,i);j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+    }
+
+  if (nr != 0) then
+    {
+     printf "     ";
+     for(j=nl*nCol+1;j<=Size;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=nl*nCol+1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=nl*nCol+1;j<=min(Size,i);j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+    }
+}
+# Print out an arbitrary array in column form
+function Prn_Mat(Size,A){
+  nCol = 5;
+  nl = int(Size/nCol);
+  nr = mod(Size,nCol);
+
+  for(k=1;k<=nl;k++)
+    {
+     printf "     ";
+     for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=(k-1)*nCol+1;j<=k*nCol;j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+     printf " \n";
+    }
+
+  if (nr != 0) then
+    {
+     printf "     ";
+     for(j=nl*nCol+1;j<=Size;j++)
+       printf "%7d       ", j;
+     printf " \n";
+     for(i=1;i<=Size;i++)
+       {
+        printf "%3d", i;
+        for(j=nl*nCol+1;j<=Size;j++)
+          printf " %13.6e", A[i,j];
+        printf " \n";
+       }
+     printf " \n";
+    }
+}
+BEGIN{
+# Define conversion between AU and Ang
+# au2ang = 0.52917706;
+# Define conversion from atomi units of force to N/m
+# auf2npm = 1556.89279161;
+# Define a tiny distance
+  D_Tiny = 1.0e-5;
+# Define the force scaling factor
+# FSca = (0.9806)^2;
+  FSca = 1.0;
+}
+# Find the number of interactions per generic atom
+/ifcout/{
+  nInt = $2;
+# Debug
+# printf "nInt %3d\n", nInt;
+}
+# Get the number of generic atoms
+/natifc/{
+  nGenAt = $2;
+# Debug
+# printf "nGenAt %3d\n", nGenAt;
+}
+# Get the current generic atom and its coordinates
+/generic atom number/{
+  iGenAt = $4;
+  getline;
+  for(p=1;p<=3;p++)
+    XYZ_Gen[iGenAt,p] = $(p+3);
+# Debug
+# printf "Reading generic atom %3d:\n", iGenAt;
+# printf "XYZ: ";
+# for(p=1;p<=3;p++)
+#   printf " %15.8e", XYZ_Gen[iGenAt,p];
+# printf "\n";
+}
+# Get all the information for an interaction with the current generic atom
+/interaction with atom/{
+# Get the interaction number
+  iInt = $1;
+# Get the type of the second atom in the interaction
+  Type_Int[iGenAt,iInt] = $5;
+# Get the coordinates of the second atom in the interaction relative to the
+# generic atom
+  getline;
+  for(p=1;p<=3;p++)
+    XYZ_Int[iGenAt,iInt,p] = $(p+2) - XYZ_Gen[iGenAt,p];
+# Get the distance for the interaction
+  getline;
+  D_Int[iGenAt,iInt] = $3;
+# Get the dynamical matrix associated with the interaction
+  getline;
+  for(p=1;p<=3;p++)
+    {
+     for(q=1;q<=3;q++)
+       DM[iGenAt,iInt,p,q] = $q;
+     getline;
+    }
+# Debug
+# printf "Reading interaction %3d:\n", iInt;
+# printf "XYZ: ";
+# for(p=1;p<=3;p++)
+#   printf " %15.8e", XYZ_Int[iGenAt,iInt,p];
+# printf "\n";
+# printf "Distance: %15.8e\n", D_Int[iGenAt,iInt];
+# for(p=1;p<=3;p++)
+#   for(q=1;q<=3;q++)
+#     DM_Block[p,q] = DM[iGenAt,iInt,p,q];
+# Prn_Mat(3,DM_Block);
+}
+# Process the information
+END{
+
+# Print out the number of interactions per generic atom
+  printf "%4d\n", nInt;
+
+# Print out the 3x3 components for each generic atom and interaction
+  for(iGenAt=1;iGenAt<=nGenAt;iGenAt++)
+    {
+
+     for(iInt=1;iInt<=nInt;iInt++)
+       {
+
+# Print out the indices and the distance between the atoms
+        printf " %3d %3d %3d %16.10f", \
+                iGenAt, iInt, Type_Int[iGenAt,iInt], D_Int[iGenAt,iInt];
+#       printf " %3d %3d %16.10f", iGenAt, iInt, au2ang*D_Int[iGenAt,iInt];
+
+# Print the block vector
+        if ( D_Int[iGenAt,iInt] > D_Tiny )
+          {
+           for(p=1;p<=3;p++)
+             printf " %16.10f", XYZ_Int[iGenAt,iInt,p]/D_Int[iGenAt,iInt];
+           printf "\n" 
+          }
+        else
+          {
+           for(p=1;p<=3;p++)
+             printf " %16.10f", 0.0;
+           printf "\n" 
+          }
+
+# Load the block and print it
+        for(p=1;p<=3;p++)
+          for(q=1;q<=3;q++)
+            DM_Block[p,q] = FSca*DM[iGenAt,iInt,p,q];
+        Prn_Mat(3,DM_Block);
+       }
+    }
+}
+' $ifc_out

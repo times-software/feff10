@@ -1,0 +1,208 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% feffdoc.sty: formatting instructions for the feff document
+%%% version 0.2
+%%%
+%%% usage in a latex document:  put "\usepackage{feffdoc}" near the
+%%%                             beginning of the preamble (i.e. before
+%%%                             the \begin{document} line).
+%%%
+%%% feffdoc.sty is the work of Bruce Ravel.  Created 20 Feb, 1999.
+%%% It is an extension of the report document class.
+%%%
+%%%   This document establishes various conventions for use in the
+%%%   feff document.  These are:
+%%%
+%%%     1. Use {\feffcur} when you want to specify the current version
+%%%        of feff.  For example if the document is currently for
+%%%        version 17 of feff, \feffcur expands to FEFF17.  Using
+%%%        \feffcur religiously will make it very easy to update the
+%%%        document when version 17.1 rolls out the door.
+%%%
+%%%     2. Use the Card environment (i.e. \begin{Card} ... \end{Card})
+%%%        for describing feff keywords in Chapter 2 of the document.
+%%%        This makes it easy to maintain a consistent style.
+%%%
+%%%     3. To get a page break that starts the next page on an odd
+%%%        numbered page when using twosided output, use \newchapter
+%%%        Beginning a chapter with \chapter{} does this
+%%%        automatically.
+%%%
+%%%     4. Use the command {\tightlist} at the beginning of every
+%%%        itemize, enumerate, or other list-type environment where
+%%%        you would like to see a tight spacing between entries in
+%%%        the list.
+%%%
+%%%     5. Use the following typographic conventions for special kinds
+%%%        of text:
+%%%           \file{text}       file names
+%%%           \command{text}    stuff written at a command line
+%%%           \program{text}    names of programs
+%%%           UPPERCASE TEXT    cards in feff.inp
+%%%           \texttt{text}     contents of files
+%%%
+%%%     6. Use the command \module when discussing a feff module.
+%%%        Use lowercase letters to differentiate modules such as
+%%%        fms from similarly-named cards.
+%%%
+%%%
+%%% Packages used by feffdoc.sty:
+%%%   amsmath, amssymb    beautiful math from AMS
+%%%   ifthen, calc        logical and arithmetic operations
+%%%   fancyheadings       makes beautiful page headings
+%%%   html                from latex2html
+%%%   hyperref            hypertext in the dvi and pdf output
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% $Id: feffdoc.sty,v 1.6 2012/06/12 19:22:28 jorissen Exp $
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Version history:
+%%%   0.1   Initial version
+
+
+%%% load packages
+\usepackage{amsmath, amssymb}   % AMS mathematics
+\usepackage{ifthen, calc}       % logic and arithmatic calculations
+\usepackage{array}              % extensions to tabular environments
+
+%%% These define the version number and revision date of this
+%%% document.  These should be the only lines that you must change
+%%% when the version number of feff changes.
+\newcommand{\program}[1]{\textsc{#1}}
+\newcommand{\feff}{\program{feff}}
+\newcommand{\vnum}{9.6}
+\newcommand{\feffcur}{\feff\vnum}
+\newcommand{\version}{User's Guide, {\feff} version 9.6.4}
+\newcommand{\updated}{updated February 2, 2013}
+
+
+%%% set up the page dimensions
+\setlength{\textwidth}{158mm}
+\setlength{\oddsidemargin}{21pt}
+\setlength{\evensidemargin}{21pt}
+\setlength{\voffset}{0.0in}
+\setlength{\topmargin}{0.0pt}
+\setlength{\headheight}{14pt}
+\setlength{\headsep}{\headheight}
+\setlength{\textheight}{44\baselineskip}
+\setlength{\parskip}{0.75ex}
+
+%%%%%%%%%%%%%%% Environments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Card environment for describing a feff keyword
+%%%
+%%% usage:
+%%% \begin{Card}{NAME_OF_CARD}{argument list}{type}{label}
+%%%    Text of description.  You may embed other environments.  For
+%%%    example, you may want to use the verbatim environment for an
+%%%    example use of the card.  The label is both the hypertext label
+%%%    and the \label{}.  The latter is useful in conjunction with the
+%%%    \pageref{} command, it is included for completeness.  You can
+%%%    point to a card by \htmlref{CARD}{label} (which gets translated
+%%%    appropriately for pdf).
+%%% \end{Card}
+\newenvironment{Card}[4]%
+  {\vspace{3ex}%
+    \hypertarget{card:#4}{}%
+    %%\noindent\rule{\linewidth}{0.5pt}\\
+    \noindent$\blacklozenge$\,\,\textbf{#1}%
+    \quad\texttt{#2}\hfill\textsl{#3}%
+    \label{card:#4}\\}
+  {}
+
+%%% List of references
+\newlength{\ThisWidth}
+\newcommand{\reflabel}[1]{%
+  \settowidth{\ThisWidth}{#1}
+  \ifthenelse{\lengthtest{\ThisWidth > \labelwidth}}
+  {\parbox[b]{\labelwidth}%
+    {\makebox[0pt][l]{#1}\\}}%
+  {#1}%
+  \hfil\relax}
+\newenvironment{Reflist}%
+{\begin{list}{}{%
+    \renewcommand{\makelabel}{\reflabel}%
+    \setlength{\labelwidth}{35pt}%
+    \setlength{\leftmargin}{\labelwidth+\labelsep}%
+    }}%
+ {\end{list}}
+
+
+%%%%%%%%%%%%%%% Commands and definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% miscellaneous definitions
+                                % typographic conventions
+\newcommand{\file}[1]{`\texttt{#1}'}
+\newcommand{\module}[1]{\textrm{\bf{#1}}} 
+\newcommand{\command}[1]{\texttt{\textsl{#1}}}
+                                % program names
+\newcommand{\atoms}{\program{atoms}}
+\newcommand{\feffit}{\program{feffit}}
+
+%%% I don't like the fraktur R and I for the real and imaginary
+%%% symbols.  I much prefer Re(foo) and Im(foo).  \Re and \Im behave
+%%% like \exp and \sin.
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+
+\renewcommand\abstractname{\LARGE Abstract}
+\newcommand{\newchapter}{\newpage{\cleardoublepage}\thispagestyle{fancy}}
+
+\renewcommand\chapter{\if@openright\cleardoublepage\else\clearpage\fi
+  \newchapter
+  \global\@topnum\z@
+  \@afterindentfalse
+  \secdef\@chapter\@schapter}
+
+\newcommand{\tightlist}{\latex{\setlength{\itemsep}{-0.5ex}}}
+
+
+%%% titlepage
+\newcommand{\MakeTitle}{%
+  \thispagestyle{empty}
+  \vspace*{\stretch{1}}
+  \noindent\rule{\linewidth}{1mm}
+  \begin{flushleft}
+    {\huge FEFF\vnum}
+  \end{flushleft}
+  \begin{flushright}
+    {\Large The FEFF Project}\\[1ex]
+    {\Large Department of Physics}\\[1ex]
+    {\Large University of Washington}
+  \end{flushright}
+  \rule{\linewidth}{1mm}
+  \vspace*{\stretch{2}}
+  \begin{flushright}
+    {\large \version\\[1ex] \updated}
+  \end{flushright}
+  }
+
+
+%%%%%%%%%%%%%%% Other packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% page headings: put the page mark on the inner side and the page
+%%%                number on the outer side.  Keep the footers empty.
+\usepackage{fancyheadings}
+\pagestyle{fancy}
+\setlength{\headrulewidth}{1pt}
+\lhead[\fancyplain{}{\bfseries\thepage}]
+      {\fancyplain{}{\bfseries\rightmark}}
+\chead[\fancyplain{}{}]{\fancyplain{}{}}
+\rhead[\fancyplain{}{\bfseries\leftmark}]
+      {\fancyplain{}{\bfseries\thepage}}
+\lfoot[\fancyplain{}{}]{\fancyplain{}{}}
+\cfoot[\fancyplain{}{}]{\fancyplain{}{}}
+\rfoot[\fancyplain{}{}]{\fancyplain{}{}}
+
+
+
+%%% For translation to html via latex2html
+% \usepackage{html}
+% \usepackage{url}
+% \def\addbibtoc{
+% \addcontentsline{toc}{section}{\numberline{\mbox{}}\relax\bibname}
+% }%end-preamble
+
+%%% Local Variables:
+%%% eval: (flyspell-mode -1)
+%%% End:

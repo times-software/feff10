@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{43839AA5-F3A1-4A86-B59A-5F1033747106}">
+	<Platforms>
+		<Platform Name="Win32"/></Platforms>
+	<Configurations>
+		<Configuration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
+		<Configuration Name="Release|Win32" OutputDirectory="..\bin">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalYes" SuppressStartupBanner="true" AdditionalLibraryDirectories="../bin" SubSystem="subSystemConsole" AdditionalDependencies="fefflib.lib"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+	<Files>
+		<Filter Name="Header Files" Filter="fi;fd"/>
+		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+		<File RelativePath="..\..\KSPACE\bastrans.f90"/>
+		<File RelativePath="..\..\KSPACE\calccgc.f90"/>
+		<File RelativePath="..\..\KSPACE\cgcrac.f90"/>
+		<File RelativePath="..\..\KSPACE\change_car.f90"/>
+		<File RelativePath="..\..\KSPACE\change_eta.f90"/>
+		<File RelativePath="..\..\COMMON\chopen.f90"/>
+		<File RelativePath="..\..\KSPACE\crystalstructure.f90"/>
+		<File RelativePath="..\..\MATH\cwig3j.f90"/>
+		<File RelativePath="..\..\COMMON\fixdsp.f90"/>
+		<File RelativePath="..\..\COMMON\fixdsx.f90"/>
+		<File RelativePath="..\..\COMMON\fixstr.f90"/>
+		<File RelativePath="..\..\COMMON\fixvar.f90"/>
+		<File RelativePath="..\..\COMMON\iniptz.f90"/>
+		<File RelativePath="..\..\MATH\invertmatrix.f90"/>
+		<File RelativePath="..\..\COMMON\isedge.f90"/>
+		<File RelativePath="..\..\BAND\kkrband.f90"/>
+		<File RelativePath="..\..\FMS\kkrintegral.f90"/>
+		<File RelativePath="..\..\KSPACE\kmesh.f90"/>
+		<File RelativePath="..\..\FMS\kprep.f90"/>
+		<File RelativePath="..\..\COMMON\m_afctr.f90"/>
+		<File RelativePath="..\..\KSPACE\m_boundaries.f90"/>
+		<File RelativePath="..\..\COMMON\m_config.f90"/>
+		<File RelativePath="..\..\COMMON\m_constants.f90"/>
+		<File RelativePath="..\..\KSPACE\m_controlkgen.f90"/>
+		<File RelativePath="..\..\KSPACE\m_controls.f90"/>
+		<File RelativePath="..\..\COMMON\m_dimsmod.f90"/>
+		<File RelativePath="..\..\KSPACE\m_energygrid.f90"/>
+		<File RelativePath="..\..\ERRORMODS\m_errorfile.f90"/>
+		<File RelativePath="..\..\ERRORMODS\m_errormod.f90"/>
+		<File RelativePath="..\..\BAND\m_fitting.f90"/>
+		<File RelativePath="..\..\COMMON\m_ifuns.f90"/>
+		<File RelativePath="..\..\COMMON\m_inpmodules.f90"/>
+		<File RelativePath="..\..\IOMODS\m_iofiles.f90"/>
+		<File RelativePath="..\..\IOMODS\m_iomod.f90"/>
+		<File RelativePath="..\..\KSPACE\m_kgenwork.f90"/>
+		<File RelativePath="..\..\COMMON\m_kinds.f90"/>
+		<File RelativePath="..\..\KSPACE\m_kklist.f90"/>
+		<File RelativePath="..\..\COMMON\m_lnlm.f90"/>
+		<File RelativePath="..\..\COMMON\m_nrixs.f90"/>
+		<File RelativePath="..\..\IOMODS\m_padio.f90"/>
+		<File RelativePath="..\..\PAR\m_par.f90"/>
+		<File RelativePath="..\..\COMMON\m_rotx.f90"/>
+		<File RelativePath="..\..\COMMON\m_stkets.f90"/>
+		<File RelativePath="..\..\KSPACE\m_strfacs.f90"/>
+		<File RelativePath="..\..\KSPACE\m_struct.f90"/>
+		<File RelativePath="..\..\COMMON\m_t3j.f90"/>
+		<File RelativePath="..\..\KSPACE\m_tetrahedra.f90"/>
+		<File RelativePath="..\..\KSPACE\m_trafo.f90"/>
+		<File RelativePath="..\..\KSPACE\m_wigner3j.f90"/>
+		<File RelativePath="..\..\KSPACE\m_workstrfacs.f90"/>
+		<File RelativePath="..\..\KSPACE\m_workstrfacs2.f90"/>
+		<File RelativePath="..\..\KSPACE\m_workstrfacssimple.f90"/>
+		<File RelativePath="..\..\COMMON\m_xstruc.f90"/>
+		<File RelativePath="..\..\KSPACE\makerotations.f90"/>
+		<File RelativePath="..\..\COMMON\nxtunt.f90"/>
+		<File RelativePath="..\..\COMMON\padlib.f90"/>
+		<File RelativePath="..\..\PAR\par.f90"/>
+		<File RelativePath="..\..\COMMON\pertab.f90"/>
+		<File RelativePath="..\..\KSPACE\pointgroup.f90"/>
+		<File RelativePath="..\..\MATH\polint.f90"/>
+		<File RelativePath="..\..\COMMON\rdhead.f90"/>
+		<File RelativePath="..\..\RDINP\rdline.f90"/>
+		<File RelativePath="..\..\COMMON\rdxsph.f90"/>
+		<File RelativePath="..\..\KSPACE\readcrystaldata.f90"/>
+		<File RelativePath="..\..\FMS\reafms.f90"/>
+		<File RelativePath="..\..\COMMON\setkap.f90"/>
+		<File RelativePath="..\..\KSPACE\spacegroup.f90"/>
+		<File RelativePath="..\..\COMMON\stdnm.f90"/>
+		<File RelativePath="..\..\COMMON\str.f90"/>
+		<File RelativePath="..\..\COMMON\str2dp.f90"/>
+		<File RelativePath="..\..\KSPACE\straa.f90"/>
+		<File RelativePath="..\..\KSPACE\strbbdd.f90"/>
+		<File RelativePath="..\..\KSPACE\strbbdd2.f90"/>
+		<File RelativePath="..\..\KSPACE\strcc.f90"/>
+		<File RelativePath="..\..\KSPACE\strconfra.f90"/>
+		<File RelativePath="..\..\KSPACE\strfunqjl.f90"/>
+		<File RelativePath="..\..\KSPACE\strgaunt.f90"/>
+		<File RelativePath="..\..\KSPACE\strharpol.f90"/>
+		<File RelativePath="..\..\KSPACE\strinit.f90"/>
+		<File RelativePath="..\..\KSPACE\strset.f90"/>
+		<File RelativePath="..\..\KSPACE\strsmat.f90"/>
+		<File RelativePath="..\..\KSPACE\structurefactor.f90"/>
+		<File RelativePath="..\..\KSPACE\strvecgen.f90"/>
+		<File RelativePath="..\..\KSPACE\subtract_a.f90"/>
+		<File RelativePath="..\..\KSPACE\symmetrycheck.f90"/>
+		<File RelativePath="..\..\MATH\terp.f90"/>
+		<File RelativePath="..\..\COMMON\wlog.f90"/>
+		<File RelativePath="..\..\COMMON\writematrix.f90"/></Filter>
+		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\..\BAND\band.f90"/>
+		<File RelativePath="..\..\BAND\bandblaslapack.f90"/>
+		<File RelativePath="..\..\BAND\bandtot.f90"/>
+		<File RelativePath="..\..\BAND\fmsband.f90"/>
+		<File RelativePath="..\..\BAND\ibravais.f90"/>
+		<File RelativePath="..\..\BAND\kpath.f90"/></Filter></Files>
+	<Globals/></VisualStudioProject>

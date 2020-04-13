@@ -1,0 +1,30 @@
+#!/bin/csh
+
+# Set up executable
+setenv EXE dmdw
+if ( `uname -o` == "Cygwin" ) then
+  setenv EXE dmdw.exe
+endif
+
+if ( "$#" > 0 ) then
+  setenv INST_DIR $1
+else
+  setenv INST_DIR ../../../bin/Seq
+endif
+
+setenv FILES_ALL `ls *.dmdw.inp`
+setenv FILES_TEST FeCN_6.g03.dmdw.inp
+
+foreach i ( ${FILES_ALL} )
+#foreach i ( ${FILES_TEST} )
+
+  echo "Running example: " $i
+  ln -s $i dmdw.inp
+  ${INST_DIR}/${EXE} > $i:r.log
+  mv dmdw.out $i:r.out 
+  rm dmdw.inp
+
+  diff $i:r.log Reference_Results/$i:r.log
+  diff $i:r.out Reference_Results/$i:r.out
+
+end

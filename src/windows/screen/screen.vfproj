@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{DE1CEDC6-B34A-43D8-BE5E-AD49B4883622}">
+	<Platforms>
+		<Platform Name="Win32"/></Platforms>
+	<Configurations>
+		<Configuration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" WarnInterfaces="true" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug" Interfaces="true"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
+		<Configuration Name="Release|Win32" OutputDirectory="..\bin">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" EnableEnhancedInstructionSet="codeArchIA32" UseMkl="mklSequential"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="..\bin" SubSystem="subSystemConsole" AdditionalDependencies="fefflib.lib"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+	<Files>
+		<Filter Name="Header Files" Filter="fi;fd"/>
+		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+		<File RelativePath="..\..\FMS\fmspack.f90"/>
+		<File RelativePath="..\..\FMS\ggbi.f90"/>
+		<File RelativePath="..\..\FMS\gggm.f90"/>
+		<File RelativePath="..\..\FMS\gglu.f90"/>
+		<File RelativePath="..\..\FMS\gglufullpot.f90"/>
+		<File RelativePath="..\..\FMS\ggrm.f90"/>
+		<File RelativePath="..\..\FMS\ggtf.f90"/>
+		<File RelativePath="..\..\COMMON\m_afctr.f90"/>
+		<File RelativePath="..\..\COMMON\m_config.f90"/>
+		<File RelativePath="..\..\COMMON\m_constants.f90"/>
+		<File RelativePath="..\..\KSPACE\m_controls.f90"/>
+		<File RelativePath="..\..\COMMON\m_dimsmod.f90"/>
+		<File RelativePath="..\..\ERRORMODS\m_errorfile.f90"/>
+		<File RelativePath="..\..\ERRORMODS\m_errormod.f90"/>
+		<File RelativePath="..\..\FMS\m_fms.f90"/>
+		<File RelativePath="..\..\COMMON\m_ifuns.f90"/>
+		<File RelativePath="..\..\COMMON\m_inpmodules.f90"/>
+		<File RelativePath="..\..\IOMODS\m_iofiles.f90"/>
+		<File RelativePath="..\..\IOMODS\m_iomod.f90"/>
+		<File RelativePath="..\..\KSPACE\m_kklist.f90"/>
+		<File RelativePath="..\..\COMMON\m_lnlm.f90"/>
+		<File RelativePath="..\..\COMMON\m_nrixs.f90"/>
+		<File RelativePath="..\..\IOMODS\m_padio.f90"/>
+		<File RelativePath="..\..\PAR\m_par.f90"/>
+		<File RelativePath="..\..\COMMON\m_rotx.f90"/>
+		<File RelativePath="..\..\COMMON\m_stkets.f90"/>
+		<File RelativePath="..\..\KSPACE\m_strfacs.f90"/>
+		<File RelativePath="..\..\KSPACE\m_struct.f90"/>
+		<File RelativePath="..\..\COMMON\m_t3j.f90"/>
+		<File RelativePath="..\..\COMMON\m_xstruc.f90"/>
+		<File RelativePath="..\..\RDINP\rdline.f90"/>
+		<File RelativePath="..\..\FMS\reafms.f90"/>
+		<File RelativePath="..\..\FMS\xstaff.f90"/>
+		<File RelativePath="..\..\FMS\yprep.f90"/></Filter>
+		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\..\CRPA\chi_crpa.f90"/>
+		<File RelativePath="..\..\SCREEN\fegrid.f90"/>
+		<File RelativePath="..\..\SCREEN\frgrid.f90"/>
+		<File RelativePath="..\..\SCREEN\fxc.f90"/>
+		<File RelativePath="..\..\SCREEN\getph.f90"/>
+		<File RelativePath="..\..\SCREEN\prep.f90"/>
+		<File RelativePath="..\..\SCREEN\rdgeom.f90"/>
+		<File RelativePath="..\..\SCREEN\screen.f90"/>
+		<File RelativePath="..\..\SCREEN\screensub.f90"/></Filter></Files>
+	<Globals/></VisualStudioProject>
