@@ -35,7 +35,8 @@ CONTAINS
     REAL(8), PARAMETER :: eps4 = 1.0d-4
     LOGICAL, PARAMETER :: print_out = .TRUE.
     EXTERNAL :: lorenz, astep
-    COMPLEX*16 :: lorenz, astep
+    COMPLEX*16 :: lorenz
+    REAL(8) :: astep
 
     INTEGER :: ie, ic
     REAL(8) :: dele, w1, w2 ,w3
@@ -942,6 +943,7 @@ CONTAINS
     COMPLEX*16 :: ec(nex), fc(nex), xmu(nex), pole
     REAL(8), PARAMETER :: eps4 = 1.0d-4
     EXTERNAL :: lorenz, astep
+    REAL(8) :: astep
     COMPLEX*16 :: lorenz
 
     INTEGER :: ie, ic
