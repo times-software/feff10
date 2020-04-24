@@ -100,7 +100,7 @@
 ./DMDW/dym2feffinp.o: ./COMMON/m_kinds.o ./DMDW/m_const_and_conv.o ./DMDW/m_cmdline.o ./DMDW/m_dmdw.o Compiler.mk
 ./DMDW/m_cmdline.o: Compiler.mk
 ./DMDW/m_const_and_conv.o: ./COMMON/m_kinds.o Compiler.mk
-./DMDW/m_dmdw.o: ./COMMON/m_kinds.o ./DMDW/m_const_and_conv.o ./INPGEN/m_ptable.o ./DMDW/m_math.o Compiler.mk
+./DMDW/m_dmdw.o: ./COMMON/m_kinds.o ./DMDW/m_const_and_conv.o ./INPGEN/m_ptable.o ./DMDW/m_math.o ./INPGEN/m_strings.o Compiler.mk
 ./DMDW/m_math.o: ./COMMON/m_kinds.o Compiler.mk
 ./EELS/angularmesh.o: ./COMMON/m_inpmodules.o ./EELS/m_qvectors.o ./EELS/m_work.o ./COMMON/m_constants.o Compiler.mk
 ./EELS/calculateweights.o: ./EELS/m_work.o ./EELS/m_qvectors.o ./COMMON/m_inpmodules.o ./COMMON/m_constants.o Compiler.mk
@@ -154,9 +154,10 @@
 ./FF2X/ff2chijas.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./FF2X/ff2gen.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./DMDW/m_dmdw.o ./HEADERS/vers.h Compiler.mk
 ./FF2X/ff2x.o: ./PAR/m_par.o ./COMMON/m_inpmodules.o ./COMMON/m_nrixs.o ./ERRORMODS/m_errorfile.o ./COMMON/m_dimsmod.o Compiler.mk
-./FF2X/ff2xmu.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
+./FF2X/ff2xmu.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./FF2X/m_thermal_xscorr.o Compiler.mk
 ./FF2X/ff2xmujas.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
 ./FF2X/fprime.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o Compiler.mk
+./FF2X/m_thermal_xscorr.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
 ./FF2X/rdfbin.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./FF2X/rdfbinl.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./FF2X/reff2x.o: ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./COMMON/m_nrixs.o Compiler.mk
@@ -345,7 +346,7 @@
 ./OPCONSAT/getelement.o: Compiler.mk
 ./OPCONSAT/opconsat.o: ./COMMON/m_inpmodules.o ./COMMON/m_constants.o ./POT/m_atomicpotio.o ./PAR/m_par.o ./ERRORMODS/m_errorfile.o ./COMMON/m_dimsmod.o Compiler.mk
 ./PAR/m_par.o: Compiler.mk
-./PAR/par.o: ./PAR/m_par.o Compiler.mk
+./PAR/parallel.o: ./PAR/m_par.o Compiler.mk
 ./PATH/ccrit.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./PATH/heap.o: Compiler.mk
 ./PATH/ipack.o: Compiler.mk
@@ -485,15 +486,17 @@
 ./XSPH/besjnjas.o: Compiler.mk
 ./XSPH/csommjas.o: Compiler.mk
 ./XSPH/fmssz.o: ./COMMON/m_dimsmod.o ./KSPACE/m_controls.o Compiler.mk
-./XSPH/getedg.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
+./XSPH/getedg.o: ./COMMON/m_constants.o ./XSPH/m_elam.o ./COMMON/m_dimsmod.o Compiler.mk
 ./XSPH/getholeorb0.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
 ./XSPH/getoccnorm.o: Compiler.mk
 ./XSPH/ljneeded0.o: Compiler.mk
+./XSPH/m_elam.o: Compiler.mk
 ./XSPH/mincalc.o: Compiler.mk
 ./XSPH/phase.o: ./IOMODS/m_iomod.o ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./SELF/m_SelfEnergy.o ./COMMON/m_inpmodules.o Compiler.mk
 ./XSPH/phase_h.o: ./IOMODS/m_iomod.o ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./SELF/m_SelfEnergy.o Compiler.mk
 ./XSPH/phmesh.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
 ./XSPH/phmesh2.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o ./COMMON/m_inpmodules.o Compiler.mk
+./XSPH/phmesh2T.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o ./COMMON/m_inpmodules.o Compiler.mk
 ./XSPH/phmeshjas.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
 ./XSPH/qbesselget.o: Compiler.mk
 ./XSPH/radint.o: ./COMMON/m_dimsmod.o Compiler.mk

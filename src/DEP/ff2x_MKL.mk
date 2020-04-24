@@ -1,8 +1,8 @@
 ff2xSRC = \
-./FF2X/ff2x.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
-./COMMON/str.f90 ./COMMON/str2dp.f90 ./COMMON/chopen.f90 \
-./FF2X/reff2x.f90 ./COMMON/rdhead.f90 ./COMMON/setkap.f90 \
-./FF2X/ff2xmujas.f90 ./COMMON/padlib.f90 ./FF2X/rdfbinl.f90 \
+./FF2X/ff2x.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./COMMON/str.f90 ./COMMON/chopen.f90 ./FF2X/reff2x.f90 \
+./COMMON/rdhead.f90 ./COMMON/setkap.f90 ./FF2X/ff2xmujas.f90 \
+./COMMON/padlib.f90 ./FF2X/rdfbinl.f90 ./COMMON/str2dp.f90 \
 ./FF2X/ff2gen.f90 ./DEBYE/sigms.f90 ./MATH/dist.f90 \
 ./COMMON/pertab.f90 ./DEBYE/sigrem.f90 ./COMMON/itoken.f90 \
 ./DEBYE/sigcl.f90 ./DEBYE/sigte3.f90 ./DEBYE/sigm3.f90 \
@@ -18,4 +18,4 @@ ff2x_MODULESRC = \
 ./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 ./COMMON/m_nrixs.f90 \
 ./COMMON/m_kinds.f90 ./DMDW/m_const_and_conv.f90 ./INPGEN/m_strings.f90 \
 ./INPGEN/m_ptable.f90 ./DMDW/m_math.f90 ./DMDW/m_dmdw.f90 \
-./ERRORMODS/m_errorfile.f90 
+./FF2X/m_thermal_xscorr.f90 ./ERRORMODS/m_errorfile.f90 

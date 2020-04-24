@@ -1,7 +1,6 @@
 dmdwSRC = \
-./DMDW/dmdw.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
-./COMMON/str.f90 ./COMMON/str2dp.f90 ./COMMON/rdhead.f90 \
-./COMMON/chopen.f90 
+./DMDW/dmdw.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./COMMON/str.f90 ./COMMON/rdhead.f90 ./COMMON/chopen.f90 
 dmdw_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_kinds.f90 ./DMDW/m_const_and_conv.f90 \
 ./INPGEN/m_strings.f90 ./INPGEN/m_ptable.f90 ./DMDW/m_math.f90 \

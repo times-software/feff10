@@ -83,7 +83,7 @@ CONTAINS
     WRITE(149, *) 'Omega(Hart)  \t  Re CCHI  \t   Im CCHI \t  1-Fermi \t  Re xmu0  \t  Im xmu0'
 
     DO ie =1, ne
-      WRITE(155, '(20E20.10E3)') ie, DBLE(emxs(ie)), DIMAG(emxs(ie))
+      WRITE(155, '(I4,20E20.10E3)') ie, DBLE(emxs(ie)), DIMAG(emxs(ie))
     ENDDO
     CLOSE(155)
 
