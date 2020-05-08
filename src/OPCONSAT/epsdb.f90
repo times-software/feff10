@@ -5,6 +5,7 @@ SUBROUTINE epsdb(iz,n)
   REAL(8) epsData(1000,3,100), SumruleError(100)
   CHARACTER(12) files(100)
   CHARACTER(2),EXTERNAL :: getelement
+  CHARACTER(512) message
   INTEGER i1, i2
 
   files(:) = 'NULL'
@@ -23476,13 +23477,13 @@ SUBROUTINE epsdb(iz,n)
 
   DO i1 = 1, n
      IF(files(iz(i1)).EQ.'NULL') THEN
-        PRINT '(A)', '#################################################################'
-        PRINT '(A)', '#                            WARNING                            #'
-        PRINT '(A)', '#################################################################'
-        PRINT '(A)', '#                                                               #'
-        PRINT '(A)', '#          Data not available for ' // getelement(iz(i1)) // '!                           #'
-        PRINT '(A)', '#                                                               #'
-        PRINT '(A)', '#################################################################'
+        call wlog('#################################################################')
+        CALL wlog('#                            WARNING                            #')
+        CALL wlog('#################################################################')
+        CALL wlog('#                                                               #')
+        CALL wlog('#          Data not available for ' // getelement(iz(i1)) // '!                           #')
+        CALL wlog('#                                                               #')
+        CALL wlog('#################################################################')
      ELSE
         ! Find the number of points in this data set.
         DO i2 = 1, 1000
@@ -23492,7 +23493,8 @@ SUBROUTINE epsdb(iz,n)
           & Double2 = epsData(1:i2-1,2,iz(i1)),  Double3 = epsData(1:i2-1,3,iz(i1)))
         CALL CloseFl(files(iz(i1)))
      END IF
-     PRINT '(A31,A12,A2,F10.5,A1)', 'Relative error in sumrules for ', files(iz(i1)), ': ', SumruleError(iz(i1)), '%'
+     WRITE(message,'(a,f3.1,a)') 'Relative error in sumrules for ' // TRIM(ADJUSTL(files(iz(i1)))) // ': ', SumruleError(iz(i1)), '%'
+     CALL wlog(message)
   END DO
   
   RETURN

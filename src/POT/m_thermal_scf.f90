@@ -469,6 +469,7 @@ CONTAINS
   end function
 
   SUBROUTINE integrate_rhos_lt(nr05,xmu,xntot,xnmues,rhoval,print_flag)
+    use par
     ! Integrate densities over energy including Fermi distribution
     ! An implementation of 'integrate_rhos' using interpolation around
     ! the chemical potential.
@@ -502,6 +503,7 @@ CONTAINS
     INTEGER :: iep, ip, ir
     INTEGER :: ind_m3, ind_p3, ie, iph, il
     LOGICAL :: out_of_bound = .FALSE.
+    CHARACTER(512) message
     INTEGER, PARAMETER :: nxmu = 1000 ! 2000 not working for 6kT
 
 
@@ -519,9 +521,19 @@ CONTAINS
     IF (ind_m3.EQ.0) out_of_bound=.TRUE.
 
     IF (out_of_bound) THEN
-      PRINT*, "ERROR: xmu_m3 less than minimum. ", DBLE(xmu_m3*hart), DBLE(energies(1)*hart)
+      write(message,'(a,2f10.5)') "ERROR: xmu_m3 less than minimum. ", & 
+                    & DBLE(xmu_m3*hart), DBLE(energies(1)*hart)
+      CALL wlog(message)
       ! If xmu below ecv then, we dont do interpolation, we treat
       ! everything below that as zero
+      ! JJK - This should really use the energies of the core-states and 
+      ! Fermi-occupations of fixed energy core-states.
+      ! We could actually change the total density accordingly as well. 
+      ! That is \rho = \rho_val + \rho_core
+      ! \rho_val  = \int_ecv^inf f(mu,E,T)ImG/pi
+      ! \rho_core = \sum_i |\phi_i|^2 f(mu,E_i,T)
+      ! I think the above indicates a serious problem, so I'm going to put a stop here
+      call par_stop
       ne_terp = ne
       ALLOCATE(rhoe_terp(0:lx,0:nphx,ne_terp+np))
       ALLOCATE(rhore_terp(251,0:nphx,ne_terp+np))
@@ -734,7 +746,7 @@ CONTAINS
         interp1d = y(n)
       ELSE
         PRINT*, "ERROR: Out of range !",x(1)*hart,"<=",x0*hart,"<=",x(n)*hart
-        STOP
+        call par_stop
       ENDIF
     endif
     RETURN

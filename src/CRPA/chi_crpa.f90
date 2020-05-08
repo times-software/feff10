@@ -105,6 +105,7 @@ subroutine chi_crpa( nat, nph, iphat, rat,                          &
   complex, allocatable :: gg(:,:,:), gtr(:,:,:,:), xphase(:,:,:)
   logical, allocatable :: lcalc(:)
   logical UseProjection
+  character*300 message
   ! Allocate local variables
   allocate(gtrl(0:lx, 0:lx, nex))
   allocate(gg(nspx*(lx+1)**2,nspx*(lx+1)**2,0:nphx))
@@ -148,8 +149,9 @@ subroutine chi_crpa( nat, nph, iphat, rat,                          &
   call yprep(iph, nat, inclus, nph, iphat, rfms2, rat)
 
   if (inclus .gt. 1) then
-     print *, ' Doing FMS for a cluster of ', inclus,                &
-          &         ' atoms around iph = ', iph
+     write(message,'(a,i4,a,i3)') ' Doing FMS for a cluster of ', &
+          &         inclus, ' atoms around iph = ', iph
+     call wlog(message)
   end if
 
   !===============================================================
@@ -600,7 +602,10 @@ subroutine chi_crpa( nat, nph, iphat, rat,                          &
 
      !       print the current progress to the wscrn
      if ( 100.0*ie/ne .gt. percent) then
-        print '(a,f3.0,a)', '  ', percent, '% of energy integration'
+
+        write(message,'(a,f5.1,a)') '  ', percent, &
+            &     '% of energy integration'
+        call wlog(message)
         percent = percent + 10.0
      end if
      
@@ -611,7 +616,7 @@ subroutine chi_crpa( nat, nph, iphat, rat,                          &
         end do
      END IF
   end do
-  print *, '100.% -- end of energy integration --'
+  call wlog('100.% -- end of energy integration --')
   !=================================================================
   !     end of energy cycle
   !=================================================================
@@ -630,7 +635,8 @@ subroutine chi_crpa( nat, nph, iphat, rat,                          &
   !=================================================================  
   if (lfxc .gt. 0) then
      call ldafxc(ilast, ri, edens, lfxc, fxc)
-     print *, 'Using TDLDA kernel.'
+     write(message,'(a)') 'Using TDLDA kernel.'
+     call wlog(message)
      do i = 1, ilast
         Kmat(i,i) = Kmat(i,i) + 4.0d0*pi * fxc(i)
      end do
@@ -638,7 +644,7 @@ subroutine chi_crpa( nat, nph, iphat, rat,                          &
   !=================================================================
   !     get response function
   !=================================================================
-  print *, 'Prepare response function'
+  call wlog('Prepare response function')
 
   do ir1 = 2, ilast
      do i = 1, ir1-1
@@ -725,9 +731,9 @@ subroutine chi_crpa( nat, nph, iphat, rat,                          &
   if (info .eq. 0) then
      call dgetrs(trans, n, nrhs, Amat, lda, ipiv, wscrn, ldb, info)
 
-     if (info .ne. 0) print *, info
+     if (info < 0) call par_stop(' ')
   else
-     print *, 'The factor U is singular'
+     call wlog('The factor U is singular in dgetrf')
   end if
   !=================================================================
   !     end of matrix inversion

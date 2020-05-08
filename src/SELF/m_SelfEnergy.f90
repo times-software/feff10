@@ -125,9 +125,9 @@ CONTAINS
     CALL CSigZ(En, 0.d0, SEData1%Rs, SigmaF, Z, SEData1%Omega, SEData1%Width, SEData1%g, 0.d0, SEData1%NPoles, .TRUE., UseBP)
 
     ! Now calculate Sigma(E) and Z(E)
-    PRINT '(A)', 'Beginning calculation of the self energy.'
+    CALL wlog('Beginning calculation of the self energy.')
     DO iE = 1, SEData1%NEPts
-       PRINT '(A9,i4,A4,i5)', '   Point ', iE, ' of ', SEData1%NEPts
+       !PRINT '(A9,i4,A4,i5)', '   Point ', iE, ' of ', SEData1%NEPts
        IF(DBLE(SEData1%EGrid(iE)).le.0.d0) THEN
           En = 0.001d0 + (0.d0,1.d0)*SEData1%EGrid(iE)
        ELSE

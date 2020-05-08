@@ -339,7 +339,7 @@
 !              if (nwords.ge.4) read(words(4),30,err=900)  vi0
                 read(words(4),30,err=900)  vi0
                if (nwords .gt. 4) read(words(5),20,err=900)  ixc0
-         if (ixc0.lt.0) ixc0=2  !default
+               !if (ixc0.lt.0) ixc0=2  !default
                mode = 0
             elseif (itok .eq. 6)  then
 !              ION  iph xion(iph)
@@ -1171,9 +1171,9 @@
 !           NUMDENS - set the number densities for creating loss.dat from database.
                read(words(2),20,err=900) iph
                IF(iph.gt.nphxhardlimit) then
-                  PRINT*, "iph > nphxhardlimit in feff.inp"
-                  PRINT*, TRIM(ADJUSTL(line))
-                  STOP
+                  call wlog("iph > nphxhardlimit in feff.inp")
+                  call wlog(TRIM(ADJUSTL(line)))
+                  call par_stop
                END IF
                read(words(3),30) NumDens(iph)
             elseif (itok .eq. 85) then

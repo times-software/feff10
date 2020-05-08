@@ -96,7 +96,7 @@ subroutine ff2xmu (ispec, ipr4, idwopt, critcw, s02, sig2g,       &
     113    format(a)
     read(1, 115) ne, ne1, ne3, nph, npadx
     115    format(5(1x,i7))
-    PRINT*, ne, ne1, ne3, nph, npadx
+    !PRINT*, ne, ne1, ne3, nph, npadx
     call rdpadx(1, npadx, gtrtemp, ne*nip)  !KJ I added *nip, changed gtr to gtrtemp  1-06
   endif
   close (unit=1)
@@ -371,7 +371,8 @@ subroutine ff2xmu (ispec, ipr4, idwopt, critcw, s02, sig2g,       &
                   !        do correction using brouder method
                   vi0 = 0
 
-                  PRINT*, "electronic_temperature = ", electronic_temperature, " (eV)"
+                  write(slog,'(a,f10.5,a)') "electronic_temperature = ", electronic_temperature, " (eV)"
+                  call wlog(slog)
                   IF (electronic_temperature.GT.0) THEN
                     call thermal_xscorr(ispec,emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi, electronic_temperature) !KJ changed xsec to kxsec  1-06
                   ELSE

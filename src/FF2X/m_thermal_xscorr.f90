@@ -520,6 +520,7 @@ CONTAINS
     REAL(8), PARAMETER :: eps4=1e-4
     REAL(8) :: window_size_terp
     LOGICAL :: BUG=.FALSE., TERP=.TRUE.
+    CHARACTER*512 message
 
     window_size_terp = 10
 
@@ -544,9 +545,10 @@ CONTAINS
       ! Need to be careful regarding the window_size_terp
       ! efermi_m3 must be greater than emxs(1)
       ! TODO: implement optimum window_size_terp
-       PRINT*, "ERROR: xmu_m3 less than minimum.", &
+      write(message,'(a,f10.5)') "ERROR: xmu_m3 less than minimum. ", &
           & DBLE(efermi_m3*hart), DBLE(emxs(1)*hart)
-      STOP
+      call wlog(message)
+      STOP 
     ENDIF
 
     ! OPEN(UNIT=12312, FILE='petak.dat', STATUS='REPLACE')

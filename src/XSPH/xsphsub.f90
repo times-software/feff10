@@ -373,10 +373,10 @@ endif
 
         if ((xkmax.gt.0.0d0).or.(do_nrixs.ne.1)) then
           IF (electronic_temperature.GT.0) THEN
-            PRINT*, "USE PHMESH2T "
+            !PRINT*, "USE PHMESH2T "
             CALL phmesh2T(ipr2, ispec, edge, emu, vi0, gamach, ecv, xkmax, xkstep, vixan, ne, ne1, em, ik0, ne3, iGrid)
           ELSE
-            PRINT*, "USE PHMESH 0 "
+            !PRINT*, "USE PHMESH 0 "
             CALL phmesh2(ipr2, ispec, edge, emu, vi0, gamach, ecv, xkmax, xkstep, vixan, ne, ne1, em, ik0, ne3, iGrid)
           ENDIF
 !KJAleksi's code :                call phmesh (ipr2, ispec, edge, emu, vi0, gamach, ecv, xkmax, xkstep, vixan, ne, ne1, em, ik0, ne3)

@@ -11,6 +11,7 @@ PROGRAM opconsAt
   IMPLICIT NONE
   INTEGER iph, iph2, NComps, iAt, iAt2, iX, iY, iZ2, nnn
   INTEGER, ALLOCATABLE :: izComp(:), nAtComp(:)
+  CHARACTER(512) message
   CHARACTER(2), ALLOCATABLE :: Components(:)
   CHARACTER(12), ALLOCATABLE :: EpsFiles(:)
   CHARACTER(2),EXTERNAL :: GetElement
@@ -45,7 +46,8 @@ PROGRAM opconsAt
   END DO
 
   DO iph = 0, nph
-     PRINT*, NumDens(iph), xnatph(iph), VTot
+     !WRITE(message,*) NumDens(iph), xnatph(iph), VTot
+     !CALL wlog(message)
      IF(NumDens(iph).lt.0.d0) NumDens(iph) = xnatph(iph)/VTot
      ! test with numDens = 1. Should give same loss as input file for a single file.
      IF(.FALSE.) THEN
@@ -65,7 +67,8 @@ PROGRAM opconsAt
   ! Get the file names.
   DO iph = 0, nph
      EpsFiles(iph) = 'opcons' // TRIM(ADJUSTL(Components(iph))) // '.dat'
-     PRINT*, Components(iph), NumDens(iph), EpsFiles(iph)
+     WRITE(message,'(a,x,f6.3,x,a)') Components(iph), NumDens(iph), EpsFiles(iph)
+     CALL wlog(message)
   END DO
   NComps = nph + 1
   CALL AddEps(EpsFiles,NComps,NumDens,print_eps)

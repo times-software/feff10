@@ -166,7 +166,7 @@ xsph_MODULES =${xsph_MODULESRC:.f90=.o}
 ########################################################################################################
 
 all:
-	cp PAR/sequential.src PAR/par.f90
+	cp PAR/sequential.src PAR/parallel.f90
 	mkdir -p ../bin/Seq
 	make $(EXECUTABLES) "F90=$(F90)" "FLAGS=$(FLAGS)" "EXECDIR=../bin/Seq/"
 	. Utility/MkFeffScript seq
@@ -174,7 +174,7 @@ all:
 	echo -e $(smessg1) $(smessg2) $(smessg3)
 
 mpi:
-	cp PAR/parallel.src PAR/par.f90
+	cp PAR/parallel.src PAR/parallel.f90
 	mkdir -p ../bin/MPI
 	make $(EXECUTABLES) "F90=$(MPIF90)" "FLAGS=$(MPIFLAGS)" "EXECDIR=../bin/MPI/"
 	. Utility/MkFeffScript mpi
@@ -203,7 +203,7 @@ clean:
 #####################################################################################################
 atomic:$(EXECDIR)/atomic
 $(EXECDIR)/atomic: $(atomic_MODULES) $(atomic_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(atomic_MODULES) $(atomic_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(atomic_MODULES) $(atomic_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(atomic_MODULES) $(atomic_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END atomic                                             ###
@@ -214,7 +214,7 @@ $(EXECDIR)/atomic: $(atomic_MODULES) $(atomic_OBJ)
 #####################################################################################################
 band:$(EXECDIR)/band
 $(EXECDIR)/band: $(band_MODULES) $(band_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(band_MODULES) $(band_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(band_MODULES) $(band_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(band_MODULES) $(band_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END band                                             ###
@@ -225,7 +225,7 @@ $(EXECDIR)/band: $(band_MODULES) $(band_OBJ)
 #####################################################################################################
 compton:$(EXECDIR)/compton
 $(EXECDIR)/compton: $(compton_MODULES) $(compton_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(compton_MODULES) $(compton_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(compton_MODULES) $(compton_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(compton_MODULES) $(compton_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END compton                                             ###
@@ -236,7 +236,7 @@ $(EXECDIR)/compton: $(compton_MODULES) $(compton_OBJ)
 #####################################################################################################
 crpa:$(EXECDIR)/crpa
 $(EXECDIR)/crpa: $(crpa_MODULES) $(crpa_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(crpa_MODULES) $(crpa_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(crpa_MODULES) $(crpa_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(crpa_MODULES) $(crpa_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END crpa                                             ###
@@ -247,7 +247,7 @@ $(EXECDIR)/crpa: $(crpa_MODULES) $(crpa_OBJ)
 #####################################################################################################
 dmdw:$(EXECDIR)/dmdw
 $(EXECDIR)/dmdw: $(dmdw_MODULES) $(dmdw_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(dmdw_MODULES) $(dmdw_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(dmdw_MODULES) $(dmdw_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(dmdw_MODULES) $(dmdw_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END dmdw                                             ###
@@ -258,7 +258,7 @@ $(EXECDIR)/dmdw: $(dmdw_MODULES) $(dmdw_OBJ)
 #####################################################################################################
 dym2feffinp:$(EXECDIR)/dym2feffinp
 $(EXECDIR)/dym2feffinp: $(dym2feffinp_MODULES) $(dym2feffinp_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(dym2feffinp_MODULES) $(dym2feffinp_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(dym2feffinp_MODULES) $(dym2feffinp_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(dym2feffinp_MODULES) $(dym2feffinp_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END dym2feffinp                                             ###
@@ -269,7 +269,7 @@ $(EXECDIR)/dym2feffinp: $(dym2feffinp_MODULES) $(dym2feffinp_OBJ)
 #####################################################################################################
 eels:$(EXECDIR)/eels
 $(EXECDIR)/eels: $(eels_MODULES) $(eels_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(eels_MODULES) $(eels_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(eels_MODULES) $(eels_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(eels_MODULES) $(eels_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END eels                                             ###
@@ -280,7 +280,7 @@ $(EXECDIR)/eels: $(eels_MODULES) $(eels_OBJ)
 #####################################################################################################
 ff2x:$(EXECDIR)/ff2x
 $(EXECDIR)/ff2x: $(ff2x_MODULES) $(ff2x_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(ff2x_MODULES) $(ff2x_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(ff2x_MODULES) $(ff2x_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(ff2x_MODULES) $(ff2x_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END ff2x                                             ###
@@ -291,7 +291,7 @@ $(EXECDIR)/ff2x: $(ff2x_MODULES) $(ff2x_OBJ)
 #####################################################################################################
 fms:$(EXECDIR)/fms
 $(EXECDIR)/fms: $(fms_MODULES) $(fms_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(fms_MODULES) $(fms_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(fms_MODULES) $(fms_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(fms_MODULES) $(fms_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END fms                                             ###
@@ -302,7 +302,7 @@ $(EXECDIR)/fms: $(fms_MODULES) $(fms_OBJ)
 #####################################################################################################
 fullspectrum:$(EXECDIR)/fullspectrum
 $(EXECDIR)/fullspectrum: $(fullspectrum_MODULES) $(fullspectrum_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(fullspectrum_MODULES) $(fullspectrum_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(fullspectrum_MODULES) $(fullspectrum_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(fullspectrum_MODULES) $(fullspectrum_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END fullspectrum                                             ###
@@ -313,7 +313,7 @@ $(EXECDIR)/fullspectrum: $(fullspectrum_MODULES) $(fullspectrum_OBJ)
 #####################################################################################################
 genfmt:$(EXECDIR)/genfmt
 $(EXECDIR)/genfmt: $(genfmt_MODULES) $(genfmt_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(genfmt_MODULES) $(genfmt_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(genfmt_MODULES) $(genfmt_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(genfmt_MODULES) $(genfmt_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END genfmt                                             ###
@@ -324,7 +324,7 @@ $(EXECDIR)/genfmt: $(genfmt_MODULES) $(genfmt_OBJ)
 #####################################################################################################
 ldos:$(EXECDIR)/ldos
 $(EXECDIR)/ldos: $(ldos_MODULES) $(ldos_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(ldos_MODULES) $(ldos_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(ldos_MODULES) $(ldos_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(ldos_MODULES) $(ldos_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END ldos                                             ###
@@ -335,7 +335,7 @@ $(EXECDIR)/ldos: $(ldos_MODULES) $(ldos_OBJ)
 #####################################################################################################
 mkgtr:$(EXECDIR)/mkgtr
 $(EXECDIR)/mkgtr: $(mkgtr_MODULES) $(mkgtr_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(mkgtr_MODULES) $(mkgtr_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(mkgtr_MODULES) $(mkgtr_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(mkgtr_MODULES) $(mkgtr_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END mkgtr                                             ###
@@ -346,7 +346,7 @@ $(EXECDIR)/mkgtr: $(mkgtr_MODULES) $(mkgtr_OBJ)
 #####################################################################################################
 opconsat:$(EXECDIR)/opconsat
 $(EXECDIR)/opconsat: $(opconsat_MODULES) $(opconsat_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(opconsat_MODULES) $(opconsat_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(opconsat_MODULES) $(opconsat_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(opconsat_MODULES) $(opconsat_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END opconsat                                             ###
@@ -357,7 +357,7 @@ $(EXECDIR)/opconsat: $(opconsat_MODULES) $(opconsat_OBJ)
 #####################################################################################################
 path:$(EXECDIR)/path
 $(EXECDIR)/path: $(path_MODULES) $(path_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(path_MODULES) $(path_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(path_MODULES) $(path_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(path_MODULES) $(path_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END path                                             ###
@@ -368,7 +368,7 @@ $(EXECDIR)/path: $(path_MODULES) $(path_OBJ)
 #####################################################################################################
 pot:$(EXECDIR)/pot
 $(EXECDIR)/pot: $(pot_MODULES) $(pot_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(pot_MODULES) $(pot_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(pot_MODULES) $(pot_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(pot_MODULES) $(pot_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END pot                                             ###
@@ -379,7 +379,7 @@ $(EXECDIR)/pot: $(pot_MODULES) $(pot_OBJ)
 #####################################################################################################
 rdinp:$(EXECDIR)/rdinp
 $(EXECDIR)/rdinp: $(rdinp_MODULES) $(rdinp_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(rdinp_MODULES) $(rdinp_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(rdinp_MODULES) $(rdinp_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(rdinp_MODULES) $(rdinp_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END rdinp                                             ###
@@ -390,7 +390,7 @@ $(EXECDIR)/rdinp: $(rdinp_MODULES) $(rdinp_OBJ)
 #####################################################################################################
 rhorrp:$(EXECDIR)/rhorrp
 $(EXECDIR)/rhorrp: $(rhorrp_MODULES) $(rhorrp_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(rhorrp_MODULES) $(rhorrp_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(rhorrp_MODULES) $(rhorrp_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(rhorrp_MODULES) $(rhorrp_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END rhorrp                                             ###
@@ -401,7 +401,7 @@ $(EXECDIR)/rhorrp: $(rhorrp_MODULES) $(rhorrp_OBJ)
 #####################################################################################################
 rixs:$(EXECDIR)/rixs
 $(EXECDIR)/rixs: $(rixs_MODULES) $(rixs_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(rixs_MODULES) $(rixs_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(rixs_MODULES) $(rixs_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(rixs_MODULES) $(rixs_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END rixs                                             ###
@@ -412,7 +412,7 @@ $(EXECDIR)/rixs: $(rixs_MODULES) $(rixs_OBJ)
 #####################################################################################################
 screen:$(EXECDIR)/screen
 $(EXECDIR)/screen: $(screen_MODULES) $(screen_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(screen_MODULES) $(screen_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(screen_MODULES) $(screen_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(screen_MODULES) $(screen_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END screen                                             ###
@@ -423,7 +423,7 @@ $(EXECDIR)/screen: $(screen_MODULES) $(screen_OBJ)
 #####################################################################################################
 sfconv:$(EXECDIR)/sfconv
 $(EXECDIR)/sfconv: $(sfconv_MODULES) $(sfconv_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(sfconv_MODULES) $(sfconv_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(sfconv_MODULES) $(sfconv_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(sfconv_MODULES) $(sfconv_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END sfconv                                             ###
@@ -434,7 +434,7 @@ $(EXECDIR)/sfconv: $(sfconv_MODULES) $(sfconv_OBJ)
 #####################################################################################################
 xsph:$(EXECDIR)/xsph
 $(EXECDIR)/xsph: $(xsph_MODULES) $(xsph_OBJ) 
-	@$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(xsph_MODULES) $(xsph_OBJ) $(LDFLAGS)
+	$(F90) $(FLAGS) $(INCLUDEFLAGS) -o $@ $(xsph_MODULES) $(xsph_OBJ) $(LDFLAGS)
 	@echo -e $(F90) $(FLAGS) INCLUDEFLAGS -o $@ $(xsph_MODULES) $(xsph_OBJ) $(LDFLAGS)
 #####################################################################################################
 ###                              END xsph                                             ###
@@ -444,7 +444,7 @@ include DEP/dependencies.mk
 
 .f90.mod:
 	@echo "cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
-	@cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
+	cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
 
 # How to make a .o file from .f90
 .f90.o:
@@ -454,7 +454,7 @@ include DEP/dependencies.mk
 #	@echo "cd $(<D); $(F90) -FR -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
 #	@cd $(<D); $(F90) -FR -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
 	@echo "cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
-	@cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
+	cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
 
 .f.o:
 # Modified by FDV
@@ -463,7 +463,7 @@ include DEP/dependencies.mk
 #	@echo "cd $(<D); $(F90) -FI -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
 #	@cd $(<D); $(F90) -FI -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
 	@echo "cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
-	@cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
+	cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
 
 	
-
+%.o: %.mod

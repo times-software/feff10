@@ -2710,9 +2710,9 @@ End If
 !   end do
 
 ! Normalize non-orthogonal vectors
-    do iCoord=1,nCoord
-      dym_In%TrfD(:,iCoord) = dym_In%TrfD(:,iCoord) / &
-         sqrt(sum(dym_In%TrfD(:,iCoord)*dym_In%TrfD(:,iCoord)))
+    do iCoord=1,6 !nCoord JJK - commented out to avoid divide by zero.
+         dym_In%TrfD(:,iCoord) = dym_In%TrfD(:,iCoord) / &
+            sqrt(sum(dym_In%TrfD(:,iCoord)*dym_In%TrfD(:,iCoord)))
     end do
 
 ! Debug

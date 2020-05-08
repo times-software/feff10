@@ -59,7 +59,7 @@ SUBROUTINE BLInterp2D(x,y,A,nx,ny,lda,x0,y0,A0)
        & A(imx,ipy)*(x(ipx) - x0)*(y0 - y(imy)) + &
        & A(ipx,ipy)*(x0 - x(imx))*(y0 - y(imy))
   IF(dxdy.EQ.0.d0) THEN
-     PRINT*, "ERROR: duplicate energies in Linterp2D"
+     PRINT*, "ERROR: Duplicate points (x,y) in Linterp2D"
      STOP
   END IF
   A0 = A0/dxdy

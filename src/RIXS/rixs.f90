@@ -67,6 +67,7 @@ PROGRAM RIXS
   real(8) gam_exp(2), Edge1(2), EdgeSplit(10), EdgeAmp(10), gam_tot, gam_edge(10), EMin(2), EMax(2), EEMin, EEMax, ET, &
        & EE, EIMin, EIMax, EI, muXES(10000)
   character c
+  CHARACTER(512) message
   CHARACTER(LEN=30) rlfiles(2), ggfiles(2), phasefiles(2), wscrnfiles(2), xsectfile
   COMPLEX*16 KKInt
   REAL(8), PARAMETER :: xInfinity = 1.d30
@@ -99,7 +100,7 @@ PROGRAM RIXS
   ggfiles(2) = 'gg_2.bin' !TRIM(ADJUSTL(RixsI%Edges(2))) // '/gg.bin'
   phasefiles(1) = 'phase_1.bin' !TRIM(ADJUSTL(RixsI%Edges(1))) // '/phase.bin'
   phasefiles(2) = 'phase_2.bin' !TRIM(ADJUSTL(RixsI%Edges(2))) // '/phase.bin'
-  PRINT*, phasefiles(1)
+  !PRINT*, phasefiles(1)
   wscrnfiles(1) = 'wscrn_1.dat' !TRIM(ADJUSTL(RixsI%Edges(1))) // '/wscrn.dat'
   wscrnfiles(2) = 'wscrn_2.dat' !TRIM(ADJUSTL(RixsI%Edges(2))) // '/wscrn.dat'
 
@@ -155,8 +156,9 @@ PROGRAM RIXS
   Sigma(:) = 0.d0
   
   ! Read data
-  PRINT*, ''
-  PRINT*, 'Reading data.'
+  !PRINT*, ''
+  CALL wlog(' ')
+  CALL wlog('Reading data.')
 
   ! ! phase.bin for both core holes (get rkk).
   ! call rdxsphrxs(ne, ne1, ne3, nph, ihole, rnrmav, xmu, edge,         &
@@ -174,7 +176,7 @@ PROGRAM RIXS
 !  gam_Edge(1:9) = gam_edge(2:10)
 !  READ*, EdgeSplit(1)
   IF(ReadPoles) THEN
-     PRINT*, 'Reading data from edges.dat'
+     CALL wlog('Reading data from edges.dat')
      CALL ReadArrayData('edges.dat', Double1 = EdgeSplit, Double2 = EdgeAmp, Double3 = gam_Edge, NumElements = nEdge)
      CALL CloseFl('edges.dat')
      IF(EdgeAmp(nEdge).LT.0.d0) EdgeAmp(nEdge) = 1
@@ -201,10 +203,11 @@ PROGRAM RIXS
      Edge1(2) = EdgeSplit(1)
      Edge1(1:nEdge) = Edge1(1:nEdge) - xmu
      EdgeSplit(:) = EdgeSplit(:) - Edge1(2)
-     PRINT*, 'Number of poles: ', nEdge
+     WRITE(message,'(a,I3)') 'Number of poles: ', nEdge
      DO iEdge = 1, nEdge
-       PRINT*, 'Pole data: iEdge, Edge energy, Edge split, Amp, Gamma'
-       PRINT '(I3,5F10.5)', iEdge, Edge1(iEdge), EdgeSplit(iEdge), EdgeAmp(iEdge), gam_edge(iEdge)
+       CALL wlog('Pole data: iEdge, Edge energy, Edge split, Amp, Gamma')
+       WRITE(message,'(I3,5F10.5)') iEdge, Edge1(iEdge), EdgeSplit(iEdge), EdgeAmp(iEdge), gam_edge(iEdge)
+       CALL wlog(message)
      END DO
   ELSE
      nEdge = 1
@@ -221,25 +224,26 @@ PROGRAM RIXS
   !EdgeAmp(2) = 2.d0
   !IF(EdgeSplit(2).GT.0.d0) nEdge = 2
   IF(RixsI%xmu.GT.-1.d2) xmu = RixsI%xmu
-  PRINT*, 'xmu = ', xmu
+  WRITE(message,'(a,f10.5)') 'xmu = ', xmu
+  CALL wlog(message)
   IF(SkipCalc) GOTO 80
   ! Read gg
   iph = 0
-  PRINT*, 'Reading gg_1.bin'
+  CALL wlog('Reading gg_1.bin')
   DO iE1 = 1, ne1
      CALL Read2D(ggfiles(1), gg(1:nspx*(lmaxph(iph)+1)**2,1:nspx*(lmaxph(iph)+1)**2,iph,iE1), L1, L2)
      ! Check that bounds are correct.
      IF(L1.ne.nspx*(lmaxph(iph)+1)**2.or.L2.ne.nspx*(lmaxph(iph)+1)**2) CALL Error('Error when reading gg.bin')
   END DO
   CALL CloseFl(ggfiles(1))
-  PRINT*, 'Reading gg_2.bin'
+  CALL wlog('Reading gg_2.bin')
   DO iE1 = 1, ne1
      CALL Read2D(ggfiles(2), gg2(1:nspx*(lmaxph(iph)+1)**2,1:nspx*(lmaxph(iph)+1)**2,iph,iE1), L1, L2)
      ! Check that bounds are correct.
      IF(L1.ne.nspx*(lmaxph(iph)+1)**2.or.L2.ne.nspx*(lmaxph(iph)+1)**2) CALL Error('Error when reading gg.bin')
   END DO
   CALL CloseFl(ggfiles(2))
-  PRINT*, 'Finished reading gg files.'
+  CALL wlog('Finished reading gg files.')
 
   ! Transform to real spherical harmonics and take imaginary parts
   !CALL ToRealYlm(gg,lmaxph(iph),nspx,iph,ne1)
@@ -299,34 +303,32 @@ PROGRAM RIXS
   enddo
   WRITE(66,'(e20.10)') bmat
   ! Read in Rl and Rl2
-  PRINT*, ''
-  PRINT*, 'Reading Rl_1.'
+  CALL wlog(' ')
+  CALL wlog('Reading Rl_1.')
   DO iE1 = 1, ne1
      DO lll = 0, lllmax
-        PRINT*, 1
         CALL ReadData(rlfiles(1), DComplex1 = em(iE1), Int2 = llltmp, DComplex3 = phx)
-        PRINT*, 2
         CALL ReadArrayData(rlfiles(1), DComplex1 = Rl(:,llltmp,iE1))
         !ph(iE1,lll,1,0) = phx
      END DO
-     IF(MOD(iE1,30).EQ.0) PRINT '(I3,A4,I3)', iE1, ' of ', ne1
+     !IF(MOD(iE1,30).EQ.0) PRINT '(I3,A4,I3)', iE1, ' of ', ne1
   END DO
   CALL CloseFl(rlfiles(1))
-  PRINT*, ''
-  PRINT*, 'Reading Rl_2.'
+  CALL wlog(' ')
+  CALL wlog('Reading Rl_2.')
   DO iE2 = 1, ne1
      DO lll = 0, lllmax
         CALL ReadData(rlfiles(2), DComplex1 = em_2(iE2), Int2 = llltmp, DComplex3 = phx)
         CALL ReadArrayData(rlfiles(2), DComplex1 = Rl_2(:,llltmp,iE2))
         !ph_2(iE2,lll,1,0) = phx
      END DO
-     IF(MOD(iE2,30).EQ.0) PRINT '(I3,A4,I3)', iE2, ' of ', ne1
+     !IF(MOD(iE2,30).EQ.0) PRINT '(I3,A4,I3)', iE2, ' of ', ne1
   END DO  
   CALL CloseFl(rlfiles(2))
   ! Read self-energy from mpse.dat
   remtmp(:) = -1.d10
   IF(ReadSigma) THEN
-     PRINT*, 'Reading mpse.dat'
+     CALL wlog('Reading mpse.dat')
      CALL ReadArrayData('mpse.dat', Double1 = remtmp, DComplex2 = Sigma)
      CALL CloseFl('mpse.dat')
      remtmp(:) = remtmp(:)/hart
@@ -346,11 +348,11 @@ PROGRAM RIXS
         END IF
      END DO
      Sigma(:) = ctmp(:)
-     PRINT*, 'Done reading mpse.dat'
+     CALL wlog('Done reading mpse.dat')
   END IF
   !xmu = -14.d0/hart
   ! Outer loop over L (kappa)
-  PRINT*, 'Forming T.'
+  CALL wlog('Forming T.')
   Tlb(:,:,:,:) = 0.d0
   DO ind = 1, 8
      ix = lnd(ind)**2 + lnd(ind) + 1
@@ -411,7 +413,7 @@ PROGRAM RIXS
   CLOSE(13)
   IF(.FALSE.) STOP ! debugging
   ! Now do convolution to get edge right.
-  PRINT*, 'Performing convolution of T.'
+  CALL wlog('Performing convolution of T.')
   NTotal = 0
   DO ind = 1, 8
         IF(lnd(ind).GE.0) NTotal = NTotal + nspx*ne1**2*(ne1-1)*(2*lnd(ind)+1)
@@ -453,7 +455,8 @@ PROGRAM RIXS
                        IF((DBLE(iTotal)/DBLE(NTotal)).GT.0.1d0) THEN
                           iTotal = 1
                           iPercent = iPercent+10
-                          PRINT*, iPercent, '%'
+                          WRITE(message,'(I4,a)') iPercent, '%'
+                          CALL wlog(message)
                        END IF
                     END DO
                     ! Add last point. Model Tlb(E) = a/E**2 for point beyond last.                                                                                            
@@ -540,8 +543,9 @@ PROGRAM RIXS
      xsect_rxs(:,:50,:,:) = 0.d0
      ne1 = 100
   END IF
-  PRINT*, 'Performing convolution of xsect_rxs.'
-  PRINT*, nEdge, ' poles.'
+  CALL wlog('Performing convolution of xsect_rxs.')
+  WRITE(message,'(I3,a)') nEdge, ' poles.'
+  CALL wlog(message)
   !rem(:) = DBLE(em(:)-eref(:,nspx))
   ! Now perform the integral for broadening.
   NTotal = ne1*ne1*2
@@ -550,15 +554,16 @@ PROGRAM RIXS
      xsect_rxs(:,:,:,iEdge) = xsect_rxs(:,:,:,1)
   END DO
   DO iEdge = 1, nEdge
-  PRINT*, 'Edge: ', iEdge, EdgeSplit(iEdge), EdgeAmp(iEdge), gam_Edge(iEdge)
+  WRITE(message,'(a,I3,3f10.5)') 'Edge: ', iEdge, EdgeSplit(iEdge), EdgeAmp(iEdge), gam_Edge(iEdge)
+  CALL wlog(message)
 
   ! Now perform convolution over incident energy
   xsect_tmp(:,:,:) = 0.d0
   NTotal = ne1*ne1*2
   iTotal = 0
   iPercent = 0
-  PRINT*, 'gam_exp', gam_exp(1), gam_exp(2)
-  PRINT*, 'Convolving over incident energy.'
+  WRITE(message,'(a,2f10.5)') 'gam_exp = ', gam_exp(1), gam_exp(2)
+  CALL wlog('Convolving over incident energy.')
   deltaMin = 100.d0
   DO iE1 = 2, ne1
      IF((rem(iE1) - rem(iE1-1)).LT.deltaMin) deltaMin = rem(iE1) - rem(iE1-1)
@@ -566,10 +571,11 @@ PROGRAM RIXS
   ctmp(1) = 0.d0
   DO ind = 1, 2
      DO iE1 = 1, ne1
-        IF(DBLE(iTotal)/DBLE(NTotal)*100.d0.GT.1.d0) THEN
-           iPercent = iPercent + 1
+        IF(DBLE(iTotal)/DBLE(NTotal)*100.d0.GT.10.d0) THEN
+           iPercent = iPercent + 10
            iTotal = 0
-           PRINT '(I3,a1)', iPercent, '%'
+           WRITE(message,'(I3,a1)') iPercent, '%'
+           CALL wlog(message)
         END IF        
         !WRITE(33,*) rem(iE1), ABS(DIMAG(Sigma(iE1)))
         DO iE2 = 1, ne1
@@ -806,10 +812,11 @@ PROGRAM RIXS
            END DO
 55         CONTINUE
            iTotal = iTotal + 1
-           IF(DBLE(iTotal)/DBLE(NTotal).GT.0.01d0) THEN
+           IF(DBLE(iTotal)/DBLE(NTotal).GT.0.1d0) THEN
               iTotal = 1
-              iPercent = iPercent+1
-              IF(MOD(iPercent,10).EQ.0) PRINT*, iPercent, '%'
+              iPercent = iPercent+10
+              WRITE(message,'(I3,a)') iPercent, '%'
+              CALL wlog(message)
            END IF
         END DO
         xsect_rxs(:,iE1,ind,iEdge) = totTLb(:)*EdgeAmp(iEdge)
@@ -861,7 +868,7 @@ PROGRAM RIXS
      rem = rem/hart - Edge1(1)
      CLOSE(14)
   END IF
-  PRINT*, 'Writing results.'
+  CALL wlog('Writing results.')
   ! Integrate over E1 and E2 to get line spectra.
   xasEI = 0.d0
   xasEF = 0.d0
@@ -968,7 +975,7 @@ PROGRAM RIXS
      !muXES(:) = muXES(:)
      DO ind = 1, 2
         DO iE1 = 1, ne1
-           PRINT*, iE1, 'of', 2*ne1
+           !PRINT*, iE1, 'of', 2*ne1
            DO iE2 = 1, ne1
               ctmp(1) = 0.d0
               !IF(rem(iE2).LT.xmu) THEN
@@ -1004,7 +1011,7 @@ PROGRAM RIXS
      muXES(:) = muXES(:)*hart
      DO ind = 1, 2
         DO iE1 = 1, ne1
-           PRINT*, iE1, 'of', 2*ne1           
+           !PRINT*, iE1, 'of', 2*ne1           
            DO iE2 = 1, ne1
               ctmp(1) = 0.d0
               IF(rem(iE2).LT.xmu) THEN
@@ -1066,7 +1073,7 @@ PROGRAM RIXS
   !      xes(iE1) = xasEI(iE1) + 0.5d0*(xsect_tmp(iE1, iE2) + xsect_tmp(iE1,iE2-1))*(rem(iE2)-rem(iE2-1))
   !   END DO
   !END DO
-  PRINT*, 'Writing results.'
+  CALL wlog('Writing results.')
   open(14, FILE = 'rixsET-sat.dat', STATUS = 'REPLACE')
   open(15, FILE = 'herfd-sat.dat', STATUS = 'REPLACE')
   open(16, FILE = 'rixsEE-sat.dat', STATUS = 'REPLACE')

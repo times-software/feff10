@@ -19,7 +19,7 @@
 !        mtot,l0
 !        polarization data : ipol, ispin, ptz
 !     Output:  bmati(...) 
-      use dimsmod, only: mtot, lx
+      use dimsmod, only: mtot, lx,nspx=>nspu 
       use rotmat
       use pdata
 	  use constants

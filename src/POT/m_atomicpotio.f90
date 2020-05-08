@@ -650,11 +650,11 @@ MODULE AtomicPotIO
       ! Potential (H+XC) inside each empty sphere
       vtot2(:,nat+1:Mtdp_Data%nESph+nat) = Mtdp_Data%ESph_Pot(:,:)
 
-      PRINT*, 'Old vint = ', vint
+      !PRINT*, 'Old vint = ', vint
       ! Interstitial potential
       vint = Mtdp_Data%V_Int
-      PRINT*, 'Enter vint: '
-      READ*, vint    
+      !PRINT*, 'Enter vint: '
+      !READ*, vint    
     
       ! HOMO energy
       xmu = (Mtdp_Data%V_HOMO + Mtdp_Data%V_LUMO)/2.d0

@@ -141,7 +141,7 @@ contains
     totpts = product(grid%npts)
 
     ! Periodically log progress
-    write (spts, "(i8)"), totpts
+    write (spts, "(i8)") totpts
     call wlog("Calculate density: "//trim(grid%filename)//" ("//trim(spts)//" total points)")
 
     allocate(points(3,totpts), rho(totpts))

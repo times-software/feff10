@@ -502,9 +502,9 @@ subroutine screen( nat, nph, iphat, rat,                          &
   if (info .eq. 0) then
      call dgetrs(trans, n, nrhs, Amat, lda, ipiv, wscrn, ldb, info)
 
-     if (info .ne. 0) print *, info
+     !if (info .ne. 0) print *, info
   else
-     print *, 'The factor U is singular'
+     call wlog('The factor U is singular')
   end if
   !=================================================================
   !     end of matrix inversion

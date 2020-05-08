@@ -199,8 +199,10 @@ integer nat !KJ
 !     check that all path atoms are found
       do 96 jl=1,nleg
         if (nconv(jl).eq.0) then
-           print*,' did not find atom jl=', jl
-           print*, rat(1,jl),rat(2,jl),rat(3,jl)
+           write(slog,'(a,i5)') ' Did not find atom jl=', jl
+           call wlog(slog)
+           write(slog,'(a, 3f10.5)') ' located at postion: ', &
+               &       rat(1,jl),rat(2,jl),rat(3,jl)
            call par_stop('SIGREM-1')
         endif
   96  continue

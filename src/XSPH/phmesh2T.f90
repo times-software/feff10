@@ -74,6 +74,7 @@ SUBROUTINE phmesh2T (iprint, ispec, edge, emu, vi0, gamach,        &
   INTEGER :: ii, nv, n1, NPts, ie
   DOUBLE PRECISION :: getxk
   LOGICAL :: normal_mesh
+  CHARACTER(512) message
   EXTERNAL :: getxk
 
   ! Initialization
@@ -216,6 +217,7 @@ SUBROUTINE mesh_normal_T(em, ne, ne1, ne3, nex, ik0, ecv, edge, xloss, iGrid,&
   COMPLEX*16 :: emH(nex)
   ! Loop variables:
   INTEGER :: i
+  CHARACTER(512) message
 
   ! Initalize
   temp = electronic_temperature / hart
@@ -239,7 +241,8 @@ SUBROUTINE mesh_normal_T(em, ne, ne1, ne3, nex, ik0, ecv, edge, xloss, iGrid,&
     e1 = np * 2*pi*temp
   END IF
 
-  PRINT*, "Number of poles = ", np
+  WRITE(message,'(a,i3)') "Number of poles = ", np
+  CALL wlog(message)
   ! The Fermi function is negligible (5e-5) at 10T past the edge.
   ! emax = edge + 10 * temp
   ! emax = edge + 5
@@ -263,7 +266,9 @@ SUBROUTINE mesh_normal_T(em, ne, ne1, ne3, nex, ik0, ecv, edge, xloss, iGrid,&
     de = (0 - emin) / n2 ! Determine the spacing
     n2 = ceiling((emax-emin)/ de) ! Determine the total number of points
 
-    PRINT*, "Horizontal grid, n2 = ", n2
+    WRITE(message,'(a,i3)') "Horizontal grid, n2 = ", n2
+    CALL wlog(message)
+
     DO i = 1, n2
       em(i) = emin + i * de + e1 * coni
     END DO

@@ -59,7 +59,7 @@
       call chopen (ios, 'phase.bin', 'rdxsph')
 
       ! read(1,10) nsp, ne, ne1, ne3, nph, ihole, ik0, npadx
-      read(1,10) nsp, ne, ne1, ne3, ne4, nph, ihole, ik0, npadx! TS added
+      read(1,*) nsp, ne, ne1, ne3, ne4, nph, ihole, ik0, npadx! TS added
   10  format (8(1x,i4))
 
       call rdpadd(1, npadx, dum(1), 3)

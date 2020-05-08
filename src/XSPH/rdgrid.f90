@@ -81,6 +81,7 @@
       DOUBLE PRECISION RealE, ImagE
       CHARACTER(20) Words(10)
       CHARACTER(100) line
+      CHARACTER(512) message
 
 !     Loop Variables:
       INTEGER i1, i2
@@ -96,9 +97,11 @@
       DO nGrid = 1, nGridMax
 !        if all points used exit
          IF(ne.eq.nex) THEN
-            PRINT*, "WARNING: Too many energy points defined in grid.inp."
-            PRINT*, "Maximum is", nex
-            PRINT*, "Grid will be truncated."
+            CALL wlog("WARNING:" // &
+                & " Too many energy points defined in grid.inp.")
+            WRITE(message,'(a,i3)') "Maximum is ", nex
+            CALL wlog(message)
+            CALL wlog("Grid will be truncated.")
             EXIT
          END IF
 !        Read comment lines
