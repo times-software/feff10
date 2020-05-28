@@ -1,11 +1,12 @@
 TITLE	MnF2 (rutile) cassiterite (Wykoff)
 
+
 EDGE K	1.0
 SPIN	2
 
 CONTROL	1 1 1 1 1 1
 RPATH 10.0
-XANES
+EXAFS
 PCRITERIA	0.8	40.0
 CRITERIA	0.0	0.0
 DEBYE	300	350
@@ -13,10 +14,10 @@ NLEG	4
 
 POTENTIALS
 *	ipot	z	label
-	0	25	Mnup
-	1	9	F
-	2	25	Mnup
-	3	25	Mndown
+	0	25	Mnup -1 -1 0.01 5.0
+	1	9	F    -1 -1 4.0 0.0
+	2	25	Mnup -1 -1 1.0 5.0
+	3	25	Mndown -1 -1 1.0 -5.0
 
 ATOMS
  0.0000	0.0000	0.0000	0	Mnup	0.0000

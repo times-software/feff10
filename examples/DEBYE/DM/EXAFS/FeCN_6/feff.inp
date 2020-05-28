@@ -7,16 +7,17 @@
  S02       1.0000
 
  *              pot    xsph     fms   paths  genfmt  ff2chi
- CONTROL          1       1       0       1       1       1
+ CONTROL          1       1       1       1       1       1
  PRINT            1       0       0       0       0       0
 
  *          ixc  [ Vr  Vi ]
- EXCHANGE     0  -15.0  0.0
+ EXCHANGE     0  -15.0  0.0 
 
  *            r_scf  [ l_scf   n_scf   ca ]
  SCF          4.000
 
- RPATH       8.0
+ NLEG 9
+ RPATH       6.87
  EXAFS      15.0
 
  DEBYE    150.0  1073.0  5  feff.dym  6  0  1

@@ -11,7 +11,7 @@
  PRINT            1       0       0       0       0       0
 
  *          ixc  [ Vr  Vi ]
- EXCHANGE     0  -15.0  0.0
+ EXCHANGE     0  -15.0  0.0 0
 
  *            r_scf  [ l_scf   n_scf   ca ]
  SCF          8.000

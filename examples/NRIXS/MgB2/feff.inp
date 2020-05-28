@@ -3,10 +3,10 @@ TITLE NRIXS calculation for K edge of MgB2
 EDGE K
 S02 0.0
 
-CONTROL 1 1 1 1 1 1
+CONTROL 0 1 1 1 1 1
 
 *         ixc  [ Vr  Vi ]
-EXCHANGE 0 1.5 0.4 -1 
+EXCHANGE 0 1.5 0.4 0
 *         r_scf
 SCF 4.6 0 100 0.2 1 
 * Calculate NRIXS spectrum with specified q-vector of length 5.13
