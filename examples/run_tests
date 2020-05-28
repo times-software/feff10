@@ -1,5 +1,5 @@
 #!/bin/bash
-files=`cat run_tests.in`
+files=`find -name referencexmu.dat`
 pd=`pwd`
 if [ "X$1" == "X" ]
 then
