@@ -9,7 +9,7 @@
 ########################################
 #              ifort
 ########################################
-#F90 = ifort 
+F90 = ifort 
 # for a MacBook1,1 with a 32-bit Intel Core Duo processor ("Yonah") running Snow Leopard - generate 32bit executable:
 # FLAGS = -O3  -L/Developer/SDKs/MacOSX10.6.sdk/usr/lib/ -m32 -O2 -axsse4.2,sse3 -prec_div -132  -g 
 # Regular 64-bit code e.g. for iMac, (recent-ish) MacBook Pro, etc. (10.7, 10.6) :
@@ -19,7 +19,7 @@
 # Production code Mac: (note this runs for Leopard and higher without performance sacrifice compared to 10.8 optimizations) :
 # FLAGS =   -O3 -mmacosx-version-min=10.5 $(FCINCLUDE)
 # Production code Linux:
-#  FLAGS = -O3
+  FLAGS = -O3
 
 
 ########################################
@@ -86,6 +86,6 @@ endif
 # F90 =  gfortran
 # FLAGS = -ffree-line-length-none -mcmodel=medium -march=native -O2
 # FDV, cygwin
-  F90 = gfortran
-  FLAGS = -ffree-line-length-none -cpp -O3
+#  F90 = gfortran
+#  FLAGS = -ffree-line-length-none -cpp -O3
 
