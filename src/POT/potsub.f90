@@ -337,7 +337,7 @@ subroutine pot !KJ put everything in modules 7-09
   !     read(956,*) Q_Tot
   !     xntot = xntot - Q_Tot
 
-  write(*,*) 'xntot is: ',xntot
+  !write(*,*) 'xntot is: ',xntot
   !write(*,*) 'xnvmu(:,0)',xnvmu(:,0)
   !write(*,*) 'xnvmu(:,1)',xnvmu(:,1)
 

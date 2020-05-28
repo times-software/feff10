@@ -80,7 +80,10 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
   EmptyCell=.false.  !KJ 6-09
 
   !     find rmt from rnrm only on first call of istprm (rmt(0)=-1)
-  if(.NOT.ALLOCATED(lnear)) allocate(lnear(0:nphx))
+  if(.NOT.ALLOCATED(lnear)) THEN
+     allocate(lnear(0:nphx))
+     lnear = .FALSE. ! JJK - added initialization of lnear since some compilers initialize it to true.
+  END IF
   if (rmt(0).le.0.0) then
     do 10 iph=0,nph
       10  lnear(iph)=.false.
@@ -188,7 +191,7 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
         rmt(iph) = exp(xx(imax)) - 0.0001
       endif
     endif
-
+    
     140 continue
 
     ! Now set rmt for empty cells to touching.
@@ -329,7 +332,6 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
       ! end if
 
       vtot(i,iph) = vclap(i,iph) + vvbh
-
       if (mod(ixc,10).eq.5) then
         rsval = 10.0
         if (edenvl(i,iph) .gt. 0.00001) rsval = (edenvl(i,iph)/3)**(-third)

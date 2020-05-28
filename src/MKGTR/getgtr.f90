@@ -86,13 +86,15 @@ subroutine getgtr
   dum = dcmplx(0)
 
 
-  nsp = 2 
+
+  nsp = 1
   if (abs(ispin).eq.1 ) nsp = nspx
   !KJ new treatment:
-  nsp=nspx
+  !nsp=nspx JK - This is not correct for ispin = 2 or 0 when nspx = 2.
 
   !     need less data than rphbin.f provides, also dimensions of ph array are different.
-  call rdxsph (ne, ne1, ne3, nph, ihole, rnrmav, xmu, edge, ik0, em, eref, iz, potlbl, ph, rkk, lmax, lmaxp1)
+  call rdxsph (ne, ne1, ne3, nph, ihole, rnrmav, xmu, edge,        &
+       &    ik0, em, eref, iz, potlbl, ph, rkk, lmax, lmaxp1)
   call setkap (ihole, kinit, linit)  
 
   !KJ 1-06  I added the do-loop around the call to bcoef for ELNES calcul.
@@ -135,12 +137,12 @@ subroutine getgtr
   ! Form gtr
   do ie = 1, ne
      do k1 = 1,8
+        ix1 = nsp * ( lnd(k1)**2 +  lnd(k1) )
         do is1 = 1,nsp
+           ms1 = is1 - 1
            do k2 = 1,8
+              ix2 = nsp * ( lnd(k2)**2 +  lnd(k2) )
               do is2 = 1,nsp
-                 ix1 = nsp * ( lnd(k1)**2 +  lnd(k1) )
-                 ix2 = nsp * ( lnd(k2)**2 +  lnd(k2) )
-                 ms1 = is1 - 1
                  ms2 = is2 - 1
                  if (lnd(k2).ge.0 .and. lnd(k1).ge.0) then
                     do m1=-lnd(k1), lnd(k1)
@@ -150,7 +152,6 @@ subroutine getgtr
                                   & gg(ix1+nsp*m1+is1,ix2+nsp*m2+is2,0,ie) * &
                                     bmat(m2,ms2,k2, m1,ms1,k1,ip) * &
                                     rkk(ie,k1,is1)*rkk(ie,k2,is2)
-!                             write(99,*) gtr(ip,ie)
                           enddo  ! ip
                        enddo  ! m2
                     enddo  ! m1

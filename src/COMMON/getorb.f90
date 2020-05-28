@@ -91,10 +91,10 @@
       iscr = 0
       iion = 0
       iholep = ihole
-	  if(index.eq.iz) then !KJ
-	     iphl=iph  !=> use potential index to retrieve occupation numbers
-	  else
-	     iphl=-743 !negative number  => use modified (ionized) atomic number to retrieve atomic numbers
+      if(index.eq.iz) then !KJ
+         iphl=iph  !=> use potential index to retrieve occupation numbers
+      else
+         iphl=-743 !negative number  => use modified (ionized) atomic number to retrieve atomic numbers
       endif
 
 
@@ -221,3 +221,22 @@
       return
       end  ! subroutine getorb
 
+      ! JK - added getspin to use for XMCD when no spin occupations
+      !      are defined in potentials input. In this case it will 
+      !      just use the sum of spin occupation as defined in the
+      !      atomic configuration.
+      real*8 function getspin (iz, ihole, xion, iph)
+          IMPLICIT NONE
+          integer,intent(in)  :: iz, ihole
+	  real*8,intent(in)   :: xion
+          integer iph, iunf, i
+	  integer :: norb, norbco, iorb(-4:3), iholep, nqn(30), nk(30)
+	  real*8  :: xnel(30), xnval(30), xmag(30)
+          iunf = 0
+          xmag = 0.d0
+          call getorb (iz, ihole, xion, iunf, norb, norbco, iorb, iholep, nqn, nk, xnel, xnval, xmag, iph)  
+          getspin=0.0
+          DO i = 1, 30
+             getspin = getspin + xmag(i)
+          END DO
+      end function getspin

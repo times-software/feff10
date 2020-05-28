@@ -165,6 +165,7 @@ subroutine fms(lfms, nsp, ispin, inclus, npot, ck, lipotx, xphase,&
    allocate(g0(istatx,istatx), g0t(istatx,istatx))
    allocate(clm(lx+2, 2*lx+3), xclm(0:lx, 0:lx, nclusx, nclusx,nspx))
    allocate(xrho(nclusx, nclusx, nspx))
+   g0t = 0.d0 ! JK - added initialization of g0t to get rid of valgrind errors.
 
    minv = minvin
    if (allocated(gg_full) .and. minv .ne. 0) then

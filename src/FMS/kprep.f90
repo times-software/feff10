@@ -38,7 +38,10 @@ subroutine kprep(em,ne,prepare_structure_factors)
   real*8,allocatable :: CGC(:,:)
   complex*16,allocatable :: crellocal(:,:),rclocal(:,:),rrellocal(:,:)
  ! complex*16 w1(32,32),w2(32,32)
-  complex*16 w1(2*(maxl+1)**2,2*(maxl+1)**2),w2(2*(maxl+1)**2,2*(maxl+1)**2)
+!  complex*16,allocatable:: w1(2*(maxl+1)**2,2*(maxl+1)**2),w2(2*(maxl+1)**2,2*(maxl+1)**2)
+! JK - The above made no sense, as maxl is initialized below. Now making w1 and w2 
+  complex*16,allocatable:: w1(:,:),w2(:,:)
+! allocatable
   integer savenph !KJ don't like this but am stumped ...
 
   !     debugging
@@ -70,6 +73,7 @@ subroutine kprep(em,ne,prepare_structure_factors)
   if (.not.allocated) then
      call init_strfacs  !KJ 11-2011 : this just zeroes streta,strrmax,strgmax,eimag - after they've been read from file! || update: changed init_strfacs
      call init_boundaries(maxl,nats)
+     call init_drot
      !	   call init_gk(msize,nkp)
      call init_workstrfacs(nats)
      call init_workstrfacs2
@@ -135,6 +139,7 @@ if (.not.prepare_structure_factors) return  !KJ 2-2012
 
 
   ! allocate some locals
+  allocate(w1(2*(maxl+1)**2,2*(maxl+1)**2),w2(2*(maxl+1)**2,2*(maxl+1)**2))
   allocate(NLQ(NQMAX),LTAB(NMUEMAX),KAPTAB(NMUEMAX),NMUETAB(NMUEMAX),CGC(NKMPMAX,2) )
   allocate(crellocal(nkmmax,NKMMAX),rclocal(NKMMAX,NKMMAX),rrellocal(NKMMAX,NKMMAX))
 
@@ -398,6 +403,7 @@ if (.not.prepare_structure_factors) return  !KJ 2-2012
 
            ! kill some locals
            deallocate(NLQ,LTAB,KAPTAB,NMUETAB,CGC,crellocal,rrellocal,rclocal)
+           deallocate(w1,w2)
 
            !     following section only works if you've already run kgen
            if(usesym.eq.1) then

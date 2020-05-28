@@ -435,7 +435,8 @@ endif
  !nsp = nspu
  !KJ changed again:
  ! nspx now linked to nspu through "use" statement
- nsp = nspx
+ !nsp = nspx ! JK - This was not correct for ispin = 2, which requires nsp = 1 even when nspx = 2.
+ !PRINT*, 'nsp=', nsp
  if (nsp.gt.nspx) then
     call wlog('ERROR - FEFF wants to do a spin-polarized calculation in xsphsub but nspx=1 (arrays are too small).')
     stop

@@ -137,8 +137,11 @@
 ! of the point group.
       
         allocate (difs(3,p,p),rotc(types,p,3),mapped(p,p),mappedsmall(p))
-      ntrans=natom(1)*ncells
-        allocate (trans(3,ntrans,ntrans,ntot),istrans(ntot,ntrans,ntrans))
+        ! JK - below trans(:,:,:,num) is assigned to difs(:,:,:) without checking dimensions. Thus I'm
+        ! changing the allocation to 3,p,p,ntot
+        ntrans=natom(1)*ncells
+        !allocate (trans(3,ntrans,ntrans,ntot),istrans(ntot,ntrans,ntrans))
+        allocate (trans(3,p,p,ntot),istrans(ntot,p,p))
         difs=dble(0)
         rotc=dble(0)
         istrans=.true.
@@ -171,7 +174,7 @@
                  enddo
               enddo
               enddo
-              if(it.eq.1) trans(:,:,:,ipoint)=-difs
+              if(it.eq.1) trans(:,:,:,ipoint)=-difs(:,:,:)
 
       debug=.false.
         if(debug) then
@@ -283,8 +286,8 @@
                   end do
                   end do
                   spacegr(p,k,nspacegr)=spacegr(p,k,nspacegr)/pi2
-                 enddo
-                 enddo
+               enddo
+               enddo
                  call subtract_a(bvs,trans(:,j,it,i),                   &
      &                           spacegr(:,4,nspacegr),p)
 !	         spacegr(:,4,nspacegr)=trans(:,j,it,i)

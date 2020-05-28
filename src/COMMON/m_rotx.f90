@@ -50,6 +50,8 @@ contains
 
     allocate(drix(-lx:lx,-lx:lx,0:lx,0:1,nclusx,nclusx))
     allocate(drisav(-lx:lx,-lx:lx,0:lx,jsavx))
+    drix = 0.d0
+    drisav = 0.d0
   end subroutine init_rotx
 
   subroutine kill_rotx

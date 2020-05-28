@@ -17,7 +17,7 @@ subroutine ff2xmu (ispec, ipr4, idwopt, critcw, s02, sig2g,       &
   use m_thermal_xscorr, only: thermal_xscorr
   implicit double precision (a-h, o-z)
 
-  parameter (eps4 = 1.0e-4)
+  parameter (eps4 = 1.0d-4)
   integer ipmin,ipmax,ipstep,elnes !KJ my variables 1-06
   integer absolu !KJ 3-06
 

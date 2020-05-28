@@ -99,7 +99,7 @@
 
 !     Functions :
       integer,external :: itoken,istrln
-      real*8,external :: dist
+      real*8,external :: dist, getspin
       integer iTmp
 
    10 format (a)
@@ -2234,10 +2234,28 @@
       nphu=nph  !number of unique potential types
       if (abs(ispin).eq.1 .or. abs(ispin).eq.2) then  !SPIN card set; do spin-polarized calculation:
          nspu=2
+         ! JK - set spinph here if it was not set in POTENTIALS card.
+         DO iph = 0, nph
+            IF(spinph(iph).LT.-1.d8) THEN
+               IF(iph.EQ.0) THEN
+                  PRINT*, 1
+                  spinph(iph) = getspin(iz(iph),ihole,xion(iph),iph)
+               ELSE
+                  spinph(iph) = getspin(iz(iph),0,xion(iph),iph)
+               END IF
+               call wlog('No spin set in POTENTIALS card. Using default spins:') 
+               call wlog('iph   spinph')
+               WRITE(slog,'(I3,X,f3.1)') iph, spinph(iph)
+               call wlog(slog)
+            END IF
+         END DO
+              
       elseif(i_hubbard .ge. 2) then  !HUBBARD-U calculation:
          nspu=2
+         spinph = 0.d0 
       else    ! regular spin-averaged calculation:
          nspu=1
+         spinph = 0.d0
       endif
 
 !    2/ : happens inside write_dimensions

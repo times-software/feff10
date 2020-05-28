@@ -5,7 +5,7 @@
 ! $Date: 2012/02/04 04:55:18 $
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      subroutine rdxsphjas ( ne, ne1, ne3, ne4, nph, ihole, rnrmav,xmu,edge, &
+      subroutine rdxsphjas ( ne, ne1, ne3, nph, ihole, rnrmav,xmu,edge, &
            ik0, em, eref, iz, potlbl, ph, rkk, lmax, lmaxp1)  !KJ 7-09 moved kfinmax,indmax to module nrixs_inp
 !     reads file 'phase.bin'
 !  Energy grid information
@@ -56,7 +56,7 @@
       call chopen (ios, 'phase.bin', 'rdxsph')
 
       ! read(1,10) nsp, ne, ne1, ne3, nph, ihole, ik0, npadx, kfinmaxt,indmaxt,nqt !KJ 7-09 indmaxt instead of indmax - these 3 values are essentially ignored
-      read(1,10) nsp, ne, ne1, ne3, ne4, nph, ihole, ik0, npadx, kfinmaxt,indmaxt,nqt  ! Added by TS
+      read(1,10) nsp, ne, ne1, ne3, nph, ihole, ik0, npadx, kfinmaxt,indmaxt,nqt  ! Added by TS
   10  format (11(1x,i4))
 
       if (kfinmax.ne.kfinmaxt .or. indmax.ne.indmaxt) then

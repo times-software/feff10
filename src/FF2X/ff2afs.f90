@@ -65,7 +65,7 @@
       dimension omega(nex), xkxs(nex), xsnorm(nex), fpp(nex)
       
 ! !KJ locals  1-06
-      integer iip,nip
+      integer iip,nip,niptmp
       logical cross 
       character*9 f1,f2
       character*10 f0,f3
@@ -90,8 +90,8 @@
          ntfms = 1
          read(1, 113) titfms
   113    format(a)
-         read(1, 115) ne, ne1, ne3, nph, npadx
-  115    format(5(1x,i3))
+         read(1, 115) ne, ne1, ne3, nph, npadx, niptmp ! JK added read of niptmp. Could check that files are consistent this way.
+  115    format(6(1x,i7))
          call rdpadx(1, npadx, gtrtemp, ne*nip)  !KJ I added *nip, changed gtr to gtrtemp  1-06
       endif
       close (unit=1)

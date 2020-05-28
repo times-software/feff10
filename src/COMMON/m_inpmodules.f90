@@ -672,7 +672,7 @@
 			totvol = 0.d0
 			gamach = 0.d0 !initialized later by setgam
 			xnatph(:) = 0.d0
-			spinph(:) = 0.d0
+			spinph(:) = -1.d10
 			xion(:) = 0.d0
 			folp(:) = 1.d0
 		    ExternalPot = .false.
@@ -1339,8 +1339,7 @@
 			pcritk = 0.e0
 			pcrith = 0.e0
 			rmax = -1 * 1.e0
-			nlegxx = 10
-			nlegxx = 6
+			nlegxx = 7
 			nncrit = 0
 		end subroutine paths_init
 

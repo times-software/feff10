@@ -9,10 +9,11 @@
 !       THE K-MESH TO SAMPLE THE BRILLOUIN ZONE
 !*****************************************************************************
         module kklist
+      use boundaries, only: maxl
 !    Number of k-points for the BZ mesh
       integer nkp
 !    BZ mesh size, specified as nkx x nky x nkz
-     integer nkx,nky,nkz
+      integer nkx,nky,nkz
 !    Use symmetry (1) or not (0) for this mesh
       integer usesym
 !    Type of k-mesh
@@ -22,7 +23,8 @@
 	  ! ktype=3  :  use nkp points for ldos/fms and nkp/5 points for pot (near edge) ; reduce nkp for all modules as we get away from near-edge
 !    Rotation matrices for spherical harmonics
       !complex*16 drot(32,32,48,2)  !lx=3
-      complex*16 drot(50,50,48,2)   !lx=4
+      !complex*16 drot(2*(maxl+1)**2,2*(maxl+1)**2,48,2) 
+      complex*16,allocatable :: drot(:,:,:,:)   !JK - Changed to use allocatable
         complex*16, allocatable :: mrot(:,:,:)
 !    The k-mesh itself!
       real*8, allocatable :: bk(:,:)
@@ -47,6 +49,7 @@
             integer,intent(in) :: n,nsym !KJ added nsym 6-09
             allocate(bk(3,n),weight(n))
             allocate(intn(n),inti(n,nsym,2),intw(n,nsym))
+            
             intn=0
             inti=0
             intw=dble(0)
@@ -63,6 +66,13 @@
 		     if(allocated(inti)) deallocate(inti)
 		     if(allocated(intn)) deallocate(intn)
 		     if(allocated(intw)) deallocate(intw)
+		     if(allocated(drot)) deallocate(drot)
           end subroutine destroy_kklist
+
+          ! JK - added to make drot allocatable.
+          subroutine init_drot
+             if(.not.allocated(drot))  &
+                allocate(drot(2*(maxl+1)**2,2*(maxl+1)**2,48,2))
+          end subroutine init_drot
 
         end module kklist

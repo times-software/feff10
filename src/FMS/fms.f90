@@ -72,7 +72,6 @@ program ffmod3
   endif
 
   ! OUTPUT: gg.bin file for the next modules
-  if (master) close (unit=11)
 
   ! Deallocate needed modules
   call kill_stkets
@@ -89,6 +88,7 @@ program ffmod3
          '(communication time', wall_comm,'s)'
         call wlog('Done with module: FMS.'//char(13)//char(10))
   endif
+  if (master) close (unit=11)
 
 
   call par_end

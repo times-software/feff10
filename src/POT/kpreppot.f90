@@ -39,7 +39,9 @@
       real*8 ALAT,BOA,COA,VOL,FACT(0:100),etop,gmulti,rmulti
       real*8,allocatable :: CGC(:,:)
       complex*16,allocatable :: crellocal(:,:),rclocal(:,:),rrellocal(:,:)
-      complex*16 w1(2*(maxl+1)**2,2*(maxl+1)**2),w2(2*(maxl+1)**2,2*(maxl+1)**2)
+!  complex*16,allocatable:: w1(2*(maxl+1)**2,2*(maxl+1)**2),w2(2*(maxl+1)**2,2*(maxl+1)**2)
+! JK - The above made no sense, as maxl is initialized below. Now making w1 and w2 
+      complex*16,allocatable :: w1(:,:),w2(:,:)
 
 
 !     debugging
@@ -76,6 +78,7 @@
       if (.not.allocated) then
          call init_strfacs
          call init_boundaries(maxl,nats)
+         call init_drot
 !	      call init_gk(msize,nkp)
          call init_workstrfacs(nats)
          call init_workstrfacs2
@@ -148,6 +151,7 @@
 ! allocate some locals
       allocate(NLQ(NQMAX),LTAB(NMUEMAX), KAPTAB(NMUEMAX),NMUETAB(NMUEMAX),CGC(NKMPMAX,2) )
       allocate(crellocal(nkmmax,NKMMAX),rclocal(NKMMAX,NKMMAX), rrellocal(NKMMAX,NKMMAX))
+      allocate(w1(2*(maxl+1)**2,2*(maxl+1)**2),w2(2*(maxl+1)**2,2*(maxl+1)**2))
 
 
       if(debug) then
@@ -421,6 +425,7 @@
 
 ! kill some locals
       deallocate(NLQ,LTAB,KAPTAB,NMUETAB,CGC,crellocal,rrellocal,rclocal)
+      deallocate(w1,w2)
 
 !     following section only works if you've already run kgen
       if(usesym.eq.1) then

@@ -64,6 +64,8 @@
 			   lgnt123=1200  !Will probably crash if lin>4 - but then so will much of the FEFF code ...
 			endif
 ! angular momentum expansion of wave functions
+            ! JK - lin can't be greater tha maxl, since drot is dimensioned using maxl.
+            IF(lin.GT.maxl) STOP 'lin > maxl in init_boundaries.' 
             nlmax=lin+1
             nkmax=2*nlmax-1
             nkmmax=2*nlmax**2

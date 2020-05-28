@@ -92,6 +92,7 @@
            gtr_offloc(0:lx,nspx*(lx+1)**2,nspx*(lx+1)**2,2, 0:nphx,nex), &
            gtr_mloc(0:lx,nspx*(lx+1)**2,2,0:nphx,nex) )
 
+  lmaxphpass = lmaxph
   UseTFrm(:,:) = .False.
   UseTFrm(l_hubbard,1) = .true.
 
@@ -209,7 +210,7 @@
                    enddo
                 enddo
              enddo
-             call fms_h(lfms, nsp,ispin,inclus,nph,ck,lmaxphpass,xphase_m,ie,iverb,minv,rdirec,toler1,toler2,lcalc,gg_m,  &
+             call fms_h(lfms, nsp,ispin,inclus,nph,ck,lmaxphpass,xphase_m,ie,iverb,rdirec,toler1,toler2,lcalc,gg_m,  &
                      TFrm, TFrmInv, UseTFrm)
           endif
 
