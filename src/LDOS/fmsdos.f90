@@ -53,7 +53,7 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
   ! Added to satisfy implicit none
   integer :: iat,idwopx
   integer :: ipot,imj,nk,ik,istart,isize,iverb
-  integer :: nsp,ispin,j,maxl,ip,ios,isp
+  integer :: nsp,ispin,j,ip,ios,isp
   integer :: is,i,indx,length,maxlen,ixl,iyl
   integer :: il,ix,im,ii,ie,ipp,ill
   real*8  :: wall_prep,wall_yprep

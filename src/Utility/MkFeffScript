@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -x
 #
 cd ../bin/
 if [ "X$1" = "Xmpi" ]
@@ -28,8 +28,7 @@ then
 	echo '$MPICOMMAND $FeffPath/rhorrp'  >> feffmpi
 #	echo 'wipe' >> feffmpi
 	chmod u+x feffmpi
-elif [ "X$1" = "Xseq" ]
-then
+else
 	pd=`pwd`
 	echo '#!/bin/bash' > feff	
         echo "FeffPath=$pd/Seq" >> feff
@@ -52,37 +51,4 @@ then
 	echo '$FeffPath/eels' >> feff
 	echo '$FeffPath/rhorrp' >> feff
 	chmod u+x feff
-else
-	pd=`pwd`
-	echo '#!/bin/bash' > feff	
-        l1="FeffPath=${pd}/Mono" >> feff
-	l2='$FeffPath/feff' >> feff
-	echo -e "${l1}\n${l2}" >> feff
-	chmod u+x feff
 fi
-
-
-exit 0
-#KJ Feb 2013 - skip the stuff below.  We don't need it anymore.
-
-cd Seq
-for i in ffmod1 ffmod2 ffmod3 ffmod4 ffmod5 ffmod6
-do
-   echo '#!/bin/csh -f' > $i
-   echo "set FeffPath = $pd/Seq" >> $i
-   cat $i.seed >> $i
-   chmod u+x $i
-done
-
-cd ../MPI
-for i in ffmod1 ffmod2 ffmod3 ffmod4 ffmod5 ffmod6
-do
-   echo '#!/bin/csh -f' > $i
-   echo "set FeffPath = $pd/MPI" >> $i
-   cat $i.seed >> $i
-   chmod u+x $i
-done
-cd ..
-
-
-cd -	
