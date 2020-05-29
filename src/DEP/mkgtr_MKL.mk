@@ -12,8 +12,8 @@ mkgtrSRC = \
 ./COMMON/iniptz.f90 ./MATH/bcoef.f90 
 mkgtr_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_constants.f90 ./KSPACE/m_struct.f90 \
-./KSPACE/m_controls.f90 ./KSPACE/m_kklist.f90 ./KSPACE/m_kgenwork.f90 \
-./KSPACE/m_tetrahedra.f90 ./KSPACE/m_controlkgen.f90 ./COMMON/m_dimsmod.f90 \
-./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 ./COMMON/m_nrixs.f90 \
-./ERRORMODS/m_errormod.f90 ./IOMODS/m_iofiles.f90 ./IOMODS/m_padio.f90 \
-./IOMODS/m_iomod.f90 ./ERRORMODS/m_errorfile.f90 
+./KSPACE/m_controls.f90 ./KSPACE/m_boundaries.f90 ./KSPACE/m_kklist.f90 \
+./KSPACE/m_kgenwork.f90 ./KSPACE/m_tetrahedra.f90 ./KSPACE/m_controlkgen.f90 \
+./COMMON/m_dimsmod.f90 ./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 \
+./COMMON/m_nrixs.f90 ./ERRORMODS/m_errormod.f90 ./IOMODS/m_iofiles.f90 \
+./IOMODS/m_padio.f90 ./IOMODS/m_iomod.f90 ./ERRORMODS/m_errorfile.f90 

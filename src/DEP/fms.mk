@@ -24,10 +24,10 @@ fmsSRC = \
 ./FMS/fmspack_h.f90 ./FMS/gglu_h.f90 
 fms_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_constants.f90 ./KSPACE/m_struct.f90 \
-./KSPACE/m_controls.f90 ./KSPACE/m_kklist.f90 ./KSPACE/m_kgenwork.f90 \
-./KSPACE/m_tetrahedra.f90 ./KSPACE/m_controlkgen.f90 ./COMMON/m_dimsmod.f90 \
-./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 ./COMMON/m_nrixs.f90 \
-./KSPACE/m_energygrid.f90 ./KSPACE/m_boundaries.f90 ./KSPACE/m_workstrfacs2.f90 \
+./KSPACE/m_controls.f90 ./KSPACE/m_boundaries.f90 ./KSPACE/m_kklist.f90 \
+./KSPACE/m_kgenwork.f90 ./KSPACE/m_tetrahedra.f90 ./KSPACE/m_controlkgen.f90 \
+./COMMON/m_dimsmod.f90 ./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 \
+./COMMON/m_nrixs.f90 ./KSPACE/m_energygrid.f90 ./KSPACE/m_workstrfacs2.f90 \
 ./KSPACE/m_workstrfacs.f90 ./KSPACE/m_workstrfacssimple.f90 ./KSPACE/m_trafo.f90 \
 ./KSPACE/m_wigner3j.f90 ./COMMON/m_rotx.f90 ./COMMON/m_lnlm.f90 \
 ./COMMON/m_xstruc.f90 ./COMMON/m_afctr.f90 ./ERRORMODS/m_errormod.f90 \

@@ -28,9 +28,9 @@ atomicSRC = \
 ./MATH/polint.f90 ./COMMON/padlib.f90 
 atomic_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_constants.f90 ./KSPACE/m_struct.f90 \
-./KSPACE/m_controls.f90 ./KSPACE/m_kklist.f90 ./KSPACE/m_kgenwork.f90 \
-./KSPACE/m_tetrahedra.f90 ./KSPACE/m_controlkgen.f90 ./KSPACE/m_energygrid.f90 \
-./KSPACE/m_boundaries.f90 ./KSPACE/m_workstrfacs2.f90 ./KSPACE/m_workstrfacs.f90 \
+./KSPACE/m_controls.f90 ./KSPACE/m_boundaries.f90 ./KSPACE/m_kklist.f90 \
+./KSPACE/m_kgenwork.f90 ./KSPACE/m_tetrahedra.f90 ./KSPACE/m_controlkgen.f90 \
+./KSPACE/m_energygrid.f90 ./KSPACE/m_workstrfacs2.f90 ./KSPACE/m_workstrfacs.f90 \
 ./KSPACE/m_workstrfacssimple.f90 ./KSPACE/m_trafo.f90 ./KSPACE/m_strfacs.f90 \
 ./KSPACE/m_wigner3j.f90 ./COMMON/m_dimsmod.f90 ./COMMON/m_inpmodules.f90 \
 ./ERRORMODS/m_errormod.f90 ./COMMON/m_config.f90 ./IOMODS/m_iofiles.f90 \

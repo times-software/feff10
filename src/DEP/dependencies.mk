@@ -258,7 +258,7 @@
 ./KSPACE/m_controls.o: Compiler.mk
 ./KSPACE/m_energygrid.o: Compiler.mk
 ./KSPACE/m_kgenwork.o: Compiler.mk
-./KSPACE/m_kklist.o: Compiler.mk
+./KSPACE/m_kklist.o: ./KSPACE/m_boundaries.o Compiler.mk
 ./KSPACE/m_strfacs.o: Compiler.mk
 ./KSPACE/m_struct.o: Compiler.mk
 ./KSPACE/m_tetrahedra.o: Compiler.mk

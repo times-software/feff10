@@ -11,6 +11,6 @@ pathSRC = \
 ./MATH/strap.f90 ./PATH/mpprmd.f90 
 path_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_constants.f90 ./COMMON/m_dimsmod.f90 \
-./KSPACE/m_controls.f90 ./KSPACE/m_struct.f90 ./KSPACE/m_kklist.f90 \
-./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 ./COMMON/m_nrixs.f90 \
-./ERRORMODS/m_errorfile.f90 
+./KSPACE/m_controls.f90 ./KSPACE/m_struct.f90 ./KSPACE/m_boundaries.f90 \
+./KSPACE/m_kklist.f90 ./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 \
+./COMMON/m_nrixs.f90 ./ERRORMODS/m_errorfile.f90 

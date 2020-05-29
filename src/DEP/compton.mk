@@ -16,7 +16,8 @@ comptonSRC = \
 ./MATH/lu.f90 ./MATH/seigen.f90 
 compton_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_dimsmod.f90 ./KSPACE/m_controls.f90 \
-./KSPACE/m_struct.f90 ./KSPACE/m_kklist.f90 ./KSPACE/m_strfacs.f90 \
-./COMMON/m_constants.f90 ./COMMON/m_inpmodules.f90 ./COMPTON/m_rotation.f90 \
-./COMMON/m_ifuns.f90 ./COMMON/m_config.f90 ./MATH/m_polyfit.f90 \
-./RHORRP/m_rhorrp.f90 ./COMPTON/m_compton.f90 ./ERRORMODS/m_errorfile.f90 
+./KSPACE/m_struct.f90 ./KSPACE/m_boundaries.f90 ./KSPACE/m_kklist.f90 \
+./KSPACE/m_strfacs.f90 ./COMMON/m_constants.f90 ./COMMON/m_inpmodules.f90 \
+./COMPTON/m_rotation.f90 ./COMMON/m_ifuns.f90 ./COMMON/m_config.f90 \
+./MATH/m_polyfit.f90 ./RHORRP/m_rhorrp.f90 ./COMPTON/m_compton.f90 \
+./ERRORMODS/m_errorfile.f90 

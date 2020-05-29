@@ -7,7 +7,7 @@ eelsSRC = \
 ./EELS/writeangulardependence2.f90 
 eels_MODULESRC = \
 ./COMMON/m_constants.f90 ./PAR/m_par.f90 ./COMMON/m_dimsmod.f90 \
-./KSPACE/m_controls.f90 ./KSPACE/m_struct.f90 ./KSPACE/m_kklist.f90 \
-./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 ./EELS/m_spectrum.f90 \
-./EELS/m_qvectors.f90 ./EELS/m_work.f90 ./EELS/m_program_control.f90 \
-./ERRORMODS/m_errorfile.f90 
+./KSPACE/m_controls.f90 ./KSPACE/m_struct.f90 ./KSPACE/m_boundaries.f90 \
+./KSPACE/m_kklist.f90 ./KSPACE/m_strfacs.f90 ./COMMON/m_inpmodules.f90 \
+./EELS/m_spectrum.f90 ./EELS/m_qvectors.f90 ./EELS/m_work.f90 \
+./EELS/m_program_control.f90 ./ERRORMODS/m_errorfile.f90 
