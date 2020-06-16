@@ -101,6 +101,12 @@
     if (ispin.ne.0) then
        idmag = 1
        if (ispin.lt.0) idmag = -1
+       do iph = 0, nph
+          do i = 1, 251
+             dmag(i,iph) = dmag(i, iph) * spinph(iph)
+          enddo
+       enddo
+
        call  istprm (nph, nat, iphat, rat, iatph, xnatph,               &
                  novr, iphovr, nnovr, rovr, folp, folpx, iafolp,    &
                  edens, edenvl, idmag,                              &
