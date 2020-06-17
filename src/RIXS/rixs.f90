@@ -91,7 +91,7 @@ PROGRAM RIXS
   CALL reafms
 
   CALL rixs_read
-  IF(RixsI%m_run.EQ.0) CALL par_stop
+  IF(RixsI%m_run.EQ.0) goto 400
   CALL rixs_set(gam_ch, gam_exp, EMin, EMax, xmu, ReadPoles, SkipCalc, MBConv, ReadSigma)
   !PRINT*, 'lx, ipmin, ipmax'
   !PRINT*, lx, ipmin, ipmax
@@ -1141,6 +1141,5 @@ PROGRAM RIXS
   400 call par_barrier
       call par_end
   if(master)call WipeErrorfileAtFinish
-  stop
 
 END PROGRAM RIXS
