@@ -3,7 +3,7 @@ TITLE NRIXS calculation for K edge of MgB2
 EDGE K
 S02 0.0
 
-CONTROL 0 1 1 1 1 1
+CONTROL 1 1 1 1 1 1
 
 *         ixc  [ Vr  Vi ]
 EXCHANGE 0 1.5 0.4 0
