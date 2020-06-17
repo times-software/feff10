@@ -1,12 +1,13 @@
 #!/bin/bash
-files=`find -name referencexmu.dat`
+files=`find -name referencexmu.dat |grep -v HUBBARD`
 pd=`pwd`
 if [ "X$1" == "X" ]
 then
-	cmd="$pd/../bin/feff"
+	cmd="feff"
 else
 	cmd='echo'
 fi
+pd=`pwd`
 rm -f test.log
 for file in $files
 do
@@ -18,7 +19,7 @@ do
 	echo "Test: $file"
 	echo '##################################################################################################'
 	echo '##################################################################################################'
-	$cmd |tee feff.out |sed 's/^/       /'
+	$pd/../bin/$cmd |tee feff.out |sed 's/^/       /'
         # Get reference files.
         rfiles=`ls reference*`
 	for rfile in $rfiles
@@ -32,13 +33,15 @@ do
 			echo '##################################################################################################'
 			echo '##################################################################################################'
 			echo -n "$file: "
-			paste xmu1.dat xmu2.dat |awk 'BEGIN{s4=0.0;s6=0.0;diff4=0.0;diff6=0.0} \
-			{if($1==$8) {s4=s4+($5+$12)^2; diff4=diff4+($5-$12)^2;s6=s6+($7+$14)^2; diff6=diff6+($7-$14)^2}}END{if(diff4/s4*100.0 < 0.1 && diff6/s6*100.0< 0.1) print "pass"; else print "fail", diff6/s6*100.0}'
+			echo 'xmu.dat' > rsqr.in
+			echo 'referencexmu.dat' >> rsqr.in
+			echo 1 >> rsqr.in
+			echo 4 >> rsqr.in
+			python2.7 $pd/rsqr.py < rsqr.in| awk '{if($1*100.0 < 0.1) print "pass"; else print "fail", $1*100.0}' 
 			echo '##################################################################################################'
 			echo '##################################################################################################'
 			echo -n "$file: " >> $pd/test.log
-			paste xmu1.dat xmu2.dat |awk 'BEGIN{s4=0.0;s6=0.0;diff4=0.0;diff6=0.0} \
-				{if($1==$8) {s4=s4+($5+$12)^2; diff4=diff4+($5-$12)^2;s6=s6+($7+$14)^2; diff6=diff6+($7-$14)^2}}END{if(diff4/s4*100.0 < 0.1 && diff6/s6*100.0< 0.1) print "pass"; else print "fail", diff6/s6*100.0}' >> $pd/test.log
+			python2.7 $pd/rsqr.py < rsqr.in| awk '{if($1*100.0 < 0.1) print "pass"; else print "fail", $1*100.0}' >> $pd/test.log
 			echo
 		else
 			echo '##################################################################################################'
