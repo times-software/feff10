@@ -73,13 +73,15 @@
         implicit none
         integer n
 
+        ! JK - Check here if allocated. Keep going if they are.
+		if(.not.allocated(ppos)) allocate(ppos(3,n))
+		if(.not.allocated(ppot)) allocate(ppot(n))
+		if(.not.allocated(lpot)) allocate(lpot(0:n))
+		if(.not.allocated(natom)) allocate(natom(n))
+		if(.not.allocated(label)) allocate(label(0:n))
+		if(.not.allocated(izatom)) allocate(izatom(0:n))
+		if(.not.allocated(firstpos)) allocate(firstpos(n))
 
-		if(allocated(ppos)) write(*,*) 'ppos is allocated'
-		if(allocated(ppot)) write(*,*) 'ppot is allocated'
-		if(allocated(lpot)) write(*,*) 'lpot is allocated'
-		if(allocated(natom)) write(*,*) 'natom is allocated'
-
-        allocate(ppos(3,n),ppot(n),lpot(0:n),natom(n),label(0:n),izatom(0:n),firstpos(n))
         ppos=dble(0)
         natom=0
         ppot=-1

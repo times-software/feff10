@@ -469,10 +469,13 @@
 			 !Careful: the next statement used to be "if size(ppot).eq.0".  However, on ifort size(ppot)=0 but on gfortran it =1!!
 			 !Hence the new instruction.
 			 !I wish if(allocated(ppot)) would work here; I don't understand why it doesn't.
-        	 if(size(ppot).lt.nats) call init_struct(nats) !KJ 7-09 bugfix call this only once ; I can't seem to use "allocated(ppos)" here?
-	         do i=1,nats
-	             read(3,*) ppos(:,i)
-	         enddo
+                 !if(size(ppot).lt.nats) call init_struct(nats) !KJ 7-09 bugfix call this only once ; I can't seem to use "allocated(ppos)" here?
+                 ! JK - replace above here. Check allocation inside
+                 ! init_struct.
+             call init_struct(nats)
+	     do i=1,nats
+	         read(3,*) ppos(:,i)
+	     enddo
              read(3,*) ; read(3,*) ppot
 			 read(3,*) ; read(3,'(100(a2,1x))') label
              read(3,*) ; read(3,*) streta,strgmax,strrmax
