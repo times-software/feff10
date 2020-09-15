@@ -1716,7 +1716,7 @@
 
          !List atoms up to at least rmax + 33%
          magnifier=1.33d0
-         ratomslist=max(8.d0,magnifier*rmax)
+         ratomslist=max(20.d0,magnifier*rmax)
          i1=int(ratomslist/dsqrt(a1(1)**2+a1(2)**2+a1(3)**2))+1
          i2=int(ratomslist/dsqrt(a2(1)**2+a2(2)**2+a2(3)**2))+1
          i3=int(ratomslist/dsqrt(a3(1)**2+a3(2)**2+a3(3)**2))+1
