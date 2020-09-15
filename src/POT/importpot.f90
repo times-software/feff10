@@ -11,17 +11,17 @@
 
       use dimsmod, only: nphx=>nphu, lx, nheadx
       implicit double precision (a-h, o-z)
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       dimension imt(0:nphx), rmt(0:nphx), inrm(0:nphx),  rnrm(0:nphx)
       dimension folp(0:nphx), folpx(0:nphx), dgc0(251), dpc0(251)
-      dimension dgc(251, 30, 0:nphx), dpc(251, 30, 0:nphx)
-      dimension adgc(10, 30, 0:nphx), adpc(10, 30, 0:nphx)
+      dimension dgc(251, 41, 0:nphx), dpc(251, 41, 0:nphx)
+      dimension adgc(10, 41, 0:nphx), adpc(10, 41, 0:nphx)
       dimension edens(251, 0:nphx), vclap(251, 0:nphx)
       dimension vtot(251, 0:nphx), edenvl(251, 0:nphx)
       dimension vvalgs(251, 0:nphx), dmag(251, 0:nphx)
-      dimension xnval(30,0:nphx), qnrm(0:nphx), xnmues(0:lx,0:nphx)
-      dimension eorb(30), kappa(30)
-      dimension iorb(-4:3,0:nphx), iz(0:nphx), xion(0:nphx)
+      dimension xnval(41,0:nphx), qnrm(0:nphx), xnmues(0:lx,0:nphx)
+      dimension eorb(41), kappa(41)
+      dimension iorb(-5:4,0:nphx), iz(0:nphx), xion(0:nphx)
       dimension xnatph(0:nphx)
 
       character*80 title(nheadx)

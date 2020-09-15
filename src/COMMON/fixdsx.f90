@@ -16,9 +16,11 @@ subroutine fixdsx (iph, dxorg, dxnew, dgc, dpc, dgcn, dpcn)
 
 !  implicit double precision (a-h, o-z)
   implicit none
+! Josh Kas - Changed array dimensions from 30 to 41 (and others) for high Z elements
+! according to Pavlo Baranov's changes.
 
-  real*8, dimension(251,30,0:nphx) :: dgc,dpc
-  real*8, dimension(nrptx,30) :: dgcn,dpcn
+  real*8, dimension(251,41,0:nphx) :: dgc,dpc
+  real*8, dimension(nrptx,41) :: dgcn,dpcn
   real*8, dimension(nrptx) :: xorg,xnew
 
   ! Added to satisfy implicit none
@@ -45,7 +47,7 @@ subroutine fixdsx (iph, dxorg, dxnew, dgc, dpc, dgcn, dpcn)
      xnew(j) = xxx(j,dxnew)
   enddo
 
-  IORB_LOOP: do iorb = 1, 30
+  IORB_LOOP: do iorb = 1, 41
      imax = 0
      I_LOOP: do i = 251, 1, -1
         if ( abs(dgc(i,iorb,iph)) .ge. 1.0d-11 .or. abs(dpc(i,iorb,iph)) .ge. 1.0d-11 )  then

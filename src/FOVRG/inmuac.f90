@@ -9,17 +9,18 @@
 
       use dimsmod, only: nrptx
       implicit double precision (a-h,o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 	  integer,intent(in) :: iph !KJ
-      common/dff/cg(nrptx,30),cp(nrptx,30),bg(10,30),bp(10,30),fl(30), fix(30), ibgp
+      common/dff/cg(nrptx,41),cp(nrptx,41),bg(10,41),bp(10,41),fl(41), fix(41), ibgp
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
 ! the meaning of common variables is described below
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30), nq(30),kap(30),nmax(30)
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41), nq(41),kap(41),nmax(41)
 ! en one-electron energies
 ! scc factors for acceleration of convergence
 ! scw precisions of wave functions
 ! sce precisions of one-electron energies
 ! nmax number of tabulation points for orbitals
-      common/scrhf1/eps(435),nre(30),ipl
+      common/scrhf1/eps(820),nre(41),ipl
 ! eps non diagonal lagrange parameters
 ! nre distingue: - the shell is closed (nre <0)
 !                  the shell is open (nre>0)
@@ -31,7 +32,7 @@
 ! this development is supposed to be written anoy(i)*r**(i-1)
 ! nuc index of nuclear radius (nuc=1 for point charge)
       common/tabtec/hx,dr(nrptx),test1,test2,ndor,np,nes,method,idim
-      dimension xnval(30), iorb(-4:3)
+      dimension xnval(41), iorb(-5:4)
       data nucm/11/
 
       testy=10.**(-5)

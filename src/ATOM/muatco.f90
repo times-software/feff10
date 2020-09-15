@@ -9,19 +9,21 @@
 !               * angular coefficients *
 !        sous programmes utilises  cwig3j
 !
+! Josh Kas - Changed array dimensions from 30 to 41 for high Z elements
+! according to Pavlo Baranov's changes.
       implicit double precision (a-h,o-z)
-      dimension xnval(30)
+      dimension xnval(41)
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
       common/mulabk/afgk
-      dimension afgk(30,30,0:3)
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),            &
-     &nq(30),kap(30),nmax(30)
+      dimension afgk(41,41,0:4)
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),            &
+     &nq(41),kap(41),nmax(41)
 !#mn
        external cwig3j
 
-      do 511 i=1,30
-      do 511 j=1,30
-      do 511 k=0,3
+      do 511 i=1,41
+      do 511 j=1,41
+      do 511 k=0,4
  511  afgk(i,j,k)=0.0d00
  601  do 701 i=1,norb
          li= abs(kap(i))*2-1

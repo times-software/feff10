@@ -28,6 +28,7 @@
 
       !implicit double precision (a-h, o-z)
       implicit none
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
 !     INPUT
 !     dx, x0, ri(nr)
@@ -72,12 +73,12 @@
 
       real*8 ri(nrptx), vtot(nrptx), edens(nrptx),dmag(nrptx)
       real*8 dgc0(nrptx), dpc0(nrptx), vvalgs(nrptx), edenvl(nrptx)
-      real*8 dgcn(nrptx,30), dpcn(nrptx,30)
-      real*8 dgcnp(nrptx,30), dpcnp(nrptx,30)
-      real*8 adgc(10,30), adpc(10,30), xnval(30)
-      integer iorb(-4:3)
-      real*8 eorb(30)
-      integer kappa(30)
+      real*8 dgcn(nrptx,41), dpcn(nrptx,41)
+      real*8 dgcnp(nrptx,41), dpcnp(nrptx,41)
+      real*8 adgc(10,41), adpc(10,41), xnval(41)
+      integer iorb(-5:4)
+      real*8 eorb(41)
+      integer kappa(41)
       complex*16 rkk(nex, 8), xsec(nex)
       complex*16 bmat(-lx:lx,0:1,8, -lx:lx,0:1,8)
       dimension kiind(8), lind(8) !KJ renamed kind to kiind to avoid conflicts with reserved name

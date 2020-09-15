@@ -16,6 +16,7 @@
       use dimsmod, only: nrptx
 	  use constants 
       implicit double precision (a-h,o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       parameter (npi=6, test=1.0d+5)
       parameter (ccl=2*alpinv, csq=ccl**2 )
       complex*16 en,agi,api
@@ -23,8 +24,8 @@
       complex*16 gg,ag,gp,ap,dv,av,eg,ceg,ep,cep, vm(nrptx)
       common/comdic/cl,dz,gg(nrptx),ag(10),gp(nrptx),ap(10),dv(nrptx),  &
      &   av(10),eg(nrptx),ceg(10),ep(nrptx),cep(10)
-      common/dff/cg(nrptx,30),cp(nrptx,30),bg(10,30),bp(10,30),         &
-     &             fl(30), fix(30), ibgp
+      common/dff/cg(nrptx,41),cp(nrptx,41),bg(10,41),bp(10,41),         &
+     &             fl(41), fix(41), ibgp
 
       complex*16 ec,eph,f,g, ph(nrptx), qh(nrptx)
       complex*16 pir(nrptx), qir(nrptx)

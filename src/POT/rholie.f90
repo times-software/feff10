@@ -14,6 +14,7 @@
       use DimsMod, only: nrptx, lx
       use constants
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
 !     INPUT
 !     dx, x0, ri(nr)
@@ -49,8 +50,8 @@
       dimension ri(nrptx), ri05(251)
       dimension  vtot(nrptx), vvalgs(nrptx)
       complex*16 vtotc(nrptx), vvalc(nrptx)
-      dimension xnval(30), dgcn(nrptx,30), dpcn(nrptx,30)
-      dimension adgc(10,30), adpc(10,30)
+      dimension xnval(41), dgcn(nrptx,41), dpcn(nrptx,41)
+      dimension adgc(10,41), adpc(10,41)
 
 !     energy grid in complex e-plane
       complex*16 em, eref
@@ -128,12 +129,12 @@
      &                ri, vtotc, vvalc, dgcn, dpcn, adgc, adpc,         &
      &                xnval, pu, qu, pn, qn,                            &
      &                iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
+
         call exjlnl (xkmt, lll, jl, nl)
         call exjlnl (xkmt, lll+1, jlp1, nlp1)
         call phamp (rmt, pu, qu, ck,  jl, nl, jlp1, nlp1, ikap,         &
      &                  phx, temp)
         ph(lll+1)=phx
-
 !     Normalize final state  at rmt to
 !     rmt*(jl*cos(delta) - nl*sin(delta))
         xfnorm = 1 / temp

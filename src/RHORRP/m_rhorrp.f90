@@ -43,6 +43,7 @@ module rhorrp_mod
   use fms_inp, only: lmaxph
   use par
   implicit none
+  !Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   private
 
   !
@@ -77,14 +78,14 @@ module rhorrp_mod
   real*8, allocatable :: rmt(:),folp(:),folpx(:),xnatph(:),qnrm(:),xion(:),rnrm(:)
   public rnrm
   real*8,  dimension(251)    :: dgc0,dpc0
-  !real*8,  dimension(251,30,0:nphx) :: dgc,dpc
-  !real*8,  dimension(10,30,0:nphx) :: adgc,adpc
+  !real*8,  dimension(251,41,0:nphx) :: dgc,dpc
+  !real*8,  dimension(10,41,0:nphx) :: adgc,adpc
   !real*8,  dimension(251,0:nphx) :: edens,vclap,vtot,edenvl,vvalgs,dmag
-  !real*8,  dimension(30,0:nphx) :: xnval
+  !real*8,  dimension(41,0:nphx) :: xnval
   real*8, allocatable :: dgc(:,:,:),dpc(:,:,:),adgc(:,:,:),adpc(:,:,:)
   real*8, allocatable :: edens(:,:),vclap(:,:),vtot(:,:),edenvl(:,:),vvalgs(:,:),dmag(:,:),xnval(:,:)
-  real*8,  dimension(30) :: eorb
-  integer, dimension(30) :: kappa
+  real*8,  dimension(41) :: eorb
+  integer, dimension(41) :: kappa
   !integer,  dimension(-4:3,0:nphx) :: iorb
   integer, allocatable :: iorb(:,:)
   real*8, allocatable :: xnmues(:,:)
@@ -151,11 +152,11 @@ subroutine rhorrp_init
   allocate( imt(0:nphx),inrm(0:nphx),iz(0:nphx), &
    rmt(0:nphx),folp(0:nphx),folpx(0:nphx),xnatph(0:nphx),qnrm(0:nphx),xion(0:nphx), &
    rnrm(0:nphx), &
-   dgc(251,30,0:nphx),dpc(251,30,0:nphx), &
-   adgc(10,30,0:nphx),adpc(10,30,0:nphx), &
+   dgc(251,41,0:nphx),dpc(251,41,0:nphx), &
+   adgc(10,41,0:nphx),adpc(10,41,0:nphx), &
    edens(251,0:nphx),vclap(251,0:nphx),vtot(251,0:nphx),edenvl(251,0:nphx),vvalgs(251,0:nphx),dmag(251,0:nphx), &
-   xnval(30,0:nphx), &
-   iorb(-4:3,0:nphx) )
+   xnval(41,0:nphx), &
+   iorb(-5:4,0:nphx) )
 !KJ
 
 
@@ -259,7 +260,7 @@ subroutine init_wavefunctions
 
   integer ikap, irr, ic3
 
-  allocate(dum(nrptx), vtotph(nrptx), vvalph(nrptx), dgcn(nrptx,30), dpcn(nrptx,30))
+  allocate(dum(nrptx), vtotph(nrptx), vvalph(nrptx), dgcn(nrptx,41), dpcn(nrptx,41))
 
   IPH_LOOP: do iph = 0, nph
 

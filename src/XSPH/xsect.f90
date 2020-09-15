@@ -27,6 +27,7 @@
 
       !implicit double precision (a-h, o-z)
       implicit none
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       integer, intent(in) :: ihole, ipr2, ne, ne1, ik0, l2lp, le2, ispin, ipol, iPl, &
         ixc, lreal, iunf, izstd, iz, ifxc
       integer, intent(inout) :: NPoles, iph  !KJ I hope that is as intended??
@@ -69,9 +70,9 @@
       complex*16, intent(in) :: em(nex)
       real*8, intent(in) :: ri(nrptx), vtot(nrptx), edens(nrptx),dmag(nrptx)
       real*8, intent(in) :: dgc0(nrptx), dpc0(nrptx), vvalgs(nrptx), edenvl(nrptx)
-      real*8, intent(in) :: dgcn(nrptx,30), dpcn(nrptx,30), eorb(30)
-      real*8, intent(in) :: adgc(10,30), adpc(10,30), xnval(30)
-      integer, intent(in) :: iorb(-4:3),kappa(30)
+      real*8, intent(in) :: dgcn(nrptx,41), dpcn(nrptx,41), eorb(41)
+      real*8, intent(in) :: adgc(10,41), adpc(10,41), xnval(41)
+      integer, intent(in) :: iorb(-5:4),kappa(41)
       complex*16, intent(out) :: rkk(nex, 8), xsec(nex)
       real*8, intent(out) :: xsnorm(nex)
 
@@ -106,8 +107,8 @@
       real*8 pat(nrptx),qat(nrptx)
       complex*16 intr(nrptx),var(nrptx) 
 !     to pass energy levels and projected DOS
-      integer neg(30)
-      real*8 eng(nex, 30), rhoj(nex,30)
+      integer neg(41)
+      real*8 eng(nex, 41), rhoj(nex,41)
 !     Josh - Added iPl switch for PLASMON card
 !          - and WpCorr = Wi/Wp, Gamma, AmpFac
 !          - to describe Im[eps^-1]
@@ -127,7 +128,7 @@
       logical,parameter :: correction_josh = .false.
       logical CorrectOrbitalEnergies ! Set to true until this is done, then set to false.
 !     Debug: FDV
-!     dimension sh_eng(nex, 30)
+!     dimension sh_eng(nex, 41)
       
       CorrectOrbitalEnergies = .TRUE.
       allocate(bmat(-lx:lx,0:1,8, -lx:lx,0:1,8))

@@ -1,0 +1,17 @@
+ 
+ TITLE  test_element
+ CONTROL 1 0 0 0 0 0
+
+ PRINT   5 0 0 0 0 0
+
+
+ NOHOLE
+ HIGHZ
+ POTENTIALS
+       0    XXX   Te
+       1    XXX   Te
+
+ ATOMS
+   0.00000     0.00000     0.00000    0   Te0        0.00000
+   0.00000     0.00000     2.00000    1   Te1        1.95266
+END

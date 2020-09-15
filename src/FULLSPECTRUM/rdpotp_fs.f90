@@ -58,18 +58,19 @@
       use dimsmod, only: nheadx,nex,nphx=>nphu
 
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       dimension imt(0:nphx), rmt(0:nphx), inrm(0:nphx),  rnrm(0:nphx)
       dimension folp(0:nphx), folpx(0:nphx), dgc0(251), dpc0(251)
-      dimension dgc(251, 30, 0:nphx), dpc(251, 30, 0:nphx)
-      dimension adgc(10, 30, 0:nphx), adpc(10, 30, 0:nphx)
+      dimension dgc(251, 41, 0:nphx), dpc(251, 41, 0:nphx)
+      dimension adgc(10, 41, 0:nphx), adpc(10, 41, 0:nphx)
       dimension edens(251, 0:nphx), vclap(251, 0:nphx)
       dimension vtot(251, 0:nphx), edenvl(251, 0:nphx)
       dimension vvalgs(251, 0:nphx), dmag(251, 0:nphx)
-      dimension xnval(30,0:nphx), qnrm(0:nphx) !, xnmues(0:lx,0:nphx)
-      dimension eorb(30)
-      dimension iorb(-4:3,0:nphx), iz(0:nphx), xion(0:nphx)
+      dimension xnval(41,0:nphx), qnrm(0:nphx) !, xnmues(0:lx,0:nphx)
+      dimension eorb(41)
+      dimension iorb(-5:4,0:nphx), iz(0:nphx), xion(0:nphx)
       dimension xnatph(0:nphx)
-      double precision kappa(30) !KJ bugfix previously implicitly declared as integer
+      double precision kappa(41) !KJ bugfix previously implicitly declared as integer
 
       character*80 title(nheadx)
       character*512 path, slog
@@ -81,7 +82,7 @@
    20 format (bn, i15)
 
       !initialize values that may not be saved in pot.bin
-      do i=1,30
+      do i=1,41
         eorb(i)=0.0
         kappa(i)=0.0
       enddo
@@ -133,7 +134,7 @@
       if (slog(1:1).ne.'!') then
         !we have a feff84 format pot.bin and must read kappa
         v84=.true.
-        read (3, 40) (kappa(i),i=1,30)
+        read (3, 40) (kappa(i),i=1,41)
       else
         v84=.false.
       endif
@@ -156,13 +157,13 @@
 !     call wlog('dpc0')
       call rdpadd(3, npadx, dpc0(1), 251)
 !     call wlog('dgc')
-      call rdpadd(3, npadx, dgc(1,1,0), 251*30*(nph+1) )
+      call rdpadd(3, npadx, dgc(1,1,0), 251*41*(nph+1) )
 !     call wlog('dpc')
-      call rdpadd(3, npadx, dpc(1,1,0), 251*30*(nph+1) )
+      call rdpadd(3, npadx, dpc(1,1,0), 251*41*(nph+1) )
 !     call wlog('adgc')
-      call rdpadd(3, npadx, adgc(1,1,0), 10*30*(nph+1) )
+      call rdpadd(3, npadx, adgc(1,1,0), 10*41*(nph+1) )
 !     call wlog('adpc')
-      call rdpadd(3, npadx, adpc(1,1,0), 10*30*(nph+1) )
+      call rdpadd(3, npadx, adpc(1,1,0), 10*41*(nph+1) )
 !     call wlog('edens')
       call rdpadd(3, npadx, edens(1,0), 251*(nph+1) )
 !     call wlog('vclap')
@@ -176,12 +177,12 @@
 !     call wlog('dmag')
       call rdpadd(3, npadx, dmag(1,0), 251*(nph+1) )
 !     call wlog('xnval')
-      call rdpadd(3, npadx, xnval(1,0), 30*(nph+1) )
+      call rdpadd(3, npadx, xnval(1,0), 41*(nph+1) )
 !     call wlog ('this is where i should read eorb')
-      if (v84) call rdpadd(3, npadx, eorb(1), 30)
+      if (v84) call rdpadd(3, npadx, eorb(1), 41)
 !     call wlog ('just did! (or didnt'))
       do 50 iph=0,nph
- 50   read (3, 60) (iorb(i,iph),i=-4,3)
+ 50   read (3, 60) (iorb(i,iph),i=-5,4)
  60   format(8(1x,i2))
       call rdpadd(3, npadx, qnrm(0), nph+1 )
 !      nn = (lx+1)*(nph+1)

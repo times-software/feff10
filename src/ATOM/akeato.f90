@@ -10,7 +10,8 @@
 !     i and j
       implicit double precision (a-h,o-z)
       common/mulabk/afgk
-      dimension afgk(30,30,0:3)
+      ! Dimensioning changed for high z elements. 
+      dimension afgk(41,41,0:4) 
  
 !     afgk angular coefficients by integrales fk and gk
 !        coefficient of integral fk(i;j) is in  afgk(min,max)
@@ -28,7 +29,8 @@
       double precision function bkeato (i,j,k)
       implicit double precision (a-h,o-z)
       common/mulabk/afgk
-      dimension afgk(30,30,0:3)
+      ! Dimensioning changed for high z elements. 
+      dimension afgk(41,41,0:4)
 !     angular coefficient at the exchange coulomb integral gk
  
       bkeato=0.0d00

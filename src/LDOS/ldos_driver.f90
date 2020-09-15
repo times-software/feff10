@@ -25,7 +25,7 @@
   use errorfile
   use xsph_inp, only: spinph, xsph_read
   implicit none
-
+!Changed the dimensions to 41 to account for superheavy elements. Pavlo Baranov 07/2016
   ! HUBBARD data
   real*8 vint_sp(2)
   real*8,  allocatable :: vtot_sp(:,:,:), vvalgs_sp(:,:,:)
@@ -67,13 +67,13 @@
   allocate(imt(0:nphx),inrm(0:nphx))
   allocate(folpx(0:nphx),rmt(0:nphx),rnrm(0:nphx),qnrm(0:nphx))
   allocate(dgc0(251),dpc0(251))
-  allocate(dgc(251,30,0:nphx),dpc(251,30,0:nphx))
-  allocate(adgc(10,30,0:nphx),adpc(10,30,0:nphx))
-  allocate(kappa(30))
+  allocate(dgc(251,41,0:nphx),dpc(251,41,0:nphx))
+  allocate(adgc(10,41,0:nphx),adpc(10,41,0:nphx))
+  allocate(kappa(41))
   allocate(edens(251,0:nphx),edenvl(251,0:nphx),vclap(251,0:nphx),vvalgs(251,0:nphx),vtot(251,0:nphx),dmag(251,0:nphx))
-  allocate(xnval(30,0:nphx))
-  allocate(eorb(30))
-  allocate(iorb(-4:3,0:nphx))
+  allocate(xnval(41,0:nphx))
+  allocate(eorb(41))
+  allocate(iorb(-5:4,0:nphx))
 
 
   ! Read the potential (it is spin-averaged)

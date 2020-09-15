@@ -21,14 +21,15 @@
 !     it can be overwritten later (see example in subroutine getchi0)
 
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       integer,parameter :: maxx = 78
       integer,intent(in) :: lin,kappa
       integer,intent(inout) :: nlp1,nlm1
       integer,intent(out) :: jinit,jfin,minit,mfin,kinit,kfin,nph,matsize
       dimension jinit(maxx), minit(maxx), jfin(maxx), mfin(maxx)
       dimension kinit(maxx), kfin(maxx), nph(maxx), ncore(maxx)
-      dimension kappa(30)
-      real*8 xnval(30)
+      dimension kappa(41)
+      real*8 xnval(41)
 
       np = 3 * (2*lin + 1)
       nm = 3 * (2*lin - 1)
@@ -146,7 +147,7 @@
         if (ibasis.eq.0) then
          lfin = kfin(im)
          if (lfin.lt.0) lfin = abs(lfin) -1
-         do iorb = 1, 30 
+         do iorb = 1, 41 
            lorb = kappa(iorb)
            if (lorb.lt.0) lorb = abs(lorb) - 1
            if (xnval(iorb).gt.0 .and. lfin.eq.lorb) then

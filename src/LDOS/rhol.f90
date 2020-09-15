@@ -15,7 +15,7 @@ subroutine rhol ( dx, x0, ri, ne, em,                             &
   use DimsMod, only: nrptx, nex, lx
   use constants
   implicit none
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   ! INPUT
   !   dx, x0, ri(nr)  Loucks r-grid, ri=exp((i-1)*dx-x0)
   !   ne, em(ne)      number of energy points,  complex energy grid
@@ -42,10 +42,10 @@ subroutine rhol ( dx, x0, ri, ne, em,                             &
   ! Input
   integer, intent(in) :: ne,ixc,iz,iunf,ihole,lmaxsc, iph !KJ iph
   real*8,  intent(in) :: dx,x0,rmt,rnrm,xion
-  real*8,  intent(in), dimension(10,30) :: adgc, adpc
-  real*8,  intent(in), dimension(nrptx,30) :: dgcn, dpcn
+  real*8,  intent(in), dimension(10,41) :: adgc, adpc
+  real*8,  intent(in), dimension(nrptx,41) :: dgcn, dpcn
   real*8,  intent(in), dimension(nrptx) ::  vtot,vvalgs,ri
-  real*8,  intent(in) :: xnval(30)
+  real*8,  intent(in) :: xnval(41)
   complex*16, intent(in) :: em(nex), eref
 
   ! Output

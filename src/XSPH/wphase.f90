@@ -13,6 +13,7 @@
   use constants
 
   implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
 
   complex*16 eref(nex, nspx)
@@ -68,7 +69,7 @@
 
        write(1,120)  (ph(ie,ll,1,iph), ll=0,lmax(iph))  ! inline 
              !writing of phase sheeft between ll=0 and lmax(iph)
-  120      format (1x, 1p, 4e14.6)
+  120      format (1x, 1p, 40e14.6)
 
        write(2,130) dble(em(ie)*hart), dble(eref(ie,1)*hart),                 &
      &     dble(sqrt(2*(em(ie)-eref(ie,1)*hart))), (dble(ph(ie,ll,1,iph)), ll=linit,linit+2)

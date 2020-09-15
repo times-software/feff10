@@ -64,6 +64,7 @@
 	  use global_inp,only: nq,qweights=>qw,qnorms=>qn,qaverage 
 	  use nrixs_inp,kiind=>kind
       implicit none !double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       integer, parameter :: npadx=8
 
 !      integer ljmax,jinit,ipr2,iunf,ipol,ne1,ik0,ios,ihole,kinit,linit,imt,jri,jri1,inrm,jnrm,i,lreal,index,ixc,minit,ispin,ilast,jnew,isp,ie,k1
@@ -81,11 +82,11 @@
       real*8 ri(nrptx), vtot(nrptx), edens(nrptx),dmag(nrptx)
       real*8 dgc0(nrptx), dpc0(nrptx), vvalgs(nrptx), edenvl(nrptx)
       real*8 dgcx0(nrptx), dpcx0(nrptx)
-      real*8 dgcn(nrptx,30), dpcn(nrptx,30)
+      real*8 dgcn(nrptx,41), dpcn(nrptx,41)
 !KJ
 	  
-      real*8 adgc(10,30), adpc(10,30), xnval(30)
-	  integer iorb(-4:3)
+      real*8 adgc(10,41), adpc(10,41), xnval(41)
+	  integer iorb(-5:4)
       complex*16 rkk(nex, nq, kfinmax), xsec(nex),xsecl(0:ljmax) !KJ added nq
       complex*16 atomxsec(kfinmax,nex)
 

@@ -534,7 +534,7 @@
 !		folp(0:nphx) -  overlap factor for rmt calculation
 		double precision, allocatable ::  xion(:)
 !		xion(0:nphx)  - ionicity, input
-		logical ExternalPot
+		logical ExternalPot, FiniteNucleus
 	!     for OVERLAP option
 	    logical StartFromFile
 		! read potential from pot.bin file and start from there
@@ -609,7 +609,9 @@
         ! Electronic temperature for thermal scf routine
               write(3,10) 'Temperature (in eV):'
               write(3,*) scf_temperature, scf_thermal_vxc
-		close(3)
+              write(3,10) 'FiniteNucleus'
+              write(3,*) FiniteNucleus
+              close(3)
 		! standard formats for string, integers and real numbers
 	  10  format(a)
 	  20  format (21i4)
@@ -642,6 +644,7 @@
 			  read(3,*) ; read(3,*) ChSh_Type
 			  read(3,*,end=55) ; read(3,*,end=55) configtype
 			  read(3,*) ; read(3,*) scf_temperature, scf_thermal_vxc
+                          read(3,*) ; read(3,*) FiniteNucleus
 			  55 continue
 			close(3)
 		end subroutine potential_read
@@ -689,6 +692,7 @@
 			corval_emin=-70.d0 ! eV
 			scf_temperature = 0.0 ! eV
 			scf_thermal_vxc = 1
+                        FiniteNucleus = .FALSE.
 		end subroutine potential_init
 
 	end module

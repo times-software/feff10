@@ -15,13 +15,17 @@
 ! nq principal quantum number
 ! kap quantum number "kappa"
 ! nmax number of tabulation points for the orbitals
+! ido if 1, use point nucleas (default), else, use finite nucleus
+! (HIGHZ)
 ! ibgp first dimension of the arrays bg and bp
 !        this programmes utilises nucdev,dentfa,soldir et messer
  
       implicit double precision (a-h,o-z)
-      common cg(251,30), cp(251,30), bg(10,30), bp(10,30),              &
-     &         fl(30), fix(30), ibgp
-      dimension en(30),nq(30),kap(30),nmax(30)
+! Josh Kas - Changed array dimensions from 30 to 41 (and others) for high Z elements
+! according to Pavlo Baranov's changes.
+      common cg(251,41), cp(251,41), bg(10,41), bp(10,41),              &
+     &         fl(41), fix(41), ibgp
+      dimension en(41),nq(41),kap(41),nmax(41)
       common/comdir/cl,dz,dg(251),ag(10),dp(251),ap(10),                &
      &dv(251),av(10),eg(251),ceg(10),ep(251),cep(10)
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
@@ -42,7 +46,14 @@
 ! dr1 first tabulation point multiplied by nz
       hx=5.0d-02
       dr1= nz*exp(-8.8)
-      call nucdev (anoy,dr,dvn,dz,hx,nuc,idim,ndor,dr1)
+      IF(ido.LT.0) THEN
+         nuc = 5 ! Set number of points inside nucleus to
+         ! 5, since He and Cu fail with default of 11.
+         call nucdev (anoy,dr,dvn,dz,hx,-nuc,idim,ndor,dr1)
+      ELSE
+         call nucdev (anoy,dr,dvn,dz,hx,nuc,idim,ndor,dr1)
+      END IF
+
 ! notice that here nuc=1, 
 ! unless you specify nuclear mass and thickness in nucdev.f
 
@@ -69,7 +80,7 @@
       b=test1
 
 ! resolution of the dirac equation to get initial orbitals
-      if (ido.ne.1) then
+      if (abs(ido).ne.1) then
          call wlog('only option ido=1 left')
          ido = 1
       endif

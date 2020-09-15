@@ -13,7 +13,7 @@ subroutine getph ( ri, dx, x0, rmt, rnrm, ne, em, ixc,            &
   use DimsMod, only: ltot, nrptx, lx, nex
   use constants
   implicit none
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   !     INPUT
   !     dx, x0, ri(nr)
   !                  Loucks r-grid, ri=exp((i-1)*dx-x0)
@@ -44,9 +44,9 @@ subroutine getph ( ri, dx, x0, rmt, rnrm, ne, em, ixc,            &
   double precision ri(nrptx)
   double precision vtot(nrptx), vvalgs(nrptx)
   complex*16 vtotc(nrptx), vvalc(nrptx)
-  double precision xnval(30)
-  double precision dgcn(nrptx,30), dpcn(nrptx,30)
-  double precision adgc(10,30), adpc(10,30)
+  double precision xnval(41)
+  double precision dgcn(nrptx,41), dpcn(nrptx,41)
+  double precision adgc(10,41), adpc(10,41)
 
   !     energy grid in complex e-plane
   complex*16 em(nex), eref

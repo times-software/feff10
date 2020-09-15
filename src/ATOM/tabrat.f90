@@ -12,13 +12,15 @@
 !      this programm uses dsordf
 
       implicit double precision (a-h,o-z)
+! Josh Kas - Changed array dimensions from 30 to 41 (and others) for high Z elements
+! according to Pavlo Baranov's changes.
       parameter (zero = 0)
       parameter (ryd  = 13.605698d0)
       parameter (hart = 2*ryd)
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),            &
-     &nq(30),kap(30),nmax(30)
-      character*2  titre(30)
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),            &
+     &nq(41),kap(41),nmax(41)
+      character*2  titre(41)
       character*2  ttire(9)
       dimension at(8),mbi(8)
       logical open_16
@@ -55,7 +57,7 @@
  251     if (open_16)                                                   &
      &     write(16,2071) nq(i),titre(i),xnel(i),-en(i)*hart,           &
      &                  (at(k),k=2,j)
- 2071 format(i1,a2,f6.3,8(1pe10.3))
+ 2071 format(i1,a2,f6.3,8(1pe20.6))
 
 !      overlap integrals
       if (norb.le.1) return

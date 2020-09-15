@@ -14,21 +14,22 @@
 
       double precision function atwtd (iz)
       double precision weight
-      common /atwtco/ weight(103)
+!     Added elementz up to Z = 139 07/2016 Pavlo Baranov
+      common /atwtco/ weight(139)
       atwtd = weight(iz)
       return
       end
 
       real function atwts (iz)
       double precision weight
-      common /atwtco/ weight(103)
+      common /atwtco/ weight(139)
       atwts = weight(iz)
       return
       end
 
-      character*2 function atsym (iz)
-      character*2 sym
-      common /atsyco/ sym(103)
+      character*3 function atsym (iz)
+      character*3 sym
+      common /atsyco/ sym(139)
       atsym = sym(iz)
       return
       end
@@ -39,10 +40,10 @@
 !     Atomic weights from inside front cover of Ashcroft and Mermin.
 
       double precision weight
-      common /atwtco/ weight(103)
+      common /atwtco/ weight(139)
 
-      character*2 sym
-      common /atsyco/ sym(103)
+      character*3 sym
+      common /atsyco/ sym(139)
 
       data weight /                                                     &
      &   1.0079, 4.0026, 6.941,  9.0122, 10.81,   12.01,                &
@@ -61,8 +62,14 @@
      &   196.97, 200.59, 204.37, 207.19, 208.98,  210,                  &
      &   210,    222,    223,    226,    227,     232.04,               &
      &   231,    238.03, 237.05, 244,    243,     247,                  &
-     &   247,    251,    254,    257,    256,     254,                  &
-     &   257/
+     &   247,    251,    252,    257,    258,     259,                  &
+     &   266,    267,    268,    269,    270,     269,                  &
+     &   278,    281,    282,    285,    286,     289,                  &
+     &   289,    293,    294,    294,    315,    320,                   &
+     &   330,    334,    337,    340,    344,    347,                   &
+     &   350,    354,    357,    361,    364,    367,                   &
+     &   371,    374,    378,    381,    385,    388,                   &
+     &   392  /
 
       data sym /  'H', 'He','Li','Be','B', 'C', 'N', 'O', 'F', 'Ne',    &
      &            'Na','Mg','Al','Si','P', 'S', 'Cl','Ar','K', 'Ca',    &
@@ -74,6 +81,10 @@
      &            'Lu','Hf','Ta','W', 'Te','Os','Ir','Pt','Au','Hg',    &
      &            'Tl','Pb','Bi','Po','At','Rn','Fr','Ra','Ac','Th',    &
      &            'Pa','U', 'Np','Pu','Am','Cm','Bk','Cf','Es','Fm',    &
-     &            'Md','No','Lw'/
+     &            'Md','No','Lr','Rf','Db','Sg','Bh','Hs','Mt','Ds',    &
+     &            'Rg','Cn','Uut','Fl','Uup','Lv','Uus','Uuo','Uue',    &
+     &            'Ubn','Ubu','Ubb','Ubt','Ubq','Ubp','Ubh','Ubs',      &
+     &            'Ubo','Ube','Utn','Utu','Utb','Utt','Utq','Utp',      &
+     &            'Uth','Uts','Uto','Ute' /
 
       end

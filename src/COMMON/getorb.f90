@@ -25,11 +25,13 @@
 	  ! KJ bugfix Sept 2012 : added initialization statement setting xnel,xmag,xnval to 0 since getorb is called many times ...  Yikes!
 	  
 	  implicit none
+! Josh Kas - Changed array dimensions from 30 to 41 (and others) for high Z elements
+! according to Pavlo Baranov's changes.
 	  
       integer,intent(in)  :: iz, ihole, iph, iunf
 	  real*8,intent(in)   :: xion
-	  integer,intent(out) :: norb, norbco, iorb(-4:3), iholep, nqn(30), nk(30)
-	  real*8,intent(out)  :: xnel(30), xnval(30), xmag(30)
+	  integer,intent(out) :: norb, norbco, iorb(-5:4), iholep, nqn(41), nk(41)
+	  real*8,intent(out)  :: xnel(41), xnval(41), xmag(41)
 
 !     Written by Steven Zabinsky, July 1989
 !     modified (20 aug 1989)  table increased to at no 100
@@ -70,7 +72,8 @@
 
 
       call InitConfig   !Initialize default electronic configurations, taking user input into account.
-      if (iz .lt. 1  .or.  iz .gt. 100)  then
+      ! JK - 139 below rather than 100 for high Z elements up to Z = 139.
+      if (iz .lt. 1  .or.  iz .gt. 139)  then
          write(slog,'(" Atomic number ",i5," not available.")')  iz
          call wlog(slog)
          call par_stop('GETORB-0')
@@ -100,7 +103,7 @@
 
 !     find last occupied orbital (ilast) and iion for delion.ge.0
 !     (if delion<0, this produces nonsense, but it will be fixed below, once we know iscr.)
-      do i=29,1,-1
+      do i=40,1,-1
          if (iion.eq.0  .and. f_iocc(index,i,iphl).gt.delion) iion=i
          if (ilast.eq.0 .and. f_iocc(index,i,iphl).gt.0) ilast=i
       enddo
@@ -125,7 +128,7 @@
 
 !     find where to put screening electron : put it in the orbital where the "Z+1" atom has its extra electron
       index1 = index + 1
-      do i = 1, 29
+      do i = 1, 40
          if (iscr.eq.0 .and. (f_iocc(index1,i,-1)-f_iocc(index,i,iphl)).gt.0.5) iscr=i  
       enddo
 
@@ -159,11 +162,11 @@
 
 ! Note that xnel,xnval,xmag do not track all orbitals, but only the ones containing charge.  e.g. "2 2 4 1 0 0 0 2" --> "2 2 4 1 2" 
       norb = 0
-      iorb(-4:3) = 0
+      iorb(-5:4) = 0
 	  xnel(:)=0.d0
 	  xnval(:)=0.d0
 	  xmag(:)=0.d0
-      do i = 1, 29
+      do i = 1, 40
 ! Modified by FDV
 ! Split line to avoid error in Solaris Studio
          if (f_iocc(index,i,iphl).gt.0 .or. (i.eq.iscr .and. ihole.gt.0) &
@@ -180,7 +183,8 @@
                endif
                if (i.eq.iscr .and. ihole.gt.0)  xnel(norb)=xnel(norb)+1  !add the screening electron
                xnval(norb)= f_ival(index,i,iphl) !valence occupation
-               if ((kappa(i).eq.-4 .or. kappa(i).eq.3) .and. iunf.eq.0)  xnval(norb) = 0 !put f-electron in the core, i.e. "freeze" them
+               if ((kappa(i).eq.-4 .or. kappa(i).eq.3 .or. &
+                   &  kappa(i).eq.-5 .or. kappa(i).eq.4) .and.iunf.eq.0)  xnval(norb) = 0 !put f- and higher electron in the core, i.e. "freeze" them
                xmag(norb) = f_ispn(index,i,iphl)
                iorb(nk(norb)) = i
                if (i.eq.ihole .and. xnval(norb).ge.1)   xnval(norb) = xnval(norb) - 1 !adjust valence occupation for core hole
@@ -230,13 +234,13 @@
           integer,intent(in)  :: iz, ihole
 	  real*8,intent(in)   :: xion
           integer iph, iunf, i
-	  integer :: norb, norbco, iorb(-4:3), iholep, nqn(30), nk(30)
-	  real*8  :: xnel(30), xnval(30), xmag(30)
+	  integer :: norb, norbco, iorb(-5:4), iholep, nqn(41), nk(41)
+	  real*8  :: xnel(41), xnval(41), xmag(41)
           iunf = 0
           xmag = 0.d0
           call getorb (iz, ihole, xion, iunf, norb, norbco, iorb, iholep, nqn, nk, xnel, xnval, xmag, iph)  
           getspin=0.0
-          DO i = 1, 30
+          DO i = 1, 41
              getspin = getspin + xmag(i)
           END DO
       end function getspin

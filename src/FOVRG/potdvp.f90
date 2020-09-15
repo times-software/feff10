@@ -10,16 +10,16 @@
 !     to calculate potential development coefficients
       use dimsmod, only: nrptx
       implicit double precision (a-h,o-z)
-
-      common/dff/ cg(nrptx,30), cp(nrptx,30), bg(10,30), bp(10,30),     &
-     &              fl(30), fix(30), ibgp
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
+      common/dff/ cg(nrptx,41), cp(nrptx,41), bg(10,41), bp(10,41),     &
+     &              fl(41), fix(41), ibgp
       complex*16 dg,ag,dp,ap,dv,av,eg,ceg,ep,cep
       common/comdic/cl,dz,dg(nrptx),ag(10),dp(nrptx),ap(10),dv(nrptx),  &
      &         av(10),eg(nrptx),ceg(10),ep(nrptx),cep(10)
 !     dg,dp to get data from yzkrdf, dv,eg,ep -output for soldir
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),            &
-     &nq(30),kap(30),nmax(30)
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),            &
+     &nq(41),kap(41),nmax(41)
       common/snoyac/dvn(nrptx),anoy(10),nuc
       common/tabtec/hx,dr(nrptx),test1,test2,ndor,np,nes,method,idim
       dimension bgj(10),bpj(10)

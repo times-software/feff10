@@ -7,7 +7,9 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine scfdat ( ipr1, iph, nph, iz, ihole, xion, iunf, vcoul,  &
      &     srho, dmag, srhovl, ispinr, dgc0, dpc0, dgc, dpc, adgc, adpc, &
-     &     s02, efrozn, eatom, xntot, xnval, xnel_out, indorb, norbp, eorb, kappa,nq2)   !KJ 5-2012 added xnel_out, nqn for output
+     &     s02, efrozn, eatom, xntot, xnval, xnel_out, indorb, norbp, eorb, kappa,nq2, &
+     &     FiniteNucleus)   !KJ 5-2012 added xnel_out, nqn for output
+                           ! use with finite nucleus.
   !     single configuration Dirac-Fock atom code
   !     Ankudinov, Zabinsky, Rehr, Comp.Phys. Comm. 98, p.359 (1996).
   !     which is modified Desclaux multi-configuration code.
@@ -15,37 +17,40 @@ subroutine scfdat ( ipr1, iph, nph, iz, ihole, xion, iunf, vcoul,  &
   use DimsMod, only: nphx=> nphu, lx
   use par
   implicit double precision (a-h,o-z)
+! Josh Kas - Changed array dimensions from 30 to 41 (and others) for high Z elements
+! according to Pavlo Baranov's changes.
   !     save central atom dirac components, see comments below.
   dimension dgc0(251), dpc0(251)
 
-integer nq2(30) !KJ
+integer nq2(41) !KJ
 
 !  real*8, intent(inout) :: dgc(251, 30, 0:nphx), dpc(251, 30, 0:nphx)
 !  real*8, intent(inout) :: adgc(10, 30, 0:nphx), adpc(10, 30, 0:nphx)
 !KJ Oct 2014: notice a bug here cf. scfdat ... dimension must be "0:nphx+1"
-  real*8, intent(inout) :: dgc(251, 30, 0:nphx+1), dpc(251, 30, 0:nphx+1)
-  real*8, intent(inout) :: adgc(10, 30, 0:nphx+1), adpc(10, 30, 0:nphx+1)
+  real*8, intent(inout) :: dgc(251, 41, 0:nphx+1), dpc(251, 41, 0:nphx+1)
+  real*8, intent(inout) :: adgc(10, 41, 0:nphx+1), adpc(10, 41, 0:nphx+1)
 
   real*8, intent(inout) :: xntot(0:lx)
 
-  dimension xnval(30), eorb(30), kappa(30), xnel_out(30)
-  dimension xmag(30)
+  dimension xnval(41), eorb(41), kappa(41), xnel_out(41)
+  dimension xmag(41)
   
   dimension vcoul(251)
   dimension srho(251), dmag(251), srhovl(251)
   !     temporary do not use core-valence separation
-  dimension xnvalp(30), indorb(-4:3)
+  dimension xnvalp(41), indorb(-5:4)
   logical open_16
   
-  dimension ovpint(30, 30)
+  dimension ovpint(41, 41)
   character*30 fname
+  logical FiniteNucleus
   !#mn:
   external dsordf
 
   ! muatco programm to calculate angular coefficients
   !        this programm uses cofcon cofdat dsordf ictime iowrdf
   !        lagdat messer nucdev ortdat potrdf soldir 
-  common cg(251,30), cp(251,30), bg(10,30), bp(10,30), fl(30), fix(30), ibgp
+  common cg(251,41), cp(251,41), bg(10,41), bp(10,41), fl(41), fix(41), ibgp
   ! cg (cp) large (small) components
   ! bg (bp) development coefficients at the origin of large
   !    (small) component
@@ -57,15 +62,15 @@ integer nq2(30) !KJ
   common/itescf/ testy, rap(2), teste, nz, norb, norbsc
   common/mulabk/ afgk
   common/inelma/ nem
-  dimension afgk(30, 30, 0:3)
+  dimension afgk(41, 41, 0:4)
   common/messag/ dlabpr, numerr
   character*8 dprlab, dlabpr
-  common/ratom1/ xnel(30), en(30), scc(30), scw(30), sce(30), nq(30), kap(30), nmax(30)
-  common/scrhf1/ eps(435), nre(30), ipl
+  common/ratom1/ xnel(41), en(41), scc(41), scw(41), sce(41), nq(41), kap(41), nmax(41)
+  ! JK - 435 below might need to be changed to 820 for high Z elements.
+  common/scrhf1/ eps(820), nre(41), ipl
   common/snoyau/ dvn(251), anoy(10), nuc
   common/tabtes/ hx, dr(251), test1, test2, ndor, np, nes, method, idim
   data dprlab /'  scfdat'/
-      
   ! if ipr1 > 3, print atomNN.dat
   if (ipr1 .ge. 3 .and. iph.le.nph)  then
      !        do not want to have extra file
@@ -84,7 +89,7 @@ integer nq2(30) !KJ
   jfail = 0
   ibgp = 10
   numerr = 0
-  nz = iz
+  nz = iz 
 11 call inmuat (ihole, xion, iunf, xnval, iholep, xmag, indorb, iph,nq2) !KJ 12-2010 added iph
    
   
@@ -95,14 +100,14 @@ integer nq2(30) !KJ
   !     idfock=5  --  exchange 5 model.
   !     idfock=6  --  exchange 6 model.
   if (idfock.eq.1) then 
-     do 42 i=1,30
+     do 42 i=1,41
 42      xnvalp(i) = 0.0d0
   elseif (idfock.eq.2) then
-     do 44 i=1,30
+     do 44 i=1,41
 44      xnvalp(i) = xnel(i)
   else
   !        use core-valence separation. also change vlda.f
-     do 43 i=1,30
+     do 43 i=1,41
 43      xnvalp(i) = xnval(i)
   endif
 
@@ -114,12 +119,15 @@ integer nq2(30) !KJ
 !   calculate initial orbitals using thomas-fermi model ido=1
 !   option to read from cards(ido=2) destroyed
       ido = 1
+      IF(FiniteNucleus) ido = -1 ! JK - if ido = -1, use finite nucleus.
       if (numerr .eq. 0) then
          a = -xion - 1
          call wfirdf (en, a, nq, kap, nmax, ido)
       endif
 
-      niter = 30
+      ! JK - I don't think this has to be 41, rather than 30, but it probably won't
+      ! hurt anything.
+      niter = 40
 ! if niter is negative then schmidt orthogonalization procedure is used
 !           niter =1000*n1+100*n2+n3
 ! n3 is the number of iterations per orbital
@@ -328,7 +336,7 @@ integer nq2(30) !KJ
 !        need kap(i) for central atom without core hole, all output of
 !        getorb is dummy, except iholep and kap(i) which is put in nq(i)
             call getorb (iz, ispinr, xion, iunf, i, j, indorb, iholep, nre, nq, scw, sce, eps, iph) !KJ 2-2011 added iph
-			nq2(1:30)=nq(1:30) !KJ 9-2012
+			nq2(1:41)=nq(1:41) !KJ 9-2012
             do 552  i = 1, nmax(iholep)
                dgc0(i) = cg(i,iholep)
                dpc0(i) = cp(i,iholep)
@@ -339,7 +347,7 @@ integer nq2(30) !KJ
   553       continue
          endif
 
-         do 590 j = 1, 30
+         do 590 j = 1, 41
             do 570 i = 1, nmax(j)
                dgc(i,j,iph) = cg(i,j)
                dpc(i,j,iph) = cp(i,j)
@@ -357,7 +365,7 @@ integer nq2(30) !KJ
 
 !     calc. overlap integrals for the final and initial state orbitals
 !     of the central atom
-      if (iholep .gt. 0 .and. iholep.lt.30 .and. ihole.le.0) then
+      if (iholep .gt. 0 .and. iholep.lt.41 .and. ihole.le.0) then
 !        this logic is fulfilled only in the last call of scfdat
 !        in subroutine pot ( ihole=0 and iholep=ispinr.neq.0)
          efrozn = en(iholep) 
@@ -407,5 +415,68 @@ integer nq2(30) !KJ
 	  
 	  xnel_out=xnel  !KJ 5-2012 for output
 
+      ! JK - interpolate all quantities onto regular radial grid.
+      CALL FixAtomicQuantities(vcoul, srho, dmag, srhovl, dgc0, dpc0, dgc(:,:,iph), dpc(:,:,iph), dr)
       return
       end
+
+      subroutine FixAtomicQuantities(vcoul, srho, dmag, srhovl, dgc0, dpc0, dgc, dpc, dr)
+        double precision dr(251)
+        double precision dgc0(251), dpc0(251), dgc(251,41), dpc(251,41)
+        double precision vcoul(251), dmag(251), srho(251), srhovl(251)
+        double precision hx, x0, ri05
+        double precision temp(251), xorg(251), xnew(251)
+        double precision, external :: xx
+        integer i, j
+        
+        do i = 1, 251
+           xorg(i) = log(dr(i))
+           xnew(i) = xx(i)
+        end do
+
+        do i = 1, 251
+           call terp(xorg,dgc0,251,3,xnew(i),temp(i))
+        end do
+        dgc0 = temp
+
+        do i = 1, 251
+           call terp(xorg,dpc0,251,3,xnew(i),temp(i))
+        end do
+        dpc0 = temp
+
+        do j = 1, 41
+           do i = 1, 251
+              call terp(xorg,dgc(:,j),251,3,xnew(i),temp(i))
+           end do
+           dgc(:,j) = temp
+        end do
+
+        do j = 1, 41
+           do i = 1, 251
+              call terp(xorg,dpc(:,j),251,3,xnew(i),temp(i))
+           end do
+           dpc(:,j) = temp
+        end do
+
+        do i = 1, 251
+           call terp(xorg,vcoul,251,3,xnew(i),temp(i))
+        end do
+        vcoul = temp
+
+        do i = 1, 251
+           call terp(xorg,dmag,251,3,xnew(i),temp(i))
+        end do
+        dmag = temp
+
+        do i = 1, 251
+           call terp(xorg,srho,251,3,xnew(i),temp(i))
+        end do
+        srho = temp
+
+        do i = 1, 251
+           call terp(xorg,srhovl,251,3,xnew(i),temp(i))
+        end do
+        srhovl = temp
+        return
+      end subroutine FixAtomicQuantities
+       

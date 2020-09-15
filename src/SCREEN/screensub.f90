@@ -25,18 +25,18 @@ subroutine screen( nat, nph, iphat, rat,                          &
   use DimsMod, only: lx, nrptx, natx, nphx=>nphu, nspx=>nspu, ltot, nex
   use constants
   implicit none
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   external dgetrf, dgetrs
   !     function getiat
   integer getiat
   !     pot.bin --------------------------------------------------------
   integer ihole, iz, iunf
-  double precision xmu, adgc(10,30), adpc(10,30)
-  double precision xion, xnval(30), edens(251)
+  double precision xmu, adgc(10,41), adpc(10,41)
+  double precision xion, xnval(41), edens(251)
   double precision dgc0(251), dpc0(251)
   !     -----------------------------------------------------------------
   double precision vtot(nrptx), vvalgs(nrptx)
-  double precision dgcn(nrptx,30), dpcn(nrptx,30)
+  double precision dgcn(nrptx,41), dpcn(nrptx,41)
   complex*16 eref
   !
 

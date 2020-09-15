@@ -39,15 +39,17 @@
       use dimsmod, only: nrptx, ltot
 	  use constants
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 41 to account for superheavy elements. Pavlo Baranov 07/2016
+
       integer, intent(in) :: ncycle, ikap, jri, iz, ihole, iunf, irr, ic3, iph
       integer, intent(out) :: jlast
-      real*8, intent(in) :: xnval(30)
+      real*8, intent(in) :: xnval(41)
       complex*16, intent(out) :: vxc(nrptx), vxcval(nrptx)
       real*8, intent(in) :: ri(nrptx)
       complex*16, intent(out) :: ps(nrptx), qs(nrptx), pu, qu
 !     all atoms' dirac components and their development coefficients
-      real*8, intent(in) :: dgcn(nrptx,30), dpcn(nrptx,30)
-      real*8, intent(in) :: adgc(10,30), adpc(10,30)
+      real*8, intent(in) :: dgcn(nrptx,41), dpcn(nrptx,41)
+      real*8, intent(in) :: adgc(10,41), adpc(10,41)
       real*8, intent(in) :: dx, rmt
       complex*16, intent(in) :: p2
 
@@ -55,8 +57,8 @@
       complex*16 ph0, amp, vu, vm(nrptx)
 
 !     iph atom's dirac components and their development coefficients
-      common/dff/cg(nrptx,30), cp(nrptx,30), bg(10,30), bp(10,30),      &
-     &             fl(30), fix(30), ibgp
+      common/dff/cg(nrptx,41), cp(nrptx,41), bg(10,41), bp(10,41),      &
+     &             fl(41), fix(41), ibgp
 !     fl power of the first term of development limits.
 !     ibgp first dimension of the arrays bg and bp (=10)
 
@@ -66,13 +68,14 @@
 !      gg,gp are the input and output for solout
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
       common/mulabc/afgkc
-      real*8 afgkc(-ltot-1:ltot,30,0:3)
+      real*8 afgkc(-ltot-1:ltot,41,0:4)
       common/messag/dlabpr,numerr
       character*8 dlabpr
 !      xnel here - number of core electrons only
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),            &
-     &nq(30),kap(30),nmax(30)
-      common/scrhf1/eps(435),nre(30),ipl
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),            &
+     &nq(41),kap(41),nmax(41)
+      ! JK - 435 below may need to be 820 for superheavies.
+      common/scrhf1/eps(820),nre(41),ipl
       common/snoyac/dvn(nrptx),anoy(10),nuc
       common/tabtec/hx,dr(nrptx),test1,test2,ndor,np,nes,method,idim
 
@@ -113,11 +116,11 @@
       if (iwkb.lt. 10) iwkb = 10
       
 !     copy information into common's of atomic code
-      do 13 j=1,30
+      do 13 j=1,41
       do 13 i=1,10
          bg(i,j)=adgc(i,j) 
  13      bp(i,j)=adpc(i,j) 
-      do 15 j=1,30
+      do 15 j=1,41
       do 15 i=1,idim
          cg(i,j)=dgcn(i,j) 
  15      cp(i,j)=dpcn(i,j) 
@@ -202,7 +205,6 @@
            jlast = nmax(norb)
 !          jlast might change on very rare occasion
         endif
-
       else
         call par_stop('error in dfovrg.f')
       endif

@@ -28,6 +28,7 @@ subroutine xsph
 ! Output:       phases.bin   phase shifts for use by the rest of the program.
 
   implicit none
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   real*8 dx,x0,dxnew,rnrmav,xmu,vint,rhoint,emu_pot,s02,erelax,wp,rs,xf,qtotel,emu_apot,e_chsh,rint
   real*8 emu,tmpgam,edge,dum1,dum2,dum3,corr,xmunew,xmuvr,vjump,xnorm1,xnorm2,dum4,dum5,dum6,dum7
   integer i,i1,i2,ik0,iph,icenter,ios,ne,ne1,ne3,nsp,isp,idmag,ispinp,jnew,n,itmp,ie,kdif,iq
@@ -65,13 +66,13 @@ subroutine xsph
   real*8 xsnorm(nex, nspx), dgc0(251), dpc0(251)
 
 ! additional data needed for relativistic version
-  real*8 dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
-  real*8 adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1)
-  real*8 dgcn(nrptx,30), dpcn(nrptx,30)
-  real*8 edenvl(251,0:nphx), eorb(30)
-  integer kappa(30)
-  real*8 vvalgs (251,0:nphx), xnval(30,0:nphx)
-  integer iorb(-4:3,0:nphx)
+  real*8 dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
+  real*8 adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
+  real*8 dgcn(nrptx,41), dpcn(nrptx,41)
+  real*8 edenvl(251,0:nphx), eorb(41)
+  integer kappa(41)
+  real*8 vvalgs (251,0:nphx), xnval(41,0:nphx)
+  integer iorb(-5:4,0:nphx)
 
 ! nrx = max number of r points for phase and xsect r grid
 !KJ      parameter (nrx = nrptx)
@@ -86,7 +87,7 @@ subroutine xsph
 
 ! Josh - Added iPl for PLASMON card, and iint for interstitial index
   integer NPolesTmp, imtstd
-  real*8 eorbTmp(30,0:nphx+1), rmtstd, a
+  real*8 eorbTmp(41,0:nphx+1), rmtstd, a
 !KJ 7-09 for NRIXS :
   real*8 dgcx0(nrptx), dpcx0(nrptx)
   complex*16,allocatable :: rkk(:,:,:,:) ! rkk(nex,nq,kfinmax,nspx)  !KJ kfinmax used to be 8 - set to 8 in nrixs_init if no nrixs
@@ -97,16 +98,16 @@ subroutine xsph
 
 ! Debug: Fer
 ! correorb input
-  integer          sh_iz, sh_ihole, sh_jri, sh_kappa(30)
-  real*8 sh_rmt, sh_dx, sh_p2f, sh_edge, sh_ri(nrptx), sh_dgcn(nrptx,30), sh_dpcn(nrptx,30), &
-                       sh_adgc(10,30), sh_adpc(10,30), sh_eorb(30)
+  integer          sh_iz, sh_ihole, sh_jri, sh_kappa(41)
+  real*8 sh_rmt, sh_dx, sh_p2f, sh_edge, sh_ri(nrptx), sh_dgcn(nrptx,41), sh_dpcn(nrptx,41), &
+                       sh_adgc(10,41), sh_adpc(10,41), sh_eorb(41)
   complex*16       sh_vxc(nrptx)
 ! correorb output
-  integer          sh_neg(30), sh_norbp
-  real*8 sh_eng(nex,30), sh_rhoj(nex,30)
+  integer          sh_neg(41), sh_norbp
+  real*8 sh_eng(nex,41), sh_rhoj(nex,41)
 ! Variables for testing
    complex*16 ts_eph, ts_vxc(nrptx), ts_ps(nrptx), ts_qs(nrptx), ts_aps(10), ts_aqs(10)
-   integer    ts_kap(30), ts_nmax(30), ts_irr, ts_ic3, ts_vm(nrptx), ts_jri, ts_iwkb
+   integer    ts_kap(41), ts_nmax(41), ts_irr, ts_ic3, ts_vm(nrptx), ts_jri, ts_iwkb
    real*8     ts_rmt
 ! End of Fer
 
@@ -514,7 +515,7 @@ endif
          gamach, vtotph, vvalph, rhoph, dmagx, rhphvl, &
          dgcn, dpcn, adgc(1,1,iph), adpc(1,1,iph), xsec(1,isp), &
          xsnorm(1,isp), rkk(1,1,1,isp),iz(0), xion(0), iunf, &  !KJ 12/10 rkk(1,1,isp)
-         xnval(1,iph), iorb(-4,iph), l2lp, &
+         xnval(1,iph), iorb(-5,iph), l2lp, &
          ipol, ispinp, abs(le2), angks,ptz, iph) !KJ iph      !, & ! abs is new
  !            qtrans,kfinmax,jmax,jinit,indmax,ldecmx) ! nrixs vars
 
@@ -530,7 +531,7 @@ endif
          gamach, vtotph, vvalph, rhoph, dmagx, rhphvl,              &
          dgcn, dpcn, adgc(1,1,iph), adpc(1,1,iph), xsec(1,isp),     &
          xsnorm(1,isp), rkk(1:nex,1:nq,1:kfinmax,isp), iz(0), xion(0), iunf,         &  !KJ 12/10
-         xnval(1,iph), izstd, ifxc, eorb, kappa, iorb(-4,iph), l2lp,& ! izstd,ifxc,eorb,kappa are new
+         xnval(1,iph), izstd, ifxc, eorb, kappa, iorb(-5,iph), l2lp,& ! izstd,ifxc,eorb,kappa are new
          ipol, ispinp, le2, angks,ptz, iph) !KJ iph
  !    write(*,*) 'Not broken down yet'
     else
@@ -588,7 +589,7 @@ endif
      &       dgcn, dpcn, adgc(1,1,iph), adpc(1,1,iph), xsec(1,isp),     &
      &       xsnorm(1,isp), rkk(1,1,1,isp),iz(0), xion(0), iunf,          &
      &       xnval(1,iph), ipmbse, ifxc, ibasis, eorb, kappa,           &
-     &       iorb(-4,iph), l2lp, ipol, ispinp, le2, angks,ptz, itdlda, iph) !KJ iph
+     &       iorb(-5,iph), l2lp, ipol, ispinp, le2, angks,ptz, itdlda, iph) !KJ iph
     endif
 
   ENDIF !NRIXS?

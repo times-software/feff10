@@ -29,19 +29,20 @@
       use dimsmod, only: nrptx, nex
 	  use constants
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 !     INPUT:
       integer,intent(in) :: iz, ihole, jri, iph
       real*8,intent(in) :: rmt,dx,ri(nrptx), p2f, edge
       complex*16,intent(inout) :: vxc(nrptx)
 !     all atoms' dirac components and their development coefficients
 !     orbitals(dgc,kappa), their energy(eorb) 
-      real*8, intent(in) :: dgcn(nrptx,30), dpcn(nrptx,30)
-      real*8, intent(in) :: adgc(10,30), adpc(10,30)
-      real*8,intent(in) :: eorb(30)
-      integer,intent(in) :: kappa(30)
+      real*8, intent(in) :: dgcn(nrptx,41), dpcn(nrptx,41)
+      real*8, intent(in) :: adgc(10,41), adpc(10,41)
+      real*8,intent(in) :: eorb(41)
+      integer,intent(in) :: kappa(41)
 !     OUTPUT: energy points and weights
-      integer,intent(out) :: neg(30), norbp
-      real*8,intent(out) :: rhoj(nex,30), eng(nex,30)
+      integer,intent(out) :: neg(41), norbp
+      real*8,intent(out) :: rhoj(nex,41), eng(nex,41)
 !     local variables
       complex*16 p2p, p2
       logical done
@@ -54,7 +55,7 @@
 !     calculate initial photoelectron orbital using lda
       ic3 = 0
 
-      do iorb = 1, 30
+      do iorb = 1, 41
         if ( eorb(iorb) .ge. 0.d0 ) cycle
         norbp = iorb
         kfin = kappa(iorb) 

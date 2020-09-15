@@ -7,17 +7,21 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine inmuat (ihole, xionin, iunf, xnval, iholep, xmag, iorb, iph, nq2)  !KJ 12-2010 added iph, nq2
       implicit double precision (a-h,o-z)
-      dimension xnval(30), xmag(30), iorb(-4:3)
-	  integer nq2(30)
+! Josh Kas - Changed array dimensions from 30 to 41 for high Z elements
+! according to Pavlo Baranov's changes.
+      dimension xnval(41), xmag(41), iorb(-5:4)
+	  integer nq2(41)
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
 ! the meaning of common variables is described below
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),nq(30),kap(30),nmax(30)
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),nq(41),kap(41),nmax(41)
 ! en one-electron energies
 ! scc factors for acceleration of convergence
 ! scw precisions of wave functions
 ! sce precisions of one-electron energies
 ! nmax number of tabulation points for orbitals
-      common/scrhf1/eps(435),nre(30),ipl
+      ! JK - 435 below may need to be changed to 820 for high Z
+      ! elements.
+      common/scrhf1/eps(820),nre(41),ipl
 ! eps non diagonal lagrange parameters
 ! nre distingue: - the shell is closed (nre <0)
 !                  the shell is open (nre>0)
@@ -29,7 +33,9 @@
 ! this development is supposed to be written anoy(i)*r**(i-1)
 ! nuc index of nuclear radius (nuc=1 for point charge)
       common/tabtes/hx,dr(251),test1,test2,ndor,np,nes,method,idim
-      data nucm/11/,nesn/50/,ideps/435/
+      ! JK - 435 below may need to be changed to 820 for high Z
+      ! elements.
+      data nucm/11/,nesn/50/,ideps/820/ ! JK - changing nucm to 5 to see what happens.
 
       ndor=10
 
@@ -43,7 +49,7 @@
       rap(1)=100.
       rap(2)=10.
 
-      do i = 1, 30
+      do i = 1, 41
          en(i) = 0.d0
          xmag(i) = 0
          xnval(i) = 0
@@ -96,7 +102,7 @@
          llq= abs(kap(i))
          l=llq+llq
          if (kap(i).lt.0) llq=llq-1
-         if (llq.lt.0.or.llq.ge.nq(i).or.llq.gt.3) call par_stop('kappa out of range, check getorb.f')
+         if (llq.lt.0.or.llq.ge.nq(i).or.llq.gt.4) call par_stop('kappa out of range, check getorb.f')
          nmax(i)=idim
          scc(i)=0.3
          if (xnel(i) .lt. l)  nre(i)=1
