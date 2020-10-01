@@ -19,21 +19,21 @@ ldosSRC = \
 ./LDOS/rhol.f90 ./FOVRG/dfovrg.f90 ./FOVRG/inmuac.f90 \
 ./COMMON/getorb.f90 ./RDINP/rdline.f90 ./COMMON/nxtunt.f90 \
 ./FOVRG/diff.f90 ./FOVRG/wfirdc.f90 ./FOVRG/nucdec.f90 \
-./FOVRG/potdvp.f90 ./FOVRG/aprdep.f90 ./FOVRG/solout.f90 \
-./FOVRG/intout.f90 ./FOVRG/solin.f90 ./MATH/besjh.f90 \
-./MATH/bjnser.f90 ./FOVRG/muatcc.f90 ./FOVRG/potex.f90 \
-./FOVRG/aprdec.f90 ./FOVRG/yzkrdc.f90 ./FOVRG/yzktec.f90 \
-./MATH/besjn.f90 ./MATH/phamp.f90 ./MATH/exjlnl.f90 \
-./MATH/csomm2.f90 ./LDOS/fmsdos.f90 ./FMS/yprep.f90 \
-./FMS/xstaff.f90 ./FMS/fmskspace.f90 ./FMS/kkrintegral.f90 \
-./COMMON/writematrix.f90 ./KSPACE/structurefactor.f90 ./KSPACE/strset.f90 \
-./KSPACE/strbbdd2.f90 ./KSPACE/strbbdd.f90 ./FMS/fmspack.f90 \
-./MATH/ylm.f90 ./FMS/gglu.f90 ./FMS/ggbi.f90 \
-./FMS/ggrm.f90 ./FMS/gggm.f90 ./FMS/ggtf.f90 \
-./LDOS/ff2rho.f90 ./LDOS/ldossub_h_unrolled.f90 ./LDOS/rhol_h_step1.f90 \
-./LDOS/fmsdos_h_step1.f90 ./LDOS/ff2rho_h_step1.f90 ./MATH/trap.f90 \
-./LDOS/rhol_h_step2.f90 ./LDOS/fmsdos_h_step2.f90 ./FMS/fmspack_h.f90 \
-./FMS/gglu_h.f90 ./LDOS/ff2rho_h_step2.f90 
+./ATOM/nucmass.f90 ./FOVRG/potdvp.f90 ./FOVRG/aprdep.f90 \
+./FOVRG/solout.f90 ./FOVRG/intout.f90 ./FOVRG/solin.f90 \
+./MATH/besjh.f90 ./MATH/bjnser.f90 ./FOVRG/muatcc.f90 \
+./FOVRG/potex.f90 ./FOVRG/aprdec.f90 ./FOVRG/yzkrdc.f90 \
+./FOVRG/yzktec.f90 ./MATH/besjn.f90 ./MATH/phamp.f90 \
+./MATH/exjlnl.f90 ./MATH/csomm2.f90 ./LDOS/fmsdos.f90 \
+./FMS/yprep.f90 ./FMS/xstaff.f90 ./FMS/fmskspace.f90 \
+./FMS/kkrintegral.f90 ./COMMON/writematrix.f90 ./KSPACE/structurefactor.f90 \
+./KSPACE/strset.f90 ./KSPACE/strbbdd2.f90 ./KSPACE/strbbdd.f90 \
+./FMS/fmspack.f90 ./MATH/ylm.f90 ./FMS/gglu.f90 \
+./FMS/ggbi.f90 ./FMS/ggrm.f90 ./FMS/gggm.f90 \
+./FMS/ggtf.f90 ./LDOS/ff2rho.f90 ./LDOS/ldossub_h_unrolled.f90 \
+./LDOS/rhol_h_step1.f90 ./LDOS/fmsdos_h_step1.f90 ./LDOS/ff2rho_h_step1.f90 \
+./MATH/trap.f90 ./LDOS/rhol_h_step2.f90 ./LDOS/fmsdos_h_step2.f90 \
+./FMS/fmspack_h.f90 ./FMS/gglu_h.f90 ./LDOS/ff2rho_h_step2.f90 
 ldos_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_constants.f90 ./KSPACE/m_struct.f90 \
 ./KSPACE/m_controls.f90 ./KSPACE/m_boundaries.f90 ./KSPACE/m_kklist.f90 \

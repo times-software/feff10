@@ -6,13 +6,14 @@ rhorrpSRC = \
 ./FOVRG/dfovrg.f90 ./FOVRG/inmuac.f90 ./COMMON/getorb.f90 \
 ./RDINP/rdline.f90 ./COMMON/nxtunt.f90 ./COMMON/rdhead.f90 \
 ./FOVRG/diff.f90 ./FOVRG/wfirdc.f90 ./FOVRG/nucdec.f90 \
-./FOVRG/potdvp.f90 ./FOVRG/aprdep.f90 ./FOVRG/solout.f90 \
-./FOVRG/intout.f90 ./FOVRG/solin.f90 ./MATH/besjh.f90 \
-./MATH/bjnser.f90 ./FOVRG/muatcc.f90 ./MATH/cwig3j.f90 \
-./FOVRG/potex.f90 ./FOVRG/aprdec.f90 ./FOVRG/yzkrdc.f90 \
-./FOVRG/yzktec.f90 ./MATH/besjn.f90 ./MATH/phamp.f90 \
-./MATH/exjlnl.f90 ./MATH/cpl0.f90 ./MATH/ylm.f90 \
-./MATH/terpc.f90 ./MATH/seigen.f90 ./COMMON/rdcmt.f90 
+./ATOM/nucmass.f90 ./FOVRG/potdvp.f90 ./FOVRG/aprdep.f90 \
+./FOVRG/solout.f90 ./FOVRG/intout.f90 ./FOVRG/solin.f90 \
+./MATH/besjh.f90 ./MATH/bjnser.f90 ./FOVRG/muatcc.f90 \
+./MATH/cwig3j.f90 ./FOVRG/potex.f90 ./FOVRG/aprdec.f90 \
+./FOVRG/yzkrdc.f90 ./FOVRG/yzktec.f90 ./MATH/besjn.f90 \
+./MATH/phamp.f90 ./MATH/exjlnl.f90 ./MATH/cpl0.f90 \
+./MATH/ylm.f90 ./MATH/terpc.f90 ./MATH/seigen.f90 \
+./COMMON/rdcmt.f90 
 rhorrp_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_dimsmod.f90 ./COMMON/m_constants.f90 \
 ./COMMON/m_ifuns.f90 ./KSPACE/m_controls.f90 ./KSPACE/m_struct.f90 \

@@ -16,6 +16,7 @@
 ./ATOM/messer.o: Compiler.mk
 ./ATOM/muatco.o: Compiler.mk
 ./ATOM/nucdev.o: Compiler.mk
+./ATOM/nucmass.o: Compiler.mk
 ./ATOM/ortdat.o: Compiler.mk
 ./ATOM/potrdf.o: Compiler.mk
 ./ATOM/potslw.o: Compiler.mk
@@ -419,13 +420,10 @@
 ./RHORRP/m_rhorrp.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./PAR/m_par.o ./COMMON/m_ifuns.o ./MATH/m_polyfit.o Compiler.mk
 ./RHORRP/rhorrp.o: ./RHORRP/m_rhorrp.o ./RHORRP/m_density_inp.o ./COMMON/m_constants.o ./PAR/m_par.o ./ERRORMODS/m_errorfile.o Compiler.mk
 ./RIXS/blinterp2d.o: Compiler.mk
-./RIXS/calcrl.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./RIXS/doublelorentz.o: Compiler.mk
 ./RIXS/kkint.o: Compiler.mk
 ./RIXS/rdxsphrxs.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./RIXS/rixs.o: ./COMMON/m_dimsmod.o ./ERRORMODS/m_errorfile.o ./IOMODS/m_iomod.o ./PAR/m_par.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./COMMON/m_nrixs.o ./POT/m_atomicpotio.o ./COMMON/m_readxmu.o Compiler.mk
-./RIXS/rixs_tools.o: Compiler.mk
-./RIXS/rixs_xs.o: ./KSPACE/m_controls.o ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o Compiler.mk
 ./RIXS/test.o: Compiler.mk
 ./SCREEN/fegrid.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./SCREEN/frgrid.o: ./COMMON/m_dimsmod.o Compiler.mk
