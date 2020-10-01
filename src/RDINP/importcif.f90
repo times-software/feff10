@@ -254,7 +254,7 @@ endif
 	  enddo
 	  if(.not.f1) zname(2:2)=' '
 	  label(i)=zname  !save stripped name
-	  call findz(zname(1:2),iz(i))
+	  call findz(zname(1:3),iz(i))
       do j=1,nsym
          call apply_cifsymop(sym(j),vec,xn(1:3,j))         
       enddo

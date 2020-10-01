@@ -34,7 +34,7 @@
 !     and since nex is now big enough to form a "fine grid",
 !     let's see if this simple solution works:
 !     parameter (nfinex = 601)  !old statement
-      parameter (nfinex = nex)
+      parameter (nfinex = nex*100) ! JK - we want nfinex to be much larger than nex
       complex*16 cchi(nfinex), ckck(nfinex), ccc, ckp
 !     to keep Im part of cchi 11.18.97 ala
       dimension rchtot(nfinex)
@@ -241,7 +241,7 @@
   260 continue
   !KJ I think at this point nkx is the size of the fine grid, and nkx <= nfinex
   !   note that it is possible that nfinex < nex ...  (i.e. the fine grid may actually be coarse ...)
-
+        
   !write(*,*) 'Fine grid, nkx =',nkx, ' and ne= ',ne,' and ne1=',ne1
 
       dwcorr = .false.
