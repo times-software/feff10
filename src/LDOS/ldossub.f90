@@ -72,7 +72,7 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
   ! Allocate local variables
   !-JPR-See above ! allocate(gtr(0:lx,0:nphx,nex)  
   allocate(dum(nrptx), vtotph(nrptx), vvalph(nrptx),           &
-       &   dgcn(nrptx,30), dpcn(nrptx,30),                     &
+       &   dgcn(nrptx,41), dpcn(nrptx,41),                     &
        &   xrhoce(0:lx,nex,0:nphx),                            &
        &   xrhole(0:lx,nex,0:nphx),   &
        &   ph(nex, ltot+1, 0:nphx), inclus(0:nphx),            & 
@@ -193,6 +193,7 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
   ! Deallocate local variables
   deallocate(dum, vtotph, vvalph,dgcn, dpcn, xrhoce, xrhole,   &
        &     ph, inclus, em, eref)
+
   !-JPR-See above  deallocate(gtr)
 
   return
