@@ -15,13 +15,15 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{amsmath}
+\usepackage{xspace}
+\usepackage{ulem}
 \newcommand{\norm}[1]{\left\Vert#1\right\Vert}
 \newcommand{\abs}[1]{\left\vert#1\right\vert}
 \newcommand{\bra}[1]{\left<#1\right\vert}
 \newcommand{\ket}[1]{\left\vert#1\right>}
 \newcommand{\braket}[2]{\left<#1\vert#2\right>}
-
-
+\newcommand{\feffcurrent}{\textsc{feff10}}
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% these lines handle html and pdf issues that cannot be addressed in
 %% the feffdoc.sty file
@@ -86,7 +88,7 @@
   \newcommand{\program}[1]{\textsc{#1}}
   \newcommand{\feff}{\program{feff}}
   \newcommand{\vnum}{10}
-  \newcommand{\feffcur}{\feff\vnum}
+  %\newcommand{\feffcur}{\feff\vnum}
  
   %%% Card environment for describing a feff keyword - modified for GUI
     \newenvironment{Card}[4]%
@@ -128,15 +130,13 @@
 
 \pagenumbering{roman}           % Roman numerals in front matter
 \MakeTitle                      % write out a title page
-
-
 \newchapter{}
 
 \begin{abstract}
   {\feff} is an {\it ab initio} multiple-scattering 
-code for calculating excitation spectra and 
+code for calculations of excitation spectra and 
 electronic structure.  It is based on a real space Green's
-function approach including a screened core-hole, inelastic losses and
+function approach that includes a screened core-hole, inelastic losses and
 self-energy shifts, and Debye-Waller factors. Optionally
 {\feff} includes local fields (TDLDA) and an approximate treatment
 of multi-electron excitations. 
@@ -146,26 +146,25 @@ natural and magnetic circular dichroism (XNCD and XMCD), spin polarized
 x-ray absorption spectra (SPXAS and SPEXAFS), non-resonant x-ray emission 
 spectra (XES), Compton scattering, Non-Resonant Inelastic X-ray Scattering (NRIXS), and the x-ray scattering amplitude (including Thomson and 
 anomalous parts). In addition the code can treat relativistic
-electron energy loss spectroscopy (EELS).   {\feffcur} is written in
-Fortran 90 and can be run from a Java based graphical interface.
+electron energy loss spectroscopy (EELS).   
+{\feffcurrent} is written in Fortran 90.
+%and can be run from a Java based graphical interface.
 
+This software was developed with support in part from the  U.S.\ DOE, Office of Basic Energy Sciences, DMSE grants  DE-FG03-97ER45623 (Dept.\
+of Physics, U.\ of Washington) and  DE-AC02-76SF00515 (Theory Institute for Materials and Energy Spectroscopies (TIMES) at SLAC).   
 
-  This work has been supported in part by grants from the U.S.\ 
-  Department of Energy and by the University of Washington
-  Office of Technology Transfer. {\feff} is copyright \copyright\
-  1992--2013, The {\feff} Project, Department of Physics, University
-  of Washington, Seattle, WA 98195-1560.
+The {\feff} Project is copyright \copyright 2020 University of Washington and SLAC National Accelerator Laboratory. All rights reserved. 
 
-  \vspace*{\stretch{1}}
+\vspace*{\stretch{1}}
 
-	\noindent This document is copyright \copyright\ 2002-2013 by J.J.\
-Rehr, K.\ Jorissen, A.\ Ankudinov, and B.\ Ravel.
+\noindent This document is copyright \copyright {2020} by J.J.\
+Rehr, J.J.\ Kas, K.\ Jorissen, A.\ Ankudinov, and B.\ Ravel.
 	  
-  \noindent Permission is granted to reproduce and distribute this
+\noindent Permission is granted to reproduce and distribute this
   document in any form so long as the copyright notice and this
   statement of permission are preserved on all copies.
   
-  \noindent This document can also be found on the \htmlref{feff project website}
+\noindent This document can also be found on the \htmlref{feff project website}
  {http://www.feffproject.org}.
  
 \end{abstract}
@@ -190,7 +189,7 @@ Rehr, K.\ Jorissen, A.\ Ankudinov, and B.\ Ravel.
 \chapter{Synopsis}
 \label{sec:Synopsis}
 
-{\feffcur} calculates spectroscopic properties, including
+{\feffcurrent} calculates spectroscopic properties, including
 extended x-ray-absorption fine structure (EXAFS), 
 x-ray-absorption near-edge structure (XANES), x-ray
 natural circular dichroism (XNCD), spin-dependent calculations 
@@ -221,16 +220,18 @@ scattering amplitude in the modern EXAFS equation.  This was the first
 application of the {\feff} code, and is the basis for the 
 multiple-scattering path-expansion in the code.
 
-For a quick start or self-guided tutorial
-we suggest that new users study the tutorial chapter \ref{sec:tutorial} and try a few of the examples in Section
-\ref{sec:Calc-Strat-Exampl}. For details on use of the code, examples
+%For a quick start or self-guided tutorial
+%we suggest that new users study the tutorial chapter \ref{sec:tutorial} and try a few of the examples in Section
+%\ref{sec:Calc-Strat-Exampl}. 
+For details on use of the code, examples
 and suggestions for calculation strategies, see Sections
 \ref{sec:Calc-Strat-Exampl}, \ref{sec:Input-and-Output-Files}, and \ref{sec:Input-Control-Cards}. For details about the algorithms,
 see the discussion for the appropriate module in Section
 \ref{sec:Input-Control-Cards}.  For additional details, see the published
 references in Appendix~\ref{sec:Append-C-Refer} and the {\feff} website.
 
-{\feff} is written in ANSI Fortran 90. It typically requires 250 MB - 2GB of available memory (RAM). More memory may be needed on MS Windows systems or for very large calculations.  See Appendix~\ref{sec:Append-B-Inst} for installation instructions.  Many problems run well on a laptop.  For larger calculations of XANES, NRIXS, or COMPTON a small cluster may be more appropriate.  The JFEFF Graphical User Interface requires a recent version of Java.
+{\feff} is written in ANSI Fortran 90. It typically requires 250 MB - 2GB of available memory (RAM). More memory may be needed on MS Windows systems or for very large calculations.  See Appendix~\ref{sec:Append-B-Inst} for installation instructions.  Many problems run well on a laptop.  For larger calculations of XANES, NRIXS, or COMPTON a small cluster may be more appropriate.  
+%The JFEFF Graphical User Interface requires a recent version of Java.
 
 Please contact the authors concerning any problems with the code. See
 Appendix~\ref{sec:Append-H-Trouble} for trouble-shooting hints and
@@ -253,9 +254,9 @@ telephone: (206) 543-8593,\  FAX: (206) 685-0635
 \end{description}
 
 
-The full {\feffcur} code is copyright protected software and users must
-obtain a license from the University of Washington Office of Technology
-Transfer for its use. 
+The full {\feffcurrent} code is copyright protected software.
+%and users must
+%obtain a license from the University of Washington, CoMotion for its use. 
 See Appendix~\ref{sec:Append-A-Copyr} for
 complete copyright notice and other details. Documentation and
 information on how to obtain the code can be found at the {\feff}
@@ -268,14 +269,17 @@ Project website:
 \htmladdnormallink{feff@uw.edu}{mailto:feff@uw.edu}.
 
 Please cite an appropriate {\feff} reference if the code
-or its results are used in published work. The main reference for calculations using the current version {\feffcur}  is:
+or its results are used in published work. The main reference for calculations using the current version {\feffcurrent}  is:
+
+\emph{Calculations of x-ray spectroscopies using FEFF10 and Corvus},
+J.J.\ Kas, F.D.\ Vila, D.\ Pemmaraju, Tun S. Tan, S.\ Vimolchalao,
+and J.J.\ Rehr, {\it Unpublished, 2020}.
 
 \emph{Parameter-free calculations of x-ray spectra with FEFF9},
 J.J. Rehr, J.J. Kas, F.D. Vila, M.P. Prange, K. Jorissen,
 Phys. Chem. Chem. Phys., 12, 5503-5513 (2010).
 
-
-The main references for the theory behind {\feff} are:
+The main references for previous versions of {\feff} are:
 
 \emph{Ab initio theory and calculations of X-ray spectra},
  J.J. Rehr, J.J. Kas, M.P. Prange, A.P. Sorini, Y. Takimoto, F.D. Vila, Comptes Rendus Physique 10 (6) 548-559 (2009).
@@ -294,72 +298,85 @@ See Appendix~\ref{sec:Append-C-Refer}  or the feffproject website for a list of 
 
 {\bf FEFF Project Developers}
 
- The core developers team for {\feffcur} consists of the following people :
+ The core developers team for {\feffcurrent} consists of the following people:
 \begin{itemize}
 \label{developers} 
-\item {\bf Kevin Jorissen} implemented relativistic EELS calculations, k-space algorithms, cloud computing, and many more;
-\item {\bf Joshua Kas} developed the many-pole self-energy and improved treatments of inelastic losses, RIXS calculations, and many more;
-\item {\bf Fernando D.\ Vila} implemented improved Debye-Waller factors;
+\item {\bf Joshua Kas} led the development of {\feffcurrent} with addition
+of the finite-temperature extension and other features.
+\item {\bf Tun S. Tan} contributed to the finite-temperature extension
 \item {\bf Brian Mattern} implemented COMPTON calculations;
-\item {\bf Towfiq Ahmed} is the developer of the Hubbard U module;
+\item {\bf Towfiq Ahmed} developed of the Hubbard U module;
 \item {\bf Micah Prange} developed the {\feff}/optical constant extension; 
 \item {\bf Yoshinari Takimoto} implemented the RPA core hole;
 \item {\bf Adam Sorini} investigated inelastic mean free paths;
-\item {\bf Aleksi Soininen} implemented q-dependent NRIXS calculations;
-\item {\bf Alexei Ankudinov} added TDLDA and automated XMCD calculations.
+\item {\bf Aleksi Soininen} implemented q-dependent NRIXS calculations.
 \end{itemize}
 
-The JFEFF GUI was originally developed by {\bf David Bitseff}. 
-Later, remote ssh, MPI, and other functionality was added by
-{\bf Lukas Svec}. {\bf Kevin Jorissen} expanded the GUI and added automated Cloud Computing on the Amazon EC2 cloud with {\bf William Johnson}.
 
-Alexei Ankudinov was the principal developer for
+{\bf Kevin Jorissen and Joshua Kas} were the principle developers
+of the {\feff}9 series.
+{\bf David Bitseff, Lukas Svec and Kevin Jorissen} developed the JFEFF
+GUI for {\feff}9, which is no longer supported for {\feffcurrent}.
+{\bf Kevin Jorissen} implemented relativistic EELS calculations,
+k-space algorithms, cloud computing, and others.
+{\bf Fernando D.\ Vila} implemented improved Debye-Waller factors.
+
+{\bf Alexei Ankudinov} was the principal developer for
 the {\feff}8 series which included automated self-consistent potential
 s, calculations of the $\ell$DOS, the Fermi level, and charge transfer.
 He also added calculations of elastic scattering
 amplitude, x-ray natural circular dichroism and nonresonant x-ray
-emission, and quadrupolar transitions.  Bruce Ravel developed the full
+emission, and quadrupolar transitions.  {\bf Bruce Ravel} developed the full
 multiple scattering (FMS) algorithm in {\feff}8. 
-A.\ Nesvizhskii added new routines for TDLDA and sum-rules
+{\bf A.\ Nesvizhskii} added new routines for TDLDA and sum-rules
 applications. Anna Poiarkova and Patrick Konrad
 contributed algorithms for calculating multiple-scattering Debye--Waller
-factors and anharmonic contributions. Jim Sims (NIST) extended the code for
-MPI based parallel execution, in collaboration with C.\ Bouldin and
-J. Rehr.  The high-order multiple-scattering routines, pathfinder and
-correlated Debye-Waller routines were developed by Steven Zabinsky and
-J. Rehr for {\feff}5.
+factors and anharmonic contributions. {\bf Jim Sims} (NIST) extended
+the code for
+MPI based parallel execution, in collaboration with {\bf C.\ Bouldin} and
+{\bf J.J.\ Rehr}.  The high-order multiple-scattering routines, pathfinder and
+correlated Debye-Waller routines were developed by {\bf Steven Zabinsky} and
+{\bf J.J. Rehr} for {\feff}5.
 The Hedin--Lundqvist self-energy and phase shift routines were developed
-by Jose Mustre de Leon, Dan Lu, J. Rehr, and R.C.~Albers.
+by {\bf Jose Mustre de Leon, Dan Lu, J. Rehr, and R.C.~Albers}.
 
-We acknowledge invaluable feedback from many of our regular users and beta users.  In particular we thank Michel Jaouen, Sergio Moreno, Rainer Wilcke, and many others for testing the current version {\feffcur}.  We also thank R.C.\
-Albers, K.\ Baberschke, C.\ Bouldin, C.\ Brouder, G.\ Brown,
-S.D.\ Conradson, F.\ Farges, G.\ Hug, M.\ Jaouen, J. Sims, H.\ Ebert and
-E.\ Stern for useful comments and suggestions.
+We gratefully acknowledge invaluable feedback from
+many users and in particular Drs. Matthew Newville, Bruce Ravel, Anatoly
+Frenkel, Simon Bare, Shelly Kelly, F. Farges, G.\ Hug, H. Wende
+and S.D.\ Conradson.  We also thank Siri Vimolchalao for help testing
+the current version {\feffcur}. 
+%We also thank R.C.\
+%Albers, K.\ Baberschke, C.\ Bouldin, C.\ Brouder, G.\ Brown,
+%S.D.\ Conradson, F.\ Farges, G.\ Hug, M.\ Jaouen, J. Sims, H.\ Ebert and
+%E.\ Stern for useful comments and suggestions.}
 
 References for previous {\feff} versions and implementations mentioned above can be found in the appendix.
-
 
 
 \newpage
 \section{The FEFF Users Guide}
 \label{sec:UG}
 
-The current {\feff} Users Guide is organized differently from previous versions, partly because of
-the increased number of input cards and program modules ; and partly because
-we have introduced a Graphical User Interface or GUI referred to as JFEFF.
+%The current {\feff} Users Guide is organized differently from previous versions, partly because of
+%the increased number of input cards and program modules ; and partly because
+%we have introduced a Graphical User Interface or GUI referred to as JFEFF.
+%
+%The next chapter (2) is a \htmlref{quick start guide}{sec:tutorial} to {\feff} and shows how to run a simple calculation
+%using the GUI.  We recommend that new users start here.  It is also a nice introduction to the new GUI.
 
-The next chapter (2) is a \htmlref{quick start guide}{sec:tutorial} to {\feff} and shows how to run a simple calculation
-using the GUI.  We recommend that new users start here.  It is also a nice introduction to the new GUI.
+Chapter (2) is devoted to \htmlref{calculations of material properties}{sec:Calc-Strat-Exampl}.  Here, we discuss in detail how to calculate various spectra, accounting for spin variables, obtaining XMCD spectra, and so on.  Many example input files are described.  
+These examples are also included in your 
+%JFEFF
+ installation, so you can run them yourself on your computer.  This chapter is required reading for serious readers.
 
-Chapter (3) is devoted to \htmlref{calculation material properties}{sec:Calc-Strat-Exampl}.  Here, we discuss in detail how to calculate various spectra, accounting for spin variables, obtaining XMCD spectra, and so on.  Many example input files are described.  These examples are also included in your JFEFF installation, so you can run them yourself on your computer.  This chapter is required reading for serious readers.
-
-Chapter (4) is a reference chapter describing all of \htmlref{{\feff}'s input options}{sec:Input-Control-Cards}, which are specified through CARDS in the input file.
-In previous versions of the {\feff} users guide these cards were grouped by the module of {\feff} that they ``belong" to.  
-Cards are now organized in the same way that they appear in the GUI.  First, we discuss cards that specify the
+Chapter (3) is a reference chapter describing all of \htmlref{{\feff}'s input options}{sec:Input-Control-Cards}, which are specified through CARDS in the input file.
+%In previous versions of the {\feff} users guide these cards were grouped by the module of {\feff} that they ``belong" to.  
+%Cards are now organized in the same way that they appear in the GUI.  
+First, we discuss cards that specify the
 system under consideration (molecule, cluster, crystal ...).  Then we discuss cards that specify which spectroscopy or material property will be calculated.  All of these cards globally affect the
 {\feff} program.  Lastly, we discuss more specialized cards that really do ``belong" to a specific module of {\feff}.  This classification combines an intuitive classification for new users with efficiency for advanced users (who may not run the entire {\feff} program flow).
 
-Chapter (5) describes \htmlref{input and output files}{sec:Input-and-Output-Files}, illustrating the data flow of the program and helping users to find the information they need in {\feff}s many output files.
+Chapter (4) describes \htmlref{input and output files}{sec:Input-and-Output-Files}, illustrating the data flow of the program and helping users to find the information they need in {\feff}s many output files.
 
 Finally, the last pages of the UG comprise \htmlref{installation instructions}{sec:Append-B-Inst}, license information, and other technical information.
 
@@ -403,107 +420,109 @@ If you notice any mistakes or omissions in this Users Guide, please contact us a
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TUTORIAL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TUTORIAL
-\chapter{Tutorial}
-\label{sec:tutorial}
+%\chapter{Tutorial}
+%\label{sec:tutorial}
+%
 
-
-This chapter demonstrates a simple FEFF calculation using the Graphical User Interface (GUI).  We recommend you start here.
-There are more examples throughout this manual and in the examples directory of your FEFF distribution.  If you have already installed {\feff}, you may skip the next section.
-
-JFEFF is updated regularly, and the screenshots in this manual may be  different from the actual JFEFF GUI on your system.
-
-\section{Installing {\feff}.}
-You first need to install{\feff}.  It comes bundled with its GUI JFEFF as well as this Users' Guide and examples.  The program is available from \htmlref{the {\feff} project website}{http://www.feffgroup.org}, where you can buy a license if you haven't already done so.  Once you receive your license code, you have access to the download section, where you can download the current version of {\feff}.
-
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=2.548in]{install1.png}
-	\label{fig:install1}
-\end{figure}
-
-We offer a very straightforward step-by-step installer that should have you up and running in moments.  {\feff} should install on your computer without any difficulties.  On most computers it will ask for an Administrator password.  If you do experience problems, we would like to hear about your experience and we will help you resolve the problem.  If you receive a complaint about missing Java or the Java JRE, please download the latest Sun Java release to your computer and try again.  There are no further requirements.
-
-For more advanced instructions that only apply to advanced users, see \htmlref{the appendices}{sec:Append-B-Inst}.
-
-\section{Running your first {\feff} calculation}
-
-To begin, please open the JFEFF-GUI by double-clicking the program icon on your desktop, Start Menu, or LaunchPad.  If this is the first time you run this version of {\feff}, the program will ask you for permission to copy user files to your home directory.  Please click OK to allow this.  JFEFF then installs a set of examples.  You can find them in \url{~/jfeff_examples}, where \url{~} means your home directory.  When JFEFF opens, it loads by default the EXAFS example for Cu (located in \url{~/jfeff_examples/EXAFS/Cu}).  However, we now calculate the X-ray Absorption Spectrum of GeCl4.
-
-
-Select \file{Open Example} from the \texttt{File} menu.  Browse to \file{EXAFS}, then to \file{GeCl4}, and select the file \file{feff.inp}.
-
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=3.0in]{open1.png}
-	\label{fig:open1}
-\end{figure}
-
-All corresponding files for this calculation can be found in  \url{~/jfeff_examples/EXAFS/GeCl\\_4/feff.inp}.  ("\url{~}" stands for the home directory, e.g. \url{C:\\Documents and Users\\John Rehr\\})  Each {\feff} calculation consists of an input file and a set of output files in one directory.  After loading the GeCl4 input file JFEFF looks like this:
-
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=4.0in]{open2.png}
-	\label{fig:open2}
-\end{figure}
-
-To view the material you are calculating, click the \texttt{Jmol} button.
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=2.0in]{view1.png}
-	\label{fig:view1}
-\end{figure}
-
-
-Take a look around.  There are many input options, corresponding to `CARDS' discussed in the next chapters.  Only a few options are explicitly initialized; many others will have default values for this simple test calculation.  The options are grouped :  In the top panel, you specify the molecule or crystal you're studying.  In the middle panel, you specify which spectrum you want to calculate (e.g., an EXAFS spectrum over a certain energy range).  The bottom panel contains a large number of options that are all the "technical settings" that tell the FEFF code how to calculate the spectrum.  It's fine if most of these don't make much sense right now.  When you read the next chapter of this Users Guide, you will quickly find out which options are most important.  Knowlege of about two dozen cards is sufficient for many {\feff} calculation.  For now, have a look at the atomic coordinates, and try to see where the type of spectroscopy and the relevant path length cutoff are set.  You can look up information on any card in chapter 4.  
-
-There is an easier way to get help.  Click the \texttt{Help} button in the bottom right corner.  A new window pops up.  Now hover the mouse over any CARD in the interface.  A description appears in the pop-up box.  If you want to consult the \file{pdf} manual, simply click \file{Open User Manual} in the \texttt{Tools} menu.
-
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=3.0in]{help1.png}
-	\label{fig:help1}
-\end{figure}
-
-Finally, the righthand panel is where you start the calculation.  When you have satisfied your curiosity, click the red \file{Save \& Run} button to run the example.  
-
-Now the \file{Run} window opens and runtime output appears on the screen.  Wait until {\feff} has finished.  For this tiny calculation it will take only a few moments.  Calculations can take minutes or even hours in some cases.  Here we see that the spectrum was calculated using 4 "scattering paths", of which only 1 is unique.  This makes sense since we have a small molecule consisting of Ge symmetrically surrounded by 4 Cl atoms.  If we increased the RPATH parameter (as we probably should - it is currently set to 3.0 Angstrom) then more paths would be taken into account.
-.
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=3.0in]{run1.png}
-	\label{fig:run1}
-\end{figure}
-
-
-Now we plot the EXAFS (X-ray absorption) spectrum that we just calculated.  Click on the {\feff} logo in the right corner.
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=3.0in]{plot1.png}
-	\label{fig:plot1}
-\end{figure}
-
-
-This plots the content of the file \file{xmu.dat}, which contains the EXAFS spectrum.  It is automatically loaded when the plot frame is opened. You can select \file{open} from the \file{file} menu in the plot frame to add another data set.  E.g. in the same directory you will find a file \file{referencexmu.dat}.  This is not a measured reference (i.e. experimental data) but output from the same calculation executed by the {\feff} authors.  It's there so you can check that you are doing the calculation correctly.  You can also display the \file{xmu.dat} output in your favorite plotting program.  As you gain more experience you can also investigate the other output files. 
-
-
-It's worth playing around with the options in the plot window: you can add, hide, refresh, or delete datasets.  (The results aren't deleted from disk, merely removed from the graph.)  You can also select the data column to plot.  The plotter automatically chooses the most useful one - column 4 for EXAFS.  In the figure below we have loaded the file \file{xmu.dat} three times, selecting first the default column 4 for the total EXAFS spectrum $\mu(E)$, then column 6 for the EXAFS fine structure $\chi$, and finally column 5 for the atomic background $\mu_0$. 
-
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=3.0in]{plot2.png}
-	\label{fig:plot2}
-\end{figure}
-
-If your results differ from the provided reference, there may be a problem with your installation that you need to correct before proceeding.
-
-
-Congratulations!  You have succesfully finished your first {\feff} calculation.
-
-
-
-
-\section{More examples}
-Your {\feff} installation includes a folder containing examples of calculations for nearly all different types of calculations {\feff} can do.  It's worth spending some time looking at the files or opening the files in JFEFF and exploring which options were used.  Most of the examples are also discussed in the next chapter of this Users Guide.
+%This chapter demonstrates a simple FEFF} calculation using the Graphical User Interface (GUI).  We recommend you start here.
+%There are more examples throughout this manual and in the examples directory of your FEFF distribution.  If you have already installed {\feff}, you may skip the next section.
+%
+%JFEFF is updated regularly, and the screenshots in this manual may be  different from the actual JFEFF GUI on your system.
+%
+%\section{Installing {\feff}.}
+%You first need to install{\feff}.  It comes bundled with its GUI JFEFF as well as this Users' Guide and examples.  The program is available from \htmlref{the {\feff} project website}{http://www.feffgroup.org}, where you can buy a license if you haven't already done so.  Once you receive your license code, you have access to the download section, where you can download the current version of {\feff}.
+%
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=2.548in]{install1.png}
+%	\label{fig:install1}
+%\end{figure}
+%
+%We offer a very straightforward step-by-step installer that should have you up and running in moments.  {\feff} should install on your computer without any difficulties.  On most computers it will ask for an Administrator password.  If you do experience problems, we would like to hear about your experience and we will help you resolve the problem.  If you receive a complaint about missing Java or the Java JRE, please download the latest Sun Java release to your computer and try again.  There are no further requirements.
+%
+%For more advanced instructions that only apply to advanced users, see \htmlref{the appendices}{sec:Append-B-Inst}.
+%
+%\section{Running your first {\feff} calculation}
+%
+%To begin, please open the JFEFF-GUI by double-clicking the program icon on your desktop, Start Menu, or LaunchPad.  If this is the first time you run this version of {\feff}, the program will ask you for permission to copy user files to your home directory.  Please click OK to allow this.  JFEFF then installs a set of examples.  You can find them in \url{~/jfeff_examples}, where \url{~} means your home directory.  When JFEFF opens, it loads by default the EXAFS example for Cu (located in \url{~/jfeff_examples/EXAFS/Cu}).  However, we now calculate the X-ray Absorption Spectrum of GeCl4.
+%
+%
+%Select \file{Open Example} from the \texttt{File} menu.  Browse to \file{EXAFS}, then to \file{GeCl4}, and select the file \file{feff.inp}.
+%
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=3.0in]{open1.png}
+%	\label{fig:open1}
+%\end{figure}
+%
+%All corresponding files for this calculation can be found in  \url{~/jfeff_examples/EXAFS/GeCl\\_4/feff.inp}.  ("\url{~}" stands for the home directory, e.g. \url{C:\\Documents and Users\\John Rehr\\})  Each {\feff} calculation consists of an input file and a set of output files in one directory.  After loading the GeCl4 input file JFEFF looks like this:
+%
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=4.0in]{open2.png}
+%	\label{fig:open2}
+%\end{figure}
+%
+%To view the material you are calculating, click the \texttt{Jmol} button.
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=2.0in]{view1.png}
+%	\label{fig:view1}
+%\end{figure}
+%
+%
+%Take a look around.  There are many input options, corresponding to `CARDS' discussed in the next chapters.  Only a few options are explicitly initialized; many others will have default values for this simple test calculation.  The options are grouped :  In the top panel, you specify the molecule or crystal you're studying.  In the middle panel, you specify which spectrum you want to calculate (e.g., an EXAFS spectrum over a certain energy range).  The bottom panel contains a large number of options that are all the "technical settings" that tell the FEFF code how to calculate the spectrum.  It's fine if most of these don't make much sense right now.  When you read the next chapter of this Users Guide, you will quickly find out which options are most important.  Knowlege of about two dozen cards is sufficient for many {\feff} calculation.  For now, have a look at the atomic coordinates, and try to see where the type of spectroscopy and the relevant path length cutoff are set.  You can look up information on any card in chapter 4.  
+%
+%There is an easier way to get help.  Click the \texttt{Help} button in the bottom right corner.  A new window pops up.  Now hover the mouse over any CARD in the interface.  A description appears in the pop-up box.  If you want to consult the \file{pdf} manual, simply click \file{Open User Manual} in the \texttt{Tools} menu.
+%
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=3.0in]{help1.png}
+%	\label{fig:help1}
+%\end{figure}
+%
+%Finally, the righthand panel is where you start the calculation.  When you have satisfied your curiosity, click the red \file{Save \& Run} button to run the example.  
+%
+%Now the \file{Run} window opens and runtime output appears on the screen.  Wait until {\feff} has finished.  For this tiny calculation it will take only a few moments.  Calculations can take minutes or even hours in some cases.  Here we see that the spectrum was calculated using 4 "scattering paths", of which only 1 is unique.  This makes sense since we have a small molecule consisting of Ge symmetrically surrounded by 4 Cl atoms.  If we increased the RPATH parameter (as we probably should - it is currently set to 3.0 Angstrom) then more paths would be taken into account.
+%.
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=3.0in]{run1.png}
+%	\label{fig:run1}
+%\end{figure}
+%
+%
+%Now we plot the EXAFS (X-ray absorption) spectrum that we just calculated.  Click on the {\feff} logo in the right corner.
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=3.0in]{plot1.png}
+%	\label{fig:plot1}
+%\end{figure}
+%
+%
+%This plots the content of the file \file{xmu.dat}, which contains the EXAFS spectrum.  It is automatically loaded when the plot frame is opened. You can select \file{open} from the \file{file} menu in the plot frame to add another data set.  E.g. in the same directory you will find a file \file{referencexmu.dat}.  This is not a measured reference (i.e. experimental data) but output from the same calculation executed by the {\feff} authors.  It's there so you can check that you are doing the calculation correctly.  You can also display the \file{xmu.dat} output in your favorite plotting program.  As you gain more experience you can also investigate the other output files. 
+%
+%
+%It's worth playing around with the options in the plot window: you can add, hide, refresh, or delete datasets.  (The results aren't deleted from disk, merely removed from the graph.)  You can also select the data column to plot.  The plotter automatically chooses the most useful one - column 4 for EXAFS.  In the figure below we have loaded the file \file{xmu.dat} three times, selecting first the default column 4 for the total EXAFS spectrum $\mu(E)$, then column 6 for the EXAFS fine structure $\chi$, and finally column 5 for the atomic background $\mu_0$. 
+%
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=3.0in]{plot2.png}
+%	\label{fig:plot2}
+%\end{figure}
+%
+%If your results differ from the provided reference, there may be a problem with your installation that you need to correct before proceeding.
+%
+%
+%Congratulations!  You have succesfully finished your first {\feff} calculation.
+%
+%
+%
+%
+\section{Examples}
+Your {\feff} installation includes a folder containing examples of calculations for nearly all different types of calculations {\feff} can do.  It's worth spending some time looking at the files 
+%or opening the files in JFEFF 
+and exploring which options were used.  Most of the examples are also discussed in the next chapter of this Users Guide.
 
 Note that many examples have reduced basis sets that allow you to run the test quickly, but do not produce a "converged" spectrum that can be compared to experiment or used in a publication.  At least the cutoff radii of the SCF, FMS, and RPATH cards need to be converged to achieve proper results.
 
@@ -518,7 +537,7 @@ Once you start setting up and running your own calculations, we recommend that y
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CALCULATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CALCULATION
 
-\chapter{Calculating material properties with {\feff}}
+\chapter{Calculating material properties with {FEFF}}
 \label{sec:Calc-Strat-Exampl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GENERAL %%%%%%%%%%%%%
@@ -528,9 +547,16 @@ A {\feff} calculation starts with two basic tasks: calculation of the potentials
 
 Each of these basic steps corresponds to a handful of {\feff} program modules controlled by a set of \file{feff.inp} input options.  In later chapters we discuss these aspects in a technical way by listing the details of program modules, input cards, and files.  The current chapter takes a more user-oriented approach.  We discuss each type of spectroscopy individually.  We indicate which options (cards) and program modules are relevant for that type of spectrum, and give recommendations on strategies, as well as examples.
 
-We encourage users to spend some time exploring the \file{examples} folder that came with their {\feff} distribution.  Most users will find this in \url{\~/jfeff_examples}.  (If you installed only the {\feff} code, the examples are in \url{\~/feff90/examples}.)  This folder contains several testcases, including all major types of spectroscopy.  Each test case comes with an input file \file{feff.inp}, a reference output file \file{referencexmu.dat} or \file{reference\_eels.dat}, and an archive \file{REFERENCE.zip} containing the entire calculation with intermediate output files.  Every example that is quoted at length in this chapter of the Users Guide is available in the \url{jfeff_examples} folder.
+We encourage users to spend some time exploring the \file{examples} folder that came with their {\feff} distribution.  
+%Most users will find this in \url{\~/jfeff_examples}.  (If you installed only the {\feff} code, t
+The examples are in
+\url{\~/feff10/examples}.)  This folder contains several testcases, including all major types of spectroscopy.  Each test case comes with an input file \file{feff.inp}, a reference output file \file{referencexmu.dat} or \file{reference\_eels.dat}, and an archive \file{REFERENCE.zip} containing the entire calculation with intermediate output files.  Every example that is quoted at length in this chapter of the Users Guide is available in the 
+%\url{jfeff_examples} 
+\url{\~/feff10/examples} folder.
 
-We endeavour to keep {\feff} accessible to the novice user: you need only one input file \file{feff.inp} and run a single command, \file{feff} (or the \textbf{Save \& Run} button in the GUI).  Nevertheless, we encourage you to gain insight in the underlying structure of {\feff}.  For example, many parameters can be changed without requiring the entire calculation to be redone.  If the model (i.e., the atom positions) doesn't change significantly, it is usually not necessary to recalculate the potentials.  E.g., if one wants to add more paths to the path expansion, the calculation can be restarted with module \module{path}, saving much time.  If one wants to change the beam orientation in an EELS calculation, only the \module{eels} module needs to run again.  However, significant changes to the model require rerunning the entire calculation.  Generally, \module{pot}, \module{fms}, and \module{genfmt} take much time, while all other program modules are very fast.
+We endeavour to keep {\feff} accessible to the novice user: you need only one input file \file{feff.inp} and run a single command, \file{feff} 
+%(or the \textbf{Save \& Run} button in the GUI)
+.  Nevertheless, we encourage you to gain insight in the underlying structure of {\feff}.  For example, many parameters can be changed without requiring the entire calculation to be redone.  If the model (i.e., the atom positions) doesn't change significantly, it is usually not necessary to recalculate the potentials.  E.g., if one wants to add more paths to the path expansion, the calculation can be restarted with module \module{path}, saving much time.  If one wants to change the beam orientation in an EELS calculation, only the \module{eels} module needs to run again.  However, significant changes to the model require rerunning the entire calculation.  Generally, \module{pot}, \module{fms}, and \module{genfmt} take much time, while all other program modules are very fast.
 
 The study of a material usually requires running several calculations, because there are parameters to converge, for example the cutoff radius of the full multiple scattering algorithm.  There are no default values for these parameters that work for all materials.  Debye-Waller factors may require much attention in the EXAFS regime but the XANES regime may be less sensitive.  It takes some experimentation to find out what treatment is adequate for a given material.
 
@@ -541,7 +567,8 @@ The information in this chapter aims to illuminate such matters; some hands-on e
 \section{Running FEFF}
 
 \subsection{Preparing the input}
-The {\feff} program consists of a set of program modules driven by a single input file \file{feff.inp} .  The user can either supply this file herself; or she can set all input options through the JFEFF GUI, which runs {\feff} without the need for manual text editing.  (A {\file{feff.inp}} is created behind the scenes and can be edited later.)
+The {\feff} program consists of a set of program modules driven by a single input file \file{feff.inp}.  
+%The user can either supply this file herself; or she can set all input options through the JFEFF GUI, which runs {\feff} without the need for manual text editing.  (A {\file{feff.inp}} is created behind the scenes and can be edited later.)
 
 To prepare {\feff} input, you must answer four questions:
 \begin{enumerate}
@@ -552,45 +579,51 @@ To prepare {\feff} input, you must answer four questions:
 \item What parts of {\feff} do I want to run?
 \end{enumerate}
 
-The answer to question 1 requires knowledge of the structure.  In most cases, this means obtaining a list of x,y,z Carthesian atom coordinates and atomic numbers.  {\feff} is happy with an explicit list of atoms, e.g. for molecules, aperiodic systems, or as an approximation to a periodic material.  {\feff} can also read \file{.cif} files, a widely accepted format for representing crystal data.  Such files can be found for many materials in online databases and can be fed straight into the JFEFF GUI, or can be linked to in the \file{feff.inp} file.  Finally, there are some third-party tools that can set up a \file{feff.inp} file for you based on atomic positions or crystallographic information.  An example is \htmladdnormallink
+The answer to question 1 requires knowledge of the structure.  In most cases, this means obtaining a list of x,y,z Carthesian atom coordinates and atomic numbers.  {\feff} is happy with an explicit list of atoms, e.g. for molecules, aperiodic systems, or as an approximation to a periodic material.  {\feff} can also read \file{.cif} files, a widely accepted format for representing crystal data.  Such files can be found for many materials in online databases and 
+%can be fed straight into the JFEFF GUI, or 
+can be linked to in the \file{feff.inp} file.  Finally, there are some third-party tools that can set up a \file{feff.inp} file for you based on atomic positions or crystallographic information.  An example is \htmladdnormallink
 {webatoms}{http://cars9.uchicago.edu/~ravel/software/aboutatoms.html}, developed by B. Ravel; or the popular Athena program.    More {\feff}-compatible crystallographic tools are available from \htmladdnormallink{ICMPE}{http://www.icmpe.cnrs.fr/spip.php?article578&lang=fr}.
 
-Although {\feff} input can certainly be constructed from scratch, the most common approach is to start from an existing input file, and modify it to what you want to do.  Example input files included in your {\feff} installation and discussed in this chapter are an excellent starting point.  You can take such a file and replace the atomic coordinates with your own (typically, using the ATOMS and POTENTIAL cards, or equivalently the CIF card).  Then you can continue to edit the file to answer questions 2-4, or you can open the file in the JFEFF GUI, where it is easy to change options and to find help on what they mean.
+Although {\feff} input can certainly be constructed from scratch, the most common approach is to start from an existing input file, and modify it to what you want to do.  Example input files included in your {\feff} installation and discussed in this chapter are an excellent starting point.  You can take such a file and replace the atomic coordinates with your own (typically, using the ATOMS and POTENTIAL cards, or equivalently the CIF card).  Then you can continue to edit the file to answer questions 2-4.
+%, or you can open the file in the JFEFF GUI, where it is easy to change options and to find help on what they mean.
 
 As you look at the examples in this chapter, it may be helpful to refer to Chapter \ref{sec:Input-Control-Cards}, which contains an exhaustive reference list of all input options.
 
 
 \subsection{Conventions for the input file}
 
-If you use the JFEFF GUI to set up your calculation, you don't need to worry about this.
+%If you use the JFEFF GUI to set up your calculation, you don't need to worry about this.
 
 The input file \file{feff.inp} is a loosely formatted, line-oriented text file. Each type of input read by the program is on a line 
 starting with a CARD:  a keyword possibly followed by some numbers or words.  The sequence of keyword cards is arbitrary. If any card or optional data is omitted,
 default values are used.  Most calculations do require the POTENTIALS card, and either the ATOMS card or the OVERLAP card.  Together, the POTENTIALS and ATOMS/OVERLAP cards specify the physical structure of the
 molecule or solid one is interested in.  {\feff} uses Carthesian coordinates and Angstrom units.  Hence it is easy to copy atom positions from, e.g., an \file{xyz} file or other popular file formats.  It is also possible to import CIF files (\file{*.cif}).  There are many optional cards to specify the material property to calculate (e.g., X-ray spectroscopy) and to control how {\feff} calculates it. 
  
-Users working from the GUI can get more information about any CARD by pressing the \file{Help} button and simply hovering the mouse over that CARD.
+%Users working from the GUI can get more information about any CARD by pressing the \file{Help} button and simply hovering the mouse over that CARD.
 
 All distances are in Angstrom ({\AA}) and energies are in electron-volts (eV). 
 
 
 \subsection{Starting the calculation}
 
-Once the input is ready, the calculation is started by clicking the \texttt{Save \& Run} button in the GUI, or by giving a single command
+Once the input is ready, the calculation is started 
+%by clicking the \texttt{Save \& Run} button in the GUI, or 
+by giving a single command
 \texttt{feff} from a command line terminal.  This executes a script bundling about fifteen modules that together comprise the {\feff} code.  
 
 Generally, not all modules are run for a given calculation.  To some extent, each step can be
 controlled individually through cards or an intermediate input file (\file{pot.inp}, \file{ldos.inp}, ...).  Note that it's useless to run any module unless the preceding modules have been run already.  We recommend that novice users simply run the \texttt{feff} command until they develop a more detailed understanding of how the {\feff} code works.  
 
-In the GUI one can easily select which modules one wants to run by checking or unchecking their checkboxes in the righthand panel of the main window.  On the command line one can either call each of the modules by name, or use the \htmlref{CONTROL}{card:con} card in \file{feff.inp} to select modules.  
+%In the GUI one can easily select which modules one wants to run by checking or unchecking their checkboxes in the righthand panel of the main window.  
+On the command line one can either call each of the modules by name, or use the \htmlref{CONTROL}{card:con} card in \file{feff.inp} to select modules.  
 
 
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=3.0in]{control1.png}
-		\caption{The user is calculating an EXAFS spectrum.  After finishing a first calculation, she increases the path length parameter RPATH to 9.0.  To see the effect on the spectrum, she only needs to re-run the \module{path list}, \module{path expansion}, and \module{cross section}.  She does not need to recalculate the potentials and phase shifts - therefore, the checkboxes of these modules are unchecked.  This way, she saves much time.}   
-	\label{fig:control1}
-\end{figure}
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=3.0in]{control1.png}
+%		\caption{The user is calculating an EXAFS spectrum.  After finishing a first calculation, she increases the path length parameter RPATH to 9.0.  To see the effect on the spectrum, she only needs to re-run the \module{path list}, \module{path expansion}, and \module{cross section}.  She does not need to recalculate the potentials and phase shifts - therefore, the checkboxes of these modules are unchecked.  This way, she saves much time.}   
+%	\label{fig:control1}
+%\end{figure}
 
 The underlying program flow of the {\feff} program is as follows:
 
@@ -705,26 +738,26 @@ Most of these techniques are discussed in greater detail throughout this chapter
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RUNNING FEFF %%%%%%%%%%%%%
-\section{Some notes on the JFEFF GUI}
-The JFEFF GUI is a user-friendly way to use the {\feff} code.  It removes the need to work on the command line, which is difficult for many new users, especially on MS Windows computers.  There may still be times when you want to use a text editor (any will do) to edit the \file{feff.inp} master input file by hand.  You may also want to have a plotting program to create images for reports or papers.  \texttt{Gnuplot} is a plotting program that exists for all platforms in one way or another; it's old-school but very flexible.
-
-We work hard to make sure the Java GUI is up to date with the Fortran {\feffcur} code.  However, there can be inevitable lags and the latest developments may not yet be available through the GUI.
-
-In the current version (10.0.0) we are aware of the following limitations :
-\begin{itemize}  \tightlist
-\item  JFEFF cannot open files containing the LATTICE or COORDINATES cards.  JFEFF can only treat periodic systems using the CIF option.
-\item  JFEFF cannot do NRIXS calculations for more than one q-vector.
-\item  JFEFF does not currently treat the CONFIG card correctly.
-\item  JFEFF is slightly limited in the EGRID card: it can use only 5 different grids (10 for the command-line version of {\feff}) and cannot use the 'user\_grid' gridtype.
-\item  JFEFF does not execute the \module{dym2feffinp} program for DMDW calculations.  The user needs to take care of this step first if applicable.
-\item  JFEFF can get confused if you modify the \file{feff.inp} file in the working directory outside of JFEFF (e.g. in a text editor, or by copying or moving files).  It is safer to quit or save and quit JFEFF first, then copy your files, then re-open JFEFF and load the new file - rather than copying files and hoping JFEFF somehow realizes changes were made.
-\item  JFEFF currently uses only one occurrence of the SCREEN card (that would be the last one occurring in \file{feff.inp} ) whereas the {\feff} code can handle many.
-\item  JFEFF does not display the content of a \file{cif} file.  You must look at the file yourself to figure out what position you'd like to put the core hole at, and then enter the corresponding number in the TARGET field.  JFEFF does display the structure in the Plotter window.
-\item  JFEFF cannot combine CIF and POTENTIALS cards, whereas this is possible (and sometimes useful) in {\feff}.
-\item If both RPATH and FMS cards are present in \file{feff.inp}, JFEFF's results may depend on the order they appear in.  It is generally not recommended to use both cards in any one calculation.
-\end{itemize}
-
-We will not remedy the ability to read the LATTICE card, as using the CIF option is the preferred strategy for the future.  If any of the other limitations are hindering you, please contact us to see if we can help you out in the short run.  We are dedicated to making JFEFF as useful and pleasant as possible.
+%\section{Some notes on the JFEFF GUI}
+%The JFEFF GUI is a user-friendly way to use the {\feff} code.  It removes the need to work on the command line, which is difficult for many new users, especially on MS Windows computers.  There may still be times when you want to use a text editor (any will do) to edit the \file{feff.inp} master input file by hand.  You may also want to have a plotting program to create images for reports or papers.  \texttt{Gnuplot} is a plotting program that exists for all platforms in one way or another; it's old-school but very flexible.
+%
+%We work hard to make sure the Java GUI is up to date with the Fortran {\feffcur} code.  However, there can be inevitable lags and the latest developments may not yet be available through the GUI.
+%
+%In the current version (9.6.4) we are aware of the following limitations :
+%\begin{itemize}  \tightlist
+%\item  JFEFF cannot open files containing the LATTICE or COORDINATES cards.  JFEFF can only treat periodic systems using the CIF option.
+%\item  JFEFF cannot do NRIXS calculations for more than one q-vector.
+%\item  JFEFF does not currently treat the CONFIG card correctly.
+%\item  JFEFF is slightly limited in the EGRID card: it can use only 5 different grids (10 for the command-line version of {\feff}) and cannot use the 'user\_grid' gridtype.
+%\item  JFEFF does not execute the \module{dym2feffinp} program for DMDW calculations.  The user needs to take care of this step first if applicable.
+%\item  JFEFF can get confused if you modify the \file{feff.inp} file in the working directory outside of JFEFF (e.g. in a text editor, or by copying or moving files).  It is safer to quit or save and quit JFEFF first, then copy your files, then re-open JFEFF and load the new file - rather than copying files and hoping JFEFF somehow realizes changes were made.
+%\item  JFEFF currently uses only one occurrence of the SCREEN card (that would be the last one occurring in \file{feff.inp} ) whereas the {\feff} code can handle many.
+%\item  JFEFF does not display the content of a \file{cif} file.  You must look at the file yourself to figure out what position you'd like to put the core hole at, and then enter the corresponding number in the TARGET field.  JFEFF does display the structure in the Plotter window.
+%\item  JFEFF cannot combine CIF and POTENTIALS cards, whereas this is possible (and sometimes useful) in {\feff}.
+%\item If both RPATH and FMS cards are present in \file{feff.inp}, JFEFF's results may depend on the order they appear in.  It is generally not recommended to use both cards in any one calculation.
+%\end{itemize}
+%
+%We will not remedy the ability to read the LATTICE card, as using the CIF option is the preferred strategy for the future.  If any of the other limitations are hindering you, please contact us to see if we can help you out in the short run.  We are dedicated to making JFEFF as useful and pleasant as possible.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POTENTIAL %%%%%%%%%%%%%
@@ -736,7 +769,8 @@ sequence corresponds to the first two fields in the CONTROL card, i.e.,
 \begin{verbatim}
 CONTROL 1 1 0 0 0 0 
 \end{verbatim}
-calculates potentials and phase shifts (and nothing more).  Similarly, it corresponds to the first two checkboxes in the Run panel of the JFEFF GUI.
+calculates potentials and phase shifts (and nothing more).  
+%Similarly, it corresponds to the first two checkboxes in the Run panel of the JFEFF GUI.
 
 Initially the free atom potentials of each atomic type are calculated
 using a relativistic Dirac--Fock atom code, treating the atoms as if
@@ -748,7 +782,7 @@ Non-overlapping muffin-tin radii are determined automatically from
 the calculated Norman radii. Automatic overlapping of muffin tin
 spheres (see the AFOLP card) is done by default, since it typically
 leads to better results than non-overlapping muffin-tin spheres.
-{\feffcur} can also calculate self-consistent potentials by successively
+\textcolor{green}{\feffcurrent} can also calculate self-consistent potentials by successively
 calculating the electron density of states, electron density and Fermi
 level at each stage within a small cluster and then iterating, using
 the Mattheiss prescription for the initial iteration.  This behavior is activated by the SCF card in \file{feff.inp}.  
@@ -782,7 +816,7 @@ unique potential only once, using as a sample geometry the atom with
 a given unique potential index that is closest to the absorbing atom. 
 Thus it is essential that the neighborhood of each sample atom be appropriate.
 One should give consideration to adding potentials for sufficiently different atoms
-of the same atomic number.  {\feffcur} only calculates the spherical part of the potential
+of the same atomic number.  \textcolor{green}{\feffcurrent} only calculates the spherical part of the potential
 ("muffin tin potential"), so if atoms have environments identical up to a unitary transformation
 (e.g. a space group symmetry operation in a crystal), they can certainly be considered equivalent
 in {\feff}.  In strongly anisotropic environments, the muffin tin approximation may lead
@@ -848,7 +882,9 @@ LDOS -20.  20.  0.05  * first run, -20->20 eV
 
 
 Once we have the potentials and phase shifts, we can calculate the multiple scattering (MS) Green's function.  This corresponds to the sequence of modules
-\module{fms}, \module{mkgtr}, \module{path} and \module{genfmt}.  Equivalently, fields 3-5 in the CONTROL card, or checkboxes 3-5 in the Run panel of the JFEFF GUI:
+\module{fms}, \module{mkgtr}, \module{path} and \module{genfmt}.  Equivalently, fields 3-5 in the CONTROL card:
+%, or checkboxes 3-5 in the Run panel of the JFEFF GUI
+
 \begin{verbatim}
 CONTROL 0 0 1 1 1 0 * calculate G and nothing else
 \end{verbatim}
@@ -933,7 +969,7 @@ The spectrum can be found in file \file{xmu.dat} for most types of spectroscopy.
 options for filtering, Debye--Waller factors, and other corrections are
 available.  The details depend on the type of spectroscopy.  For more details and examples, we refer to the section below that is appropriate for your type of calculation.
 
-FIX Add a paragraph or two about sfconv either here or in a section of itself
+\textcolor{cyan}{??FIX Add a paragraph or two about sfconv either here or in a section of itself??}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXAFS %%%%%%%%%%%%%
 
@@ -1163,7 +1199,7 @@ XANES calculations usually take more time and require more experience than EXAFS
 They require self-consistent potentials using the \htmlref{SCF}{card:scf} card. The use of the SCF card 
 also gives a more reliable estimate of the Fermi level.  (The CORRECTIONS card
 can still be used, since the error in Fermi level position is only a few eV).
-{\feffcur} thus automatically accounts for charge transfer. The ION card should 
+{\feffcurrent} thus automatically accounts for charge transfer. The ION card should 
 be used only to specify the total charge of a cluster. Overlapping of muffin tins (AFOLP) leads to better results for XANES and is done by default.
 
 The high order MS path expansion can lead to unreliable XANES calculations when the MS series converges
@@ -1294,7 +1330,7 @@ spin-dependent calculations require that the SPIN card be present in
 \file{feff.inp} (see the \htmlref{SPIN}{card:spi} card in 
 Section~\ref{sec:Scatt-potent-modul}). 
 The method depends on the value of the 
-parameter \texttt{nspx} in the header file \file{feff90/src/COMMON/m\_dimsmod.f90}.
+parameter \texttt{nspx} in the header file \file{feff10/src/COMMON/m\_dimsmod.f90}.
 Please contact the authors if you need help modifying the source code.
 
 In order for the final result to be contained in \file{xmu.dat}, 
@@ -1434,7 +1470,7 @@ at energies well above the absorption edge, we found that ground state
 potentials yield better results and that quadrupolar transitions 
 have to be included.
 
-An example can be found in the \url{jfeff_examples} directory of your {\feff} installation.
+An example can be found in the \textcolor{green}{\url{\~/feff10/examples}} directory of your {\feff} installation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% XES %%%%%%%%%%%%%
@@ -1449,7 +1485,7 @@ Preliminary comparisons with experiment
 for the phosphorous K$_{\beta}$ line show good agreement with experiment for various
 compounds. Please report any problems with this card to the authors.
 
-An example can be found in the \url{jfeff_examples} directory of your {\feff} installation.
+An example can be found in the \textcolor{green}{\url{\~/feff10/examples}} directory of your {\feff} installation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EELS %%%%%%%%%%%%%
@@ -1493,21 +1529,21 @@ If you only change the experimental setup  (i.e., beam direction, beam energy, d
   \item Run module \module{eels} to calculate a new EELS spectrum.
 \end{itemize}
 
-Alternatively, in the JFEFF GUI,
-\begin{itemize} \tightlist
-\item Click the "Other Options" in the spectrum panel and make the desired changes; 
-\item Unselect all checkboxes except \file{cross section} in the Run panel of the main window;
-\item Click \file{Save \& Run}.
-\end{itemize}
+%Alternatively, in the JFEFF GUI,
+%\begin{itemize} \tightlist
+%\item Click the "Other Options" in the spectrum panel and make the desired changes; 
+%\item Unselect all checkboxes except \file{cross section} in the Run panel of the main window;
+%\item Click \file{Save \& Run}.
+%\end{itemize}
 
  The \module{eels} module is very fast and can be looped over to fit some of the experimental parameters mentioned.
 
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=3.0in]{eels1.png}
-		\caption{Pressing the \file{Other Options} button in the Spectrum panel pops up a dialog for the EELS-specific parameters.  In this case, the user is editing the collection angle to better reflect her experimental setup.  Notice that in the Run panel only the \file{cross section} calculation is selected.  It is not necessary to re-run the rest of the calculation when only the microscope parameters are changed.  In this case the new calculation will take less than a second.}
-	\label{fig:eels1}
-\end{figure}
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=3.0in]{eels1.png}
+%		\caption{Pressing the \file{Other Options} button in the Spectrum panel pops up a dialog for the EELS-specific parameters.  In this case, the user is editing the collection angle to better reflect her experimental setup.  Notice that in the Run panel only the \file{cross section} calculation is selected.  It is not necessary to re-run the rest of the calculation when only the microscope parameters are changed.  In this case the new calculation will take less than a second.}
+%	\label{fig:eels1}
+%\end{figure}
 
 
 \subsection{Example input.}
@@ -1615,8 +1651,9 @@ The following input cards cannot currently be used for NRIXS:
 
 The NRIXS code cannot run in k-space.
 
-The NRIXS code can simultaneously calculate a list of q-vectors if run from the command line.  However, this functionality is not yet implemented in the JFEFF GUI,
-which remains limited to a single q-vector at this time.
+The NRIXS code can simultaneously calculate a list of q-vectors if run from the command line.  
+%However, this functionality is not yet implemented in the JFEFF GUI,
+%which remains limited to a single q-vector at this time.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PMBSE/TDDFT %%%%%%%%%%%%%
 
@@ -1624,7 +1661,7 @@ which remains limited to a single q-vector at this time.
 \label{sec:Loc-field-core-hole}
 
 These are features of {\feff} that are still under development. 
-They are not reliable in this release of {\feffcur}.
+They are not reliable in this release of {\feffcurrent}.
 
 Many-body effects such as local fields and the core-hole interaction 
 can be significant in x-ray absorption spectra, even several hundred 
@@ -1645,7 +1682,7 @@ together with inelastic losses and self-energy shifts over a wide
 energy range. 
 
 Note that the \htmlref{TDLDA}{card:tdl} card accounts for some of the same 
-effects, and is functional in this release of {\feffcur}.
+effects, and is functional in this release of {\feffcurrent}.
 
 See \emph{Combined Bethe-Salpeter equations and time-dependent density-functional 
 theory approach for x-ray absorption calculations}; A.L.\ Ankudinov, Y.\ Takimoto, 
@@ -1666,7 +1703,10 @@ Use the CIF CARD as in the \htmlref{Cr2GeC example}{K-space-example-Cr2GeC} belo
 
 If both a CIF card and a POTENTIALS card are present in \file{feff.inp}, the program does the following.  First, it determines if the list of potentials in the POTENTIALS card matches exactly that generated from the CIF file.  If it does not match, the POTENTIALS card is ignored and a warning is printed to the screen.  If the list of potentials does match, the program takes the options for the potentials (i.e.,  lmax1  lmax2  xnatph  spinph ) and uses these values instead of the defaults generated from the CIF file.  This way, the user can control the angular momentum cutoff and set the spin-related variables.
 
-Finally, a word of warning on using the TARGET card to indicate the corehole atom.  Combined with the CIF card, this counts an atom in a list of the crystallographically inequivalent atoms in the unit cell (e.g., 2 C atoms for graphite) in the order given in the CIF file.  However, combined with LATTICE/ATOMS cards, it counts an atom in a list of all atoms in the unit cells (e.g., 4 C atoms for graphite, 2 of which are equivalent by symmetry to the other 2) in the order given in the ATOMS card.  Hence, the value of the TARGET card must be reevaluated if you switch from one representation to the other.  Note that the JFEFF GUI currently does not display the content of the CIF file; you must look at the file yourself to find out in what order the atoms are listed and identify which one you want to place the core hole on.  If it is the third atom listed in the CIF file, use "TARGET 3" in \file{feff.inp} or in the JFEFF GUI.
+Finally, a word of warning on using the TARGET card to indicate the corehole atom.  Combined with the CIF card, this counts an atom in a list of the crystallographically inequivalent atoms in the unit cell (e.g., 2 C atoms for graphite) in the order given in the CIF file.  However, combined with LATTICE/ATOMS cards, it counts an atom in a list of all atoms in the unit cells (e.g., 4 C atoms for graphite, 2 of which are equivalent by symmetry to the other 2) in the order given in the ATOMS card.  Hence, the value of the TARGET card must be reevaluated if you switch from one representation to the other.  Note that 
+%the JFEFF GUI currently does not display the content of the CIF file; 
+you must look at the file yourself to find out in what order the atoms are listed and identify which one you want to place the core hole on.  If it is the third atom listed in the CIF file, use "TARGET 3" in \file{feff.inp}.
+% or in the JFEFF GUI.
 
 \subsection{Formal requirements for cif files}
 Although CIF is a mature standard, there is a wild proliferation of options and input fields for cif files.  We've come across some files that seem to contain endless "junk" entries, or that enter data in sufficiently nonstandard ways to confuse {\feff}.
@@ -1690,7 +1730,7 @@ Most cif files contain much, much more information than this.
 \section{K-space FEFF}
 \label{sec:kspace}
 
-Although {\feff} is traditionally a real-space code, {\feffcur} is capable of calculating infinite periodic systems (crystals) in
+Although {\feff} is traditionally a real-space code, {\feffcurrent} is capable of calculating infinite periodic systems (crystals) in
 reciprocal space.  The reciprocal space engine is based on impurity KKR.  This functionality is implemented through a handful of new input CARDs.  The main difference from the real-space code is that the system is specified in terms of a unit cell with lattice vectors and a basis of atoms in the unit cell, instead of a real space cluster.  We  describe how to do this below.
 
 First, the RECIPROCAL card switches {\feff} to work in k-space.  
@@ -1699,7 +1739,7 @@ Next the crystal structure must be specified.  This can be done in two ways.  Th
 
 In both cases, the TARGET card places the absorber on one of the sites (either the list of sites in the ATOMS card, or the list of sites in the \file{.cif} file) ; and the KMESH card sets the size of the mesh used to sample Brillouin Zone integrals.  There are also a few optional cards, notably COORDINATES (sets the units for the ATOMS card if one uses the LATTICE/ATOMS approach), and SGROUP (only for the LATTICE/ATOMS approach).  STRFAC is an advanced card that adds internal broadening for convergence of lattice sums and is not usually needed.
 
-In the JFEFF GUI only the CIF method is supported.  Select "Import CIF file" from the "Atoms" pulldown menu.  A "Select CIF file" appears, and the RECIPROCAL, TARGET, KMESH, and STRFAC cards become clickable.  If you click the "Jmol" button, you will see the unit cell (only the generating atom positions are shown).
+%In the JFEFF GUI only the CIF method is supported.  Select "Import CIF file" from the "Atoms" pulldown menu.  A "Select CIF file" appears, and the RECIPROCAL, TARGET, KMESH, and STRFAC cards become clickable.  If you click the "Jmol" button, you will see the unit cell (only the generating atom positions are shown).
 
 If a core hole is needed, we recommend using COREHOLE RPA.  Note that NRIXS cannot currently be run in k-space.
 
@@ -1980,7 +2020,8 @@ the force constants or the dynamical matrix be provided.  We will now describe t
 behind these calculations, we refer to \htmlref{Anna Poiarkova's thesis}{http://leonardo.phys.washington.edu/feff/papers/dissertations/thesis_poiarkova.ps} and our \htmlref{paper on the DM method}{http://leonardo.phys.washington.edu/feff/papers/fdv-ab-initio-dw-factors.pdf}.  
 
 \subsection{EM and RM methods}
-The Equation of Motion (EM) and Recursion Method (RM) require additional input to be given in the file \file{spring.inp}.  This file cannot currently be produced from the JFEFF GUI.
+The Equation of Motion (EM) and Recursion Method (RM) require additional input to be given in the file \file{spring.inp}.  
+%This file cannot currently be produced from the JFEFF GUI.
 The file defines the force fields for {\feff}.  First, {\feff} searches for all similar bonds and angles in the material, creates complete lists of all bond stretches and angle bends, and then, based on the force field and geometry of the structure, calculates the cartesian force field matrix and scales it with the atomic masses, thus obtaining the dynamical matrix.  Finally, the DW factors are calculated from the dynamical matrix.
 
 The file \file{feff.inp} has the same CARD-based structure as the master input file \file{feff.inp}.  For example, the \file{spring.inp} file for zinc tetraimidazole looks like this.
@@ -2061,7 +2102,7 @@ Further details can be found on pp. 98 of  \htmlref{Anna Poiarkova's thesis}{htt
 
 \subsubsection{Examples}
 
-These examples can also be found in the \file{examples} folder of the feff90 distribution.
+These examples can also be found in the \file{examples} folder of the feff10 distribution.
 
 First we present a \file{spring.inp} example for a 177-atom cluster of a Cu crystal.  Here only a single central force constant between the first nearest neighbors is taken into account.  Similar input files can be constructed for other fcc structures, e.g. Pt, Al, etc.
 \begin{verbatim}
@@ -2087,7 +2128,7 @@ ANGLES
 1    0    2    31.45    2.
 \end{verbatim}
 
-The output files for these examples can be found in the \file{examples} folder of the feff90 distribution.  They are also discussed in pp. 100-104 of  \htmlref{Anna Poiarkova's thesis}{http://leonardo.phys.washington.edu/feff/papers/dissertations/thesis_poiarkova.ps}.
+The output files for these examples can be found in the \file{examples} folder of the feff10 distribution.  They are also discussed in pp. 100-104 of  \htmlref{Anna Poiarkova's thesis}{http://leonardo.phys.washington.edu/feff/papers/dissertations/thesis_poiarkova.ps}.
 
 
 
@@ -2423,22 +2464,22 @@ Although {\feff} is an efficient code and many spectra can be calculated on a la
 
 Several parallel threads may write identical output to the screen or log file.  This may cause the standard output to be less readable.
 
-\subsection{An easier alternative}
-If you do not have access to a parallel computer with MPI configuration, or if the software configuration seems daunting to you, you may be interested in our \htmlref{Cloud Computing platform}{Sec:Cloud}.  This platform is incorporated in JFEFF for easy access and does automated parallel calculations.  It incurs modest per-hour charges.
+%\subsection{An easier alternative}
+%If you do not have access to a parallel computer with MPI configuration, or if the software configuration seems daunting to you, you may be interested in our \htmlref{Cloud Computing platform}{Sec:Cloud}.  This platform is incorporated in JFEFF for easy access and does automated parallel calculations.  It incurs modest per-hour charges.
 
 \subsection{MPI calculations on the command line}
   
     Although the precise syntax varies with software and hardware environment, a command like
 \begin{verbatim}
 prompt> mpirun -NP 40 --hosts n1,n2,n3,n4,n5 --hostfile /home/me/stuff/my.hostfile 
-/home/me/feff90/bin/MPI/fms
+/home/me/feff10/bin/MPI/fms
 \end{verbatim}
 will execute \module{fms} in parallel using 40 threads.  Your {\feff} installation includes a simple \file{feffmpi} script that contains the above instruction for all consecutive {\feff} modules.  Or you can copy it here:
 
 \begin{verbatim}
 #!/bin/bash
 # Adjust this line: it must point to a directory containing the MPI FEFF modules
-FeffPath=/home/jorissen/feff90/bin/MPI
+FeffPath=/home/jorissen/feff10/bin/MPI
 # Adjust this line to meet your system configuration: "
 MPICommand="mpirun -n 12 --host n20,n20,n20,n20,n17,n17,n17,n17,n18,n18,n18,n18 "
 # In this example, we are using 12 parallel threads on 3 cluster nodes 
@@ -2497,7 +2538,7 @@ On some computers you can omit the hosts and hostfile options (e.g. when running
 # Adjust this number to = nodes x ppn, e.g. 4 x 16 here:
 set NP=64
 # Adjust next line to point to the location of the FEFF MPI executables: 
-set FEFF_HOME=/home/me/feff90/bin/MPI
+set FEFF_HOME=/home/me/feff10/bin/MPI
 
 # No need to edit below:
 cd $PBS_O_WORKDIR
@@ -2522,60 +2563,60 @@ mpirun -np $NP --hostfile $PBS_NODEFILE $FEFF_HOME/eels
 
 More information can be found in Sec. \ref{sec:Append-B-Inst}.  If you are unable to figure out the particularities of your local setup, we ask that you consult your system administrator or system documentation for help first.
 
-\subsection{MPI calculations in JFEFF}
+%\subsection{MPI calculations in JFEFF}
+%
+%The JFEFF GUI also starts parallel calculations.  It is still up to you to fulfill the software requirements outlined above.  JFEFF may install MPI-FEFF binaries to your computer, but it is very likely that you will have to compile your own instead.
+%
+%Use the \file{Settings} window to specify the relevant parameters, in particular number of threads (NP), host list, and location of the FEFF-MPI binaries.
+%
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=4.0in]{settingsMPIlocal.png}
+%	\label{fig:settingsMPIlocal}
+%\end{figure}
+%
+%Start the calculation by clicking \file{Save \& Run}.
+%
+%On a few occasions we have received errors such as  $sh: mpirun not found $.  These were caused by \module{mpirun} not being found by the shell through which JFEFF executes the program.  This shell does not read user configuration files such as \file{.bashrc}.  \module{mpirun} must be available through some global path (e.g. \file{/usr/bin}), or the explicit path can be given in the \file{Settings}.
 
-The JFEFF GUI also starts parallel calculations.  It is still up to you to fulfill the software requirements outlined above.  JFEFF may install MPI-FEFF binaries to your computer, but it is very likely that you will have to compile your own instead.
 
-Use the \file{Settings} window to specify the relevant parameters, in particular number of threads (NP), host list, and location of the FEFF-MPI binaries.
-
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=4.0in]{settingsMPIlocal.png}
-	\label{fig:settingsMPIlocal}
-\end{figure}
-
-Start the calculation by clicking \file{Save \& Run}.
-
-On a few occasions we have received errors such as  $sh: mpirun not found $.  These were caused by \module{mpirun} not being found by the shell through which JFEFF executes the program.  This shell does not read user configuration files such as \file{.bashrc}.  \module{mpirun} must be available through some global path (e.g. \file{/usr/bin}), or the explicit path can be given in the \file{Settings}.
-
-
-\subsection{Remote MPI calculations in JFEFF}
-
-JFEFF can dispatch calculations to a remote machine.  E.g. you can open JFEFF on your laptop and use it to start a {\feff} calculation on your desktop work computer, or on a cluster in a different country.  The remote machine must be available via the SSH protocol.
-
-You must first set up the remote configuration.  In \file{Settings - SSH} proceed as in the figure below.
-
-\begin{figure}[H]
-	\centering
-		\includegraphics[height=4.0in]{settingsMPIssh.png}
-	\label{fig:settingsMPIssh}
-\end{figure}
-
-Once all fields are completed, press \file{add}.  You can enter several different configurations for JFEFF to remember.  Select the appropriate one before starting a calculation.  When all the information is entered, click \file{OK} to save your settings.  In the main JFEFF window drag the Run slider to \file{ssh} and click \file{Save \& Run} to start the calculation.  JFEFF will ask you to enter a password to access the remote machine (unless you have configured passwordless access through a SSH keyfile).  JFEFF does not save this password beyond the current JFEFF session.
-
-Note that the same setup can be used to start serial (non-parallel) calculations on the remote machine by selecting the \file{Single} radio button.
-
-Note that you must have {\feff} installed on the remote machine!  
+%\subsection{Remote MPI calculations in JFEFF}
+%
+%JFEFF can dispatch calculations to a remote machine.  E.g. you can open JFEFF on your laptop and use it to start a {\feff} calculation on your desktop work computer, or on a cluster in a different country.  The remote machine must be available via the SSH protocol.
+%
+%You must first set up the remote configuration.  In \file{Settings - SSH} proceed as in the figure below.
+%
+%\begin{figure}[H]
+%	\centering
+%		\includegraphics[height=4.0in]{settingsMPIssh.png}
+%	\label{fig:settingsMPIssh}
+%\end{figure}
+%
+%Once all fields are completed, press \file{add}.  You can enter several different configurations for JFEFF to remember.  Select the appropriate one before starting a calculation.  When all the information is entered, click \file{OK} to save your settings.  In the main JFEFF window drag the Run slider to \file{ssh} and click \file{Save \& Run} to start the calculation.  JFEFF will ask you to enter a password to access the remote machine (unless you have configured passwordless access through a SSH keyfile).  JFEFF does not save this password beyond the current JFEFF session.
+%
+%Note that the same setup can be used to start serial (non-parallel) calculations on the remote machine by selecting the \file{Single} radio button.
+%
+%Note that you must have {\feff} installed on the remote machine!  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CLOUD COMPUTING %%%%%%%%%%%%%
 
-\section{Cloud Computing}
-\label{Sec:Cloud}
-
-JFEFF can run {\feff} calculations in the EC2 cloud.  JFEFF will then send a request to EC2 to prepare a high-performance cloud cluster containing a specified number of nodes.  The {\feff} calculation is run on the cloud cluster and the results are copied back to the user's local machine when finished.  This way of performing calculations, which we call Scientific Cloud Computing, is an alternative to traditional parallel computing.  It allows one to run demanding calculations that would traditionally require expensive and hard-to-maintain local clusters.  
-
-Note that it takes a short time (typically 3-4 minutes) to prepare the cloud cluster.  Therefore, it makes no sense to use Scientific Cloud Computing for very short calculations.
-
-Cloud computing is not a free service.  EC2 charges its users per hour and per node (currently about USD \$0.08 per core-hour).  The user needs to set up a customer account with Amazon Web Services (AWS).  This is very easy but requires a credit card.  EC2 usage charges are then billed to this account.  We have found that these charges are typically reasonable and cheaper than buying one's own hardware unless one has a constant demand for computational power.  
-
-In the JFEFF Settings window you can specify the credentials identifying your AWS account.  Once this is done, deploying a calculation to the EC2 cloud is as easy as setting the slider on the main panel to "cloud" and pressing "Save \& Run".  It takes a few minutes to set up the cloud cluster, plus calculation time depending on the calculation you request and the number of nodes you make available.  Typically, we recommend running the {\feff} code on 1-64 threads.  Note that in the current implementation the cloud cluster will be terminated when the calculation ends, to avoid being charged for a cluster you accidentally forget to terminate.  However, this means that if you start many short calculations on the cloud that each take only a few minutes, each will be billed for an hour of EC2 time.  
-
-All the {\feff} output files will automatically be copied back to your own computer when the calculation finishes.  There is no need for you to log in to the cloud cluster, or to use the command line terminal on your own computer.
-
-To give you the opportunity to try out Scientific Cloud Computing before you set up your own AWS account, JFEFF installs a "Demo Mode".  This means that you can run a cloud calculation "on the house".  You don't need to do anything to activate the Demo Mode.  If you simply put the slider of the "Run" panel to "Cloud", it will automatically launch using demo mode if you haven't yet configured your own account.  Please don't abuse this privilege - all these calculations are billed to the {\feff} project and we are not able to fund your research project.  Also, such calculations are limited to using a maximum of 8 threads. 
-
-If you require any help with this new development, please contact us.  We are interested in user feedback.
-
+%\section{Cloud Computing}
+%\label{Sec:Cloud}
+%
+%JFEFF can run {\feff} calculations in the EC2 cloud.  JFEFF will then send a request to EC2 to prepare a high-performance cloud cluster containing a specified number of nodes.  The {\feff} calculation is run on the cloud cluster and the results are copied back to the user's local machine when finished.  This way of performing calculations, which we call Scientific Cloud Computing, is an alternative to traditional parallel computing.  It allows one to run demanding calculations that would traditionally require expensive and hard-to-maintain local clusters.  
+%
+%Note that it takes a short time (typically 3-4 minutes) to prepare the cloud cluster.  Therefore, it makes no sense to use Scientific Cloud Computing for very short calculations.
+%
+%Cloud computing is not a free service.  EC2 charges its users per hour and per node (currently about USD \$0.08 per core-hour).  The user needs to set up a customer account with Amazon Web Services (AWS).  This is very easy but requires a credit card.  EC2 usage charges are then billed to this account.  We have found that these charges are typically reasonable and cheaper than buying one's own hardware unless one has a constant demand for computational power.  
+%
+%In the JFEFF Settings window you can specify the credentials identifying your AWS account.  Once this is done, deploying a calculation to the EC2 cloud is as easy as setting the slider on the main panel to "cloud" and pressing "Save \& Run".  It takes a few minutes to set up the cloud cluster, plus calculation time depending on the calculation you request and the number of nodes you make available.  Typically, we recommend running the {\feff} code on 1-64 threads.  Note that in the current implementation the cloud cluster will be terminated when the calculation ends, to avoid being charged for a cluster you accidentally forget to terminate.  However, this means that if you start many short calculations on the cloud that each take only a few minutes, each will be billed for an hour of EC2 time.  
+%
+%All the {\feff} output files will automatically be copied back to your own computer when the calculation finishes.  There is no need for you to log in to the cloud cluster, or to use the command line terminal on your own computer.
+%
+%To give you the opportunity to try out Scientific Cloud Computing before you set up your own AWS account, JFEFF installs a "Demo Mode".  This means that you can run a cloud calculation "on the house".  You don't need to do anything to activate the Demo Mode.  If you simply put the slider of the "Run" panel to "Cloud", it will automatically launch using demo mode if you haven't yet configured your own account.  Please don't abuse this privilege - all these calculations are billed to the {\feff} project and we are not able to fund your research project.  Also, such calculations are limited to using a maximum of 8 threads. 
+%
+%If you require any help with this new development, please contact us.  We are interested in user feedback.
+%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% MPSE %%%%%%%%%%%%%
 
@@ -2672,8 +2713,12 @@ OPCONS card. Note that the OPCONS card gives only a rough
 estimate of the loss function.
 
 For a more accurate calculation, comment out the "OPCONS" card and provide your own \file{loss.dat} file, e.g. from an experimental measurement or 
-an ab initio calculation.  An example of a \file{loss.dat} file can be found in \url{$\sim$/jfeff_examples/MPSE/Cu/}.  You can compare this to the
-\file{loss.dat} file that will be generated from the OPCONS card in the example above or at \url{$\sim$/jfeff_examples/MPSE/Cu\_OPCONS/}.  You can also compare the resulting spectra.  (Note that the 2 examples provided have many other differences.  You should compare 2 calculations differing only in the use of the OPCONS card to study its effects.)
+an ab initio calculation.  An example of a \file{loss.dat} file can be found in 
+%$\sim$/jfeff_examples/MPSE/Cu/ 
+\url{~/feff10/examplesMPSE/Cu/}.  You can compare this to the
+\file{loss.dat} file that will be generated from the OPCONS card in the example above or at 
+%\url{$\sim$/jfeff_examples/MPSE/Cu\_OPCONS/}
+\url{~/feff10/examples/MPSE/Cu\_OPCONS/}.  You can also compare the resulting spectra.  (Note that the 2 examples provided have many other differences.  You should compare 2 calculations differing only in the use of the OPCONS card to study its effects.)
 
 
 \section{Compton scattering}
@@ -2720,17 +2765,20 @@ Currently available to Developers only.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CARDS %%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CARDS %%%%%%%%%%%%%
 
-\chapter{{\feffcur} Control Cards}
+\chapter{{\feffcurrent} Control Cards}
 \label{sec:Input-Control-Cards}
 
 \section{The master input file \file{feff.inp}}
 
-The {\feff} program consists of a set of program modules driven by  a single input file \file{feff.inp} .  The user can either supply this file
- herself; or she can set all input options through the JFEFF GUI, which then
- creates a {\file{feff.inp}} and launches {\feff} without the need for 
- manual text editing.
+The {\feff} program consists of a set of program modules driven by  a single input file \file{feff.inp}.  
+%The user can 
+%either 
+%supply this file herself
+%; or she can set all input options through the JFEFF GUI, which then
+% creates a {\file{feff.inp}} and launches {\feff} without the need for 
+% manual text editing.
 
-This section describes the input . It may be helpful to look at the
+This section describes the input. It may be helpful to look at the
 sample input files in Section \ref{sec:Calc-Strat-Exampl} while
 reading this section.  The current chapter is meant as a reference,
 while Section \ref{sec:Calc-Strat-Exampl} makes for friendlier, tutorial-style reading.
@@ -2748,7 +2796,7 @@ as end-of-line comments. Empty lines are ignored. Any
 line beginning with an asterisk (\texttt{*}) is regarded as a comment
 and is also ignored. 
 
-Users working from the GUI do not need to worry about formatting, and can get more information about any CARD by simply hovering the mouse over it.
+%Users working from the GUI do not need to worry about formatting, and can get more information about any CARD by simply hovering the mouse over it.
 
 All distances are in angstroms ({\AA}) and energies are in electron-volts (eV). 
 
@@ -2759,12 +2807,12 @@ available at \htmladdnormallink
 {http://cars9.uchicago.edu/$\sim$ravel/software/aboutatoms.html}
 {http://cars9.uchicago.edu/~ravel/software/aboutatoms.html}
 
-Additionally, {\feffcur} itself can treat crystals specified by their unit cell.
+Additionally, {\feffcurrent} itself can treat crystals specified by their unit cell.
 
 
 
-\section{Complete List of FEFF9 Control Cards}
-\label{sec:Complete-list-FEFF9}
+\section{Complete List of FEFF10 Control Cards}
+\label{sec:Complete-list-FEFF10}
 
 
 We divide the \file{feff.inp} options into three categories: 
@@ -2774,7 +2822,8 @@ We divide the \file{feff.inp} options into three categories:
 \item options that determine how {\feff} calculates the required spectrum for the given structure
 \end{itemize}
 
-The three main panels of the GUI correspond to these three categories.  Additionally, we can
+%The three main panels of the GUI correspond to these three categories.  
+Additionally, we can
 classify CARDS as \textsl{standard} options frequently and easily used, \textsl{useful}
 options that are often used, and \textsl{advanced} options that are
 seldom necessary, but may be helpful in some cases.
@@ -3275,7 +3324,7 @@ FIX check that there's a more substantial example of this somewhere and put a li
   The OVERLAP card can be used to construct approximate overlapped
   atom potentials when atomic coordinates are not known or specified.
   If the atomic positions are listed following the \htmlref{ATOMS}{card:ato} 
-  card, the OVERLAP card is not needed. {\feffcur} will stop if both 
+  card, the OVERLAP card is not needed. {\feffcurrent} will stop if both 
   the ATOMS and OVERLAP cards are used. The OVERLAP card contains the 
   potential index of the atom being overlapped and is followed by a list
   specifying the potential index, number of atoms of a given type to
@@ -3840,9 +3889,9 @@ This card specifies the mesh of k-vectors used to sample the full Brillouin Zone
 \begin{Card}{DIMS}{nmax lmax}{Advanced}{dim}
   This card limits the size of arrays so as not to exceed available memory.  nmax is the maximum number of atoms in the cluster
   for FMS matrix inversion.  Lmax is the maximal l-value for the potentials and Green's function.
-  {\feffcur} first determines the number of atoms and maximal l-value from user input, i.e. number of atoms given in the ATOMS card,
+  {\feffcurrent} first determines the number of atoms and maximal l-value from user input, i.e. number of atoms given in the ATOMS card,
   the FMS-radius given in the FMS and SCF card, and l-values given in the POTENTIALS card.  In a second step, it will truncate these values using the values of the DIMS card if present.  If the DIMS card is not present, default cutoff values will be loaded from 
-  \file{feff90/src/COMMON/m\_dimsmod.f90} - these are fixed at compilation time.
+  \file{feff10/src/COMMON/m\_dimsmod.f90} - these are fixed at compilation time.
 \begin{verbatim}
   * Limit l-values to 2 or lower.  Leave number of atoms alone 
   * (i.e. use compilation time limit for number of atoms).
@@ -3869,7 +3918,9 @@ minimum and maximum grid values in $eV$, and grid\_step is the
 exponential, i.e.
 $E_{i} = E_Min + exp(grid\_step*i) - 1.0$.
 A fourth grid\_type \textit{user\_grid} is also
-available for {\feff} but not in the JFEFF GUI. \textit{user\_grid} is followed by an arbitrary number of
+available for {\feff}.
+% but not in the JFEFF GUI. 
+\textit{user\_grid} is followed by an arbitrary number of
 lines, each specifying an energy point in $eV$, i.e.,
 \begin{verbatim}
   user_grid
@@ -3884,7 +3935,9 @@ lines, each specifying an energy point in $eV$, i.e.,
 Note that the energies are all defined relative to the Fermi energy,
 i.e. the edge. 
 
-Up to ten grids can be specified for {\feff} ; up to 5 for JFEFF. The grids can also overlap. If one
+Up to ten grids can be specified for {\feff}.
+% ; up to 5 for JFEFF. 
+ The grids can also overlap. If one
 is using multiple grid types, a useful parameter \textit{last} can be
 used in place of grid\_min, i.e.
 \begin{verbatim}
@@ -4077,7 +4130,7 @@ grid as grid\_min.
   CONFIG card 1
   4 Cr Ar 3d 4 0 4s 1 4p 1 s 1 0 s 0
 \end{verbatim}
-  IMPORTANT: This card is new and experimental in {\feffcur}.  Please double-check \file{config.dat} to make sure your input has been parsed correctly, and contact the authors in case of doubt (or bugs).  Also be aware that non-standard configurations may lead {\feff} to fail, or may produce nonsense.
+  IMPORTANT: This card is new and experimental in {\feffcurrent}.  Please double-check \file{config.dat} to make sure your input has been parsed correctly, and contact the authors in case of doubt (or bugs).  Also be aware that non-standard configurations may lead {\feff} to fail, or may produce nonsense.
 \end{Card}
 
 
@@ -4738,7 +4791,7 @@ MPSE  0
 
   For EXAFS analysis, one typically calculates to $k=20$, but FMS results
   are not accurate at high energies. Thus if you are running
-  {\feffcur} for EXAFS, you should not use the FMS card.
+  {\feffcurrent} for EXAFS, you should not use the FMS card.
 
   If the value of \htmlref{RPATH}{card:rpa} 
   \begin{latexonly}
@@ -4852,7 +4905,7 @@ with the Lanczos algorithm, we used:
 
   By default, \texttt{idwopt}=0 specifies that the correlated Debye model 
   is used to calculate EXAFS Debye--Waller factors. Two additional models for
-  calculating DW factors are available in {\feffcur} based on the information
+  calculating DW factors are available in {\feffcurrent} based on the information
   about the harmonic force constants in the material. \texttt{idwopt}=1
   means the equation of motion (EM) method is used to get Debye--Waller
   factors and \texttt{idwopt}=2 means the recursion method (RM) which
@@ -5186,7 +5239,7 @@ with the Lanczos algorithm, we used:
 
 
    Several additional models for
-  calculating DW factors are available in {\feffcur} based on the information
+  calculating DW factors are available in {\feffcurrent} based on the information
   about the harmonic force constants in the material.  The \htmlref{DEBYE}{car:deb2} card offers a choice between 5 different models for the DW factors:
 \begin{itemize}
 				\item  0 	Correlated-Debye method  (default) (CD)
@@ -5388,11 +5441,12 @@ MAGIC 20
 Any {\feff} calculation produces a large number of files that may be confusing to the novice.  
 The most important files are the master input file \file{feff.inp}, which we discussed at length in the previous chapters ;
 the output file \file{xmu.dat}, which contains the XAS spectrum ; and the various \file{log*.dat} files, which are log files
-written by {\feff} during execution.  These basic files are also readily accessible in the GUI, where the input options corresponding to
-\file{feff.inp} are set in the interface; the log information scrolls by in a pop-up screen after {\feff} is launched ; and the XAS spectrum
-is displayed by selecting 'plot'.
+written by {\feff} during execution.  
+%These basic files are also readily accessible in the GUI, where the input options corresponding to
+%\file{feff.inp} are set in the interface; the log information scrolls by in a pop-up screen after {\feff} is launched ; and the XAS spectrum
+%is displayed by selecting 'plot'.
 
-The GUI plotter can also display other output files ; however, for full flexibility the use of a plotting package like gnuplot is recommended.  The data files use a standard format and your favorite plotting package is likely able to read them.
+%The GUI plotter can also display other output files ; however, for full flexibility the use of a plotting package like gnuplot is recommended.  The data files use a standard format and your favorite plotting package is likely able to read them.
 
 {\feff} creates a variety of output files depending on the spectroscopy type selected by the user, and depending on verbosity settings.
 See the \htmlref{PRINT}{card:pri} card in Section~\ref{sec:General-Cards} and \ref{table:printlevels} to obtain various diagnostic files.
@@ -6085,7 +6139,7 @@ Fax: (206) 685-0635
 \label{sec:Governm-Copyr}
 
 This work was supported in part by Grants from DOE. In accordance with
-the DOE FAR rules part 600.33 ``Rights in Technical Data - Modified
+the DOE FAR rules part 600.33 "Rights in Technical Data - Modified
 Short Form'' the following clause applies to {\feff}:
 
 (c)(1)The grantee agrees to and does hereby grant to the U.S.
@@ -6114,145 +6168,190 @@ for in paragraph (c)(1)(ii) of this section, or without the consent of
 the copyright owner, unless it obtains specific written approval of the
 Contracting Officer for the inclusion of such copyright material.
 
-\section{FEFF9 LICENSE}
-\label{sec:F9license}
+\section{FEFF10 LICENSE}
+\label{sec:F10license}
 
- FEFF PROGRAMS (referred to below as "the System")
- Copyright (c) 1986-2013, University of Washington.
+% FEFF PROGRAMS (referred to below as "the System")
+% Copyright (c) 1986-2020, University of Washington.
+%
+% END-USER LICENSE
+%
+% A signed End-user License Agreement from the University of Washington
+% Office of Technology Transfer is required to use these programs and
+% subroutines.}
+%
+% See the URL: http://leonardo.phys.washington.edu/feff/
+%
+% USE RESTRICTIONS:
+%
+% 1. The End-user agrees that neither the System, nor any of its
+% components shall be used as the basis of a commercial product, and
+% that the System shall not be rewritten or otherwise adapted to
+% circumvent the need for obtaining additional license rights.
+% Components of the System subject to other license agreements are
+% excluded from this restriction.
+%
+% 2. Modification of the System is permitted, e.g., to facilitate
+% its performance by the End-user. Use of the System or any of its
+% components for any purpose other than that specified in this Agreement
+% requires prior approval in writing from the University of Washington.
+%
+% 3. The license granted hereunder and the licensed System may not be
+% assigned, sublicensed, or otherwise transferred by the End-user.
+%
+% 4. The End-user shall take reasonable precautions to ensure that
+% neither the System nor its components are copied, or transferred out
+% side of his/her current academic or government affiliated laboratory
+% or disclosed to parties other than the End-user.
+%
+% 5. In no event shall the End-user install or provide this System
+% on any computer system on which the End-user purchases or sells
+% computer-related services.
+%
+% 6. Nothing in this agreement shall be construed as conferring rights
+% to use in advertising, publicity, or otherwise any trademark or the
+% names of the System or the UW. In published accounts of the use or
+% application of FEFF the System should be referred to  by this name,
+% with an appropriate literature reference:
+%
+% FEFF9: \emph{ Parameter-free calculations of X-ray spectra with FEFF9},
+%John J. Rehr, Joshua J. Kas, Fernando D. Vila, Micah P. Prange and K. Jorissen,
+%Phys. Chem. Chem. Phys. 12, 5503-5513 (2010).
+%
+% LIMITATION OF LIABILITY:
+%
+% 1. THE UW MAKES NO WARRANTIES , EITHER EXPRESSED OR IMPLIED, AS TO
+% THE CONDITION OF THE SYSTEM, ITS MERCHANTABILITY, OR ITS FITNESS FOR
+% ANY PARTICULAR PURPOSE. THE END-USER AGREES TO ACCEPT THE SYSTEM
+% 'AS IS' AND IT IS UNDERSTOOD THAT THE UW IS NOT OBLIGATED TO PROVIDE
+% MAINTENANCE, IMPROVEMENTS, DEBUGGING OR SUPPORT OF ANY KIND.
+%
+% 2. THE UW SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL,
+% INCIDENTAL OR CONSEQUENTIAL DAMAGES SUFFERED BY THE END-USER OR ANY
+% OTHER PARTIES FROM THE USE OF THE SYSTEM.
+%
+% 3. The End-user agrees to indemnify the UW for liability resulting
+% from the use of the System by End-user. The End-user and the UW each
+% agree to hold the other harmless for their own negligence.
+%
+% TITLE:
+%
+% 1. Title patent, copyright and trademark rights to the System are
+% retained by the UW. The End-user shall take all reasonable precautions
+% to preserve these rights.
+%
+% 2. The UW reserves the right to license or grant any other rights to
+% the System to other persons or entities.
+%
+%
+%Note: According to the terms of the above End-user license, 
+%no part of the standard distributions of {\feff} can be included in other
+%codes without a license or permission from the authors. However, some subroutines
+%in {\feff} explicitly contain such a license, and all components subject to
+%other license agreements are excluded from the restrictions of the
+%End-user license. Moreover, we are willing to collaborate with other code
+%developers, and our development version with all the
+%comments (and subroutines in individual files!) can be made available,
+%although it makes use of some features that are not standard FORTRAN.
+%Also we cannot guarantee that any new version of {\feff} will be compatible 
+%with these subroutines or with any changes you make in the codes.
 
- END-USER LICENSE
+Distribution:  FEFF10.0
+Copyright (c) 2020 FEFF Project, University of Washington and
+SLAC National Accelerator Laboratory.  All rights reserved.  
+ 
+This software was prepared with support in part from the U.S. DOE,
+Office of Basic Energy Sciences, DMSE grants DE-FG03-97ER45623
+(Dept. of Physics, U.Washington) and DE-AC02-76SF00515 (Theory
+Institute for Materials and Energy Spectroscopies (TIMES) at SLAC. 
 
- A signed End-user License Agreement from the University of Washington
- Office of Technology Transfer is required to use these programs and
- subroutines.
+Redistribution and use of this Distribution in source and binary
+formats, with or without modification, is permitted, provided the 
+following conditions are met:
 
- See the URL: http://leonardo.phys.washington.edu/feff/
+Redistributions must retain the above notices and the following list
+of conditions and disclaimer;
 
- USE RESTRICTIONS:
+Modified formats carry the marking
+    "Based on or developed using Distribution: FEFF10.0
+Copyright (c) 2020 FEFF Project, University of Washington and
+SLAC National Accelerator Laboratory.  All rights reserved." 
 
- 1. The End-user agrees that neither the System, nor any of its
- components shall be used as the basis of a commercial product, and
- that the System shall not be rewritten or otherwise adapted to
- circumvent the need for obtaining additional license rights.
- Components of the System subject to other license agreements are
- excluded from this restriction.
+Recipient acknowledges the rights of the University of Washington
+and SLAC to prepare uses of this Distribution and its modifications that
+may be substantially similar or functionally equivalent to
+Recipient-prepared modifications.
 
- 2. Modification of the System is permitted, e.g., to facilitate
- its performance by the End-user. Use of the System or any of its
- components for any purpose other than that specified in this Agreement
- requires prior approval in writing from the University of Washington.
+Recipient and anyone obtaining access to the Distribution through
+recipient's actions accept all risk associated with possession and
+use of the Distribution.
 
- 3. The license granted hereunder and the licensed System may not be
- assigned, sublicensed, or otherwise transferred by the End-user.
-
- 4. The End-user shall take reasonable precautions to ensure that
- neither the System nor its components are copied, or transferred out
- side of his/her current academic or government affiliated laboratory
- or disclosed to parties other than the End-user.
-
- 5. In no event shall the End-user install or provide this System
- on any computer system on which the End-user purchases or sells
- computer-related services.
-
- 6. Nothing in this agreement shall be construed as conferring rights
- to use in advertising, publicity, or otherwise any trademark or the
- names of the System or the UW. In published accounts of the use or
- application of FEFF the System should be referred to  by this name,
- with an appropriate literature reference:
-
- FEFF9: \emph{ Parameter-free calculations of X-ray spectra with FEFF9},
-John J. Rehr, Joshua J. Kas, Fernando D. Vila, Micah P. Prange and K. Jorissen,
-Phys. Chem. Chem. Phys. 12, 5503-5513 (2010).
-
- LIMITATION OF LIABILITY:
-
- 1. THE UW MAKES NO WARRANTIES , EITHER EXPRESSED OR IMPLIED, AS TO
- THE CONDITION OF THE SYSTEM, ITS MERCHANTABILITY, OR ITS FITNESS FOR
- ANY PARTICULAR PURPOSE. THE END-USER AGREES TO ACCEPT THE SYSTEM
- 'AS IS' AND IT IS UNDERSTOOD THAT THE UW IS NOT OBLIGATED TO PROVIDE
- MAINTENANCE, IMPROVEMENTS, DEBUGGING OR SUPPORT OF ANY KIND.
-
- 2. THE UW SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL,
- INCIDENTAL OR CONSEQUENTIAL DAMAGES SUFFERED BY THE END-USER OR ANY
- OTHER PARTIES FROM THE USE OF THE SYSTEM.
-
- 3. The End-user agrees to indemnify the UW for liability resulting
- from the use of the System by End-user. The End-user and the UW each
- agree to hold the other harmless for their own negligence.
-
- TITLE:
-
- 1. Title patent, copyright and trademark rights to the System are
- retained by the UW. The End-user shall take all reasonable precautions
- to preserve these rights.
-
- 2. The UW reserves the right to license or grant any other rights to
- the System to other persons or entities.
-
-
-Note: According to the terms of the above End-user license, 
-no part of the standard distributions of {\feff} can be included in other
-codes without a license or permission from the authors. However, some subroutines
-in {\feff} explicitly contain such a license, and all components subject to
-other license agreements are excluded from the restrictions of the
-End-user license. Moreover, we are willing to collaborate with other code
-developers, and our development version with all the
-comments (and subroutines in individual files!) can be made available,
-although it makes use of some features that are not standard FORTRAN.
-Also we cannot guarantee that any new version of {\feff} will be compatible 
-with these subroutines or with any changes you make in the codes.
-
+THIS SOFTWARE IS PROVIDED "AS IS'' AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE UNIVERSITY OF WASHINGTON OR CONTRIBUTORS TO THE
+DISTRIBUTION BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+REVENUE; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+%///////////////////////////////////////////////////////////////////////
+%License is applicable for routines below, until otherwise specified.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INSTALLATION %%%%%%%%%%%%%
 
 \chapter{Installation Instructions}
 \label{sec:Append-B-Inst}
-The structure of the {\feffcur} code differs from its ancestors.
-Most users will now receive a package containing the JFEFF graphical user interface (GUI) as a Java program ; and the actual {\feff} code either as a set of bundled precompiled binaries.  This package installs with a few mouse clicks like modern software, and all complexity is hidden.  On first run, the JFEFF GUI copies example files, the users guide, and a few cloud computing files to the user's home folder.  The adventurous user may dig into the JFEFF installation files, where he will find the {\feff} source code in monolithic form: a dozen of very long fortran90 source files suitable for compilation and optimization on the user's computer, but not very convenient for programming work.
+%The structure of the {\feffcurrent} code differs from its ancestors.
+%Most users will now receive a package containing the JFEFF graphical user interface (GUI) as a Java program ; and the actual {\feff} code either as a set of bundled precompiled binaries.  This package installs with a few mouse clicks like modern software, and all complexity is hidden.  On first run, the JFEFF GUI copies example files, the users guide, and a few cloud computing files to the user's home folder.  The adventurous user may dig into the JFEFF installation files, where he will find the {\feff} source code in monolithic form: a dozen of very long fortran90 source files suitable for compilation and optimization on the user's computer, but not very convenient for programming work.
 
-The older type of distribution, where the user is given a complex tree of many fortran90 source files, is still available for the expert user who wishes to edit or read the {\feff} source code.
+%The older type of distribution, where the user is given a complex tree of many fortran90 source files, is still available for the expert user who wishes to edit or read the {\feff} source code.
 
-Some versions of JFEFF installed a bash implementation of the "Scientific Cloud Computing Toolset (SC2IT)" to your computer.  This is no longer the case.  The same functionality is now implemented directly in JFEFF.  You can still download the standalone SC2IT-bash from the feffproject website.
+%Some versions of JFEFF installed a bash implementation of the "Scientific Cloud Computing Toolset (SC2IT)" to your computer.  This is no longer the case.  The same functionality is now implemented directly in JFEFF.  You can still download the standalone SC2IT-bash from the feffproject website.
   
 
-\section{Installation}
-\label{sec:installation}
+%\section{Installation}
+%\label{sec:installation}
 
-Installing the GUI is easy enough.  Download the JFEFF installer, run it, and simply let it guide you through the installation steps.  At the end of the procedure, all required files are installed on your computer, and you will be directed to the web page for more information.  The GUI will open and you can try to run an example calculation.  
-
-The folder \url{~/jfeff_examples} contains a large set of examples.  It also contains this Users Guide, and links to system folders containing the {\feff} executables and a \file{feff} script to run all the executables in the right order.  You can add these to your path if you plan to use {\feff} on the command line.
-
-The program files are installed to appropriate system folders.  (On MS Windows, \file{C:/Program Files/JFEFF} .  On Mac OS X, \file{/Applications/jfeff.app} .  On Linux, \url{~/JFEFF} .)  For most operating systems we provide both a 32bit and a 64bit precompiled version of {\feff}.  It is up to you to decide which version is appropriate.  Almost all Mac OS X machines are 64bit, except for very old ones (e.g., a MacBook 1,1).  The Mac OS X executables do not work on PowerPPC machines.  We will generate appropriate executables for you on request - please contact us.  We are interested in making sure {\feff} runs pretty much anywhere, so let us know if you encounter problems. 
-
-On MS Windows and Linux, the installer should place a shortcut on your Desktop that will start JFEFF.  On MS Windows it will also create a Start Menu entry.  On Mac OS X, JFEFF is added to your LaunchPad (Lion only) and the Applications folder in your Dock.  
-
-JFEFF looks for the {\feff} executables in default locations.  If you prefer to use your own set of executables, you can go into the $Settings$ dialog and browse to the correct path there.  It is probably a good idea to look at these $Settings$ anyway.
-
-There are just about a million Linux flavors out there, and we've noticed there can be some unforeseen quirks.  These range from harmless (e.g., the desktop shortcut doesn't work) to more severe (the provided binaries cannot be executed).  We are very interested in hearing about what didn't work out-of-the-box.  However, please do your best to troubleshoot before asking us for help as it may be very difficult for us to replicate your situation.  We may ask you if you can provide us with ssh access to your computer.  A few notable issues have occurred on Ubuntu: some versions seem to ship without java and also without a c-shell installed.  You will need both.  (You can try `which java` and `which csh` from a command line terminal to see if you have these essential packages.)
-
-Now you should be ready to open your first \file{feff.inp} file and start calculating.  The \htmlref{Tutorial Chapter}{sec:tutorial} is an excellent place to start.
-
-
-Note that the GUI will not work unless you have a recent version of Java.  We believe that Sun Java SE JRE 5.0 or later should be good ; now is a good time to update.  For security reasons it is generally a good idea to have the latest version of Sun Java, which you can download for free online.  If you cannot install Java, you can still use the {\feff} code from the command line.
+%Installing the GUI is easy enough.  Download the JFEFF installer, run it, and simply let it guide you through the installation steps.  At the end of the procedure, all required files are installed on your computer, and you will be directed to the web page for more information.  The GUI will open and you can try to run an example calculation.  
+%
+%The folder \url{~/jfeff_examples} contains a large set of examples.  It also contains this Users Guide, and links to system folders containing the {\feff} executables and a \file{feff} script to run all the executables in the right order.  You can add these to your path if you plan to use {\feff} on the command line.
+%
+%The program files are installed to appropriate system folders.  (On MS Windows, \file{C:/Program Files/JFEFF} .  On Mac OS X, \file{/Applications/jfeff.app} .  On Linux, \url{~/JFEFF} .)  For most operating systems we provide both a 32bit and a 64bit precompiled version of {\feff}.  It is up to you to decide which version is appropriate.  Almost all Mac OS X machines are 64bit, except for very old ones (e.g., a MacBook 1,1).  The Mac OS X executables do not work on PowerPPC machines.  We will generate appropriate executables for you on request - please contact us.  We are interested in making sure {\feff} runs pretty much anywhere, so let us know if you encounter problems. 
+%
+%On MS Windows and Linux, the installer should place a shortcut on your Desktop that will start JFEFF.  On MS Windows it will also create a Start Menu entry.  On Mac OS X, JFEFF is added to your LaunchPad (Lion only) and the Applications folder in your Dock.  
+%
+%JFEFF looks for the {\feff} executables in default locations.  If you prefer to use your own set of executables, you can go into the $Settings$ dialog and browse to the correct path there.  It is probably a good idea to look at these $Settings$ anyway.
+%
+%There are just about a million Linux flavors out there, and we've noticed there can be some unforeseen quirks.  These range from harmless (e.g., the desktop shortcut doesn't work) to more severe (the provided binaries cannot be executed).  We are very interested in hearing about what didn't work out-of-the-box.  However, please do your best to troubleshoot before asking us for help as it may be very difficult for us to replicate your situation.  We may ask you if you can provide us with ssh access to your computer.  A few notable issues have occurred on Ubuntu: some versions seem to ship without java and also without a c-shell installed.  You will need both.  (You can try `which java` and `which csh` from a command line terminal to see if you have these essential packages.)
+%
+%Now you should be ready to open your first \file{feff.inp} file and start calculating.  The \htmlref{Tutorial Chapter}{sec:tutorial} is an excellent place to start.
+%
+%
+%Note that the GUI will not work unless you have a recent version of Java.  We believe that Sun Java SE JRE 5.0 or later should be good ; now is a good time to update.  For security reasons it is generally a good idea to have the latest version of Sun Java, which you can download for free online.  If you cannot install Java, you can still use the {\feff} code from the command line.
 
 
 \section{Compiling your own code}
-\label{sec:compilation}
+%\label{sec:compilation}
 
-Compiling your own {\feff} binaries is a good idea, as the resulting executables will generally be faster than ours.  If you obtained the {\feff} source tree (probably as a package \file{feff90.tar.gz}), then the code is in \file{feff90/src} - so that's where you need to go.
+Compiling your own {\feff} binaries is a good idea, as the resulting executables will generally be faster than ours.  If you obtained the {\feff} source tree (probably as a package \file{feff10.tar.gz}), then the code is in \file{feff10/src} - so that's where you need to go.
 
 If you're on Linux/Unix/OS X, you're lucky.  Open the \file{Compiler.mk} file and edit the statement specifying the fortran90 compiler and its compilation options.  Close the file, and type {\it make} on the command line.  If you're interested in using parallel MPI calculations for increased speed on parallel computer infrastructure, give the {\it make mpi} command.  When switching between
 sequential and MPI compilation, you should ALWAYS use the {\it make clean} command to flush intermediate files, otherwise the executables may crash and burn.
-The resulting executables now ought to be in \file{feff90/bin/Seq} or \file{feff90/bin/MPI}.  These folders will contain a set of 16 executables that together comprise the {\feff} code.  If you plan on using the JFEFF GUI, make sure you edit its Settings accordingly.
+The resulting executables now ought to be in \file{feff10/bin/Seq} or \file{feff10/bin/MPI}.  These folders will contain a set of 16 executables that together comprise the {\feff} code.  
 
-Alternatively, if we did not give you the source tree but you installed the JFEFF GUI, you can still compile your own code by going to \url{~/jfeff_examples/feff9code/mod}.  This folder contains the so-called "modular version" of the source code, which is intended just for compilation.  The source tree mentioned above, by contrast, contains the same code but with a separate file for each individual routine, which is much handier for developers but unnecessary for users just compiling for reasons of efficiency.  You will find a \file{Compile} script that you can edit for compiler options and use to compile the {\feff} code.  It is possible that you will have to copy the modular source files to another directory first for reasons of file permissions.
+%If you plan on using the JFEFF GUI, make sure you edit its Settings accordingly.
+
+%Alternatively, if we did not give you the source tree but you installed the JFEFF GUI, you can still compile your own code by going to \url{~/jfeff_examples/feff9code/mod}.  This folder contains the so-called "modular version" of the source code, which is intended just for compilation.  The source tree mentioned above, by contrast, contains the same code but with a separate file for each individual routine, which is much handier for developers but unnecessary for users just compiling for reasons of efficiency.  You will find a \file{Compile} script that you can edit for compiler options and use to compile the {\feff} code.  It is possible that you will have to copy the modular source files to another directory first for reasons of file permissions.
 
 We can make "project files" available for Mac OS X + XCode 3 + Intel Fortran Composer ; and for MS Windows + MS Visual Studio + Intel Fortran Composer .  This is how we produce MS Windows executables.  Alternatively, you could try to make the "Makefile" setup work on MS Windows + Cygwin.
 
 Since the two main dimensioning parameters, $nclusx$ and $lx$, are now dynamically set by the code during each run, there is less need for recompilation
 than in older versions of {\feff}.  Other dimensioning parameters, including the maximum number of potentials $nphx$ and the maximum number of spin
-states $nspx$, are still static and can only be changed through recompilation.  You may want to edit \file{feff90/src/COMMON/m\_dimsmod.f90} to set these to the desired value before you compile.
+states $nspx$, are still static and can only be changed through recompilation.  You may want to edit \file{feff10/src/COMMON/m\_dimsmod.f90} to set these to the desired value before you compile.
 
 We have endeavoured to make {\feff} portable to all architectures without any modification. 
 If your machine does not reproduce the test output files \file{xmu.dat}
@@ -6285,6 +6384,10 @@ Please cite {\feff} and an appropriate {\feff} reference if the code or its resu
 
 The main references for the theory of {\feff} are:
 
+\emph{Calculations of x-ray spectroscopies using FEFF10 and Corvus},
+J.J.\ Kas, F.D.\ Vila, D.\ Pemmaraju, Tun S. Tan, S.\ Vimolchalao,
+and J.J.\ Rehr, {\it Unpublished, 2020}.
+
 \emph{Ab initio theory and calculations of X-ray spectra},
  J.J. Rehr, J.J. Kas, M.P. Prange, A.P. Sorini, Y. Takimoto, F.D. Vila, Comptes Rendus Physique 10 (6) 548-559 (2009)
  
@@ -6294,7 +6397,7 @@ and for EXAFS theory:
 J. J. Rehr and R. C. Albers, Rev. Mod. Phys. {\bf72}, 621, (2000).
  
 
-The main reference for calculations using the current version {\feffcur}  is:
+The main reference for calculations using the current version {\feffcurrent}  is:
 
 \emph{Parameter-free calculations of X-ray spectra with FEFF9}, J.J. Rehr, J.J. Kas, F.D. Vila, M.P. Prange, K. Jorissen, Phys. Chem. Chem. Phys. 12 (21) 5503-5513 (2010).
 
@@ -6398,7 +6501,7 @@ For historical reasons {\feff} is a mix of older fortran77 code and newer
 fortran90 code. Hence the most important array dimensions are treated dynamically,
 while others are set at compilation time.  If you need
 to run larger problems than the dimension statements in the code
-allow, you must change the dimensions in the file \file{feff90/src/COMMON/m\_dimsmod.f90} and recompile.
+allow, you must change the dimensions in the file \file{feff10/src/COMMON/m\_dimsmod.f90} and recompile.
 If you need help, please contact the authors.
 
 
@@ -6575,7 +6678,7 @@ required input files from different ab initio programs.
 \subsection{Installing as a FEFF module}
 DMDW is included in the {\feff} distribution and is installed as a {\feff} module with all the other program modules.
 Please refer to the {\feff} installation instructions. After the {\feff} installation is completed a
-module called \module{dmdw} is located under the {\feff} \file{feff90/bin/Seq} directory structure.
+module called \module{dmdw} is located under the {\feff} \file{feff10/bin/Seq} directory structure.
 
 \subsection{Creating and installing the standalone version}
 Within the \file{src/DMDW} directory in the {\feff} distribution, execute the following
@@ -6583,7 +6686,7 @@ command:
 \begin{verbatim}
 make standalone
 \end{verbatim}
-This will create a directory \file{feff90/src/DMDW/dmdw\_standalone}. Edit \file{dmdw\_standalone/src/Makefile}
+This will create a directory \file{feff10/src/DMDW/dmdw\_standalone}. Edit \file{dmdw\_standalone/src/Makefile}
 and change the "F90" variable to your fortran 90 compiler of choice. Then execute the following commands:
 \begin{verbatim}
 make
@@ -6701,7 +6804,7 @@ where:
 
   A "dym" file contains the information required by the Lanczos algorithm. This
   includes the atomic masses, structure and force constants. Two conversion
-  scripts are included in the \file{feff90/bin/Seq} directory to convert Gaussian 03 formatted
+  scripts are included in the \file{feff10/bin/Seq} directory to convert Gaussian 03 formatted
   checkpoint ("fchk") files (fchk2dym) and Quantum Espresso dynamical matrix
   files (dynG2dym) into our "dym" dynamical matrix format. The "fchk2dym"
   command has been thoroughly tested, but the "dynG2dym" has not. 
@@ -6750,7 +6853,7 @@ where:
 		 atom j, where a,b={x,y,z}.
 \end{itemize}
 
-Example "dym" files can be found in the \file{feff90/test/DMDW} directory.
+Example "dym" files can be found in the \file{feff10/test/DMDW} directory.
 
 
 \section{Examples}
