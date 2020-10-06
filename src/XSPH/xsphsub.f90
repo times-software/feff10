@@ -316,50 +316,50 @@ endif
 
 ! Josh - if nohole = 2, read wscrn.dat and add ch pot to vtot.
 ! Need to add file check and emesh check.
-  if (nohole.eq.2)  then
-     open (unit=13, file='wscrn.dat', status='old', iostat=ios)
-     call chopen (ios, 'wscrn.dat', 'ffmod2(xsph)')
-     read(13,*)  !KJ 12-2011 I added a header
-     open (unit=14, file='vtot.dat', status='replace',iostat=ios)
-     call chopen (ios, 'vtot.dat', 'ffmod2(xsph)')
-     do i = 1, 251
-        read(13,'(2e20.10)',end=20) dum1, dum2
-        dum3 = vtot(i,0)
-        vtot(i,0) = vtot(i,0) - dum2
-        write(14,'(3e20.10)') dum1, dum3, dum2
-     end do
- 20      continue
-
-     ! Add xc interaction. JK - 11/2010
-     DO i = 1, 251
-        ri(i) = exp(-x0+dx*(i-1))
-        ! Get rhotot
-         ! dum1 is rs here.
-        if(edens(i,0).le.0) then
-           dum1 = 10.d0
-        else
-           dum1 = (edens(i,0)/3)**(-third)
-        end if
-        CALL vbh(dum1,0.d0,dum2) ! dum2 is vxctot
-        ! Now do it for density with core-hole
-        ! dum1 = rho - rhoch
-        dum1 = edens(i,0) - (dgc0(i)**2 + dpc0(i)**2)/ri(i)**2
-        ! dum1 = rs
-        if(dum1.le.0.d0) then
-           dum1 = 10.d0
-        else
-           dum1 = (dum1/3)**(-third)
-        end if
-        CALL vbh(dum1,0.d0,dum3) ! dum3 is vxc with ch
-        dum1 = dum3 - dum2
-        !KJ WRITE(18,'(8(f10.4,x))') ri(i), dum1,dum2,dum3   !KJ 1-2012 This was going to "fort.18" so I'm guessing it's debugging output?
-        vtot(i,0) = vtot(i,0) + dum1
-     END DO
-
-     nohole = 0
-     close(13)
-     close(14)
-  end if
+!  if (nohole.eq.2)  then
+!     open (unit=13, file='wscrn.dat', status='old', iostat=ios)
+!     call chopen (ios, 'wscrn.dat', 'ffmod2(xsph)')
+!     read(13,*)  !KJ 12-2011 I added a header
+!     open (unit=14, file='vtot.dat', status='replace',iostat=ios)
+!     call chopen (ios, 'vtot.dat', 'ffmod2(xsph)')
+!     do i = 1, 251
+!        read(13,'(2e20.10)',end=20) dum1, dum2
+!        dum3 = vtot(i,0)
+!        vtot(i,0) = vtot(i,0) - dum2
+!        write(14,'(3e20.10)') dum1, dum3, dum2
+!     end do
+! 20      continue
+!
+!     ! Add xc interaction. JK - 11/2010
+!     DO i = 1, 251
+!        ri(i) = exp(-x0+dx*(i-1))
+!        ! Get rhotot
+!         ! dum1 is rs here.
+!        if(edens(i,0).le.0) then
+!           dum1 = 10.d0
+!        else
+!           dum1 = (edens(i,0)/3)**(-third)
+!        end if
+!        CALL vbh(dum1,0.d0,dum2) ! dum2 is vxctot
+!        ! Now do it for density with core-hole
+!        ! dum1 = rho - rhoch
+!        dum1 = edens(i,0) - (dgc0(i)**2 + dpc0(i)**2)/ri(i)**2
+!        ! dum1 = rs
+!        if(dum1.le.0.d0) then
+!           dum1 = 10.d0
+!        else
+!           dum1 = (dum1/3)**(-third)
+!        end if
+!        CALL vbh(dum1,0.d0,dum3) ! dum3 is vxc with ch
+!        dum1 = dum3 - dum2
+!        !KJ WRITE(18,'(8(f10.4,x))') ri(i), dum1,dum2,dum3   !KJ 1-2012 This was going to "fort.18" so I'm guessing it's debugging output?
+!        vtot(i,0) = vtot(i,0) + dum1
+!     END DO
+!
+!     nohole = 0
+!     close(13)
+!     close(14)
+!  end if
 ! Josh END
 
 !  write(*,*) 'vtot(:,0)',vtot(:,0)
@@ -475,6 +475,54 @@ endif
       ispinp = 0
     endif
 
+! Josh - if nohole = 2, read wscrn.dat and add ch pot to vtot.
+! Need to add file check and emesh check.
+    if (nohole.eq.2)  then
+       open (unit=13, file='wscrn.dat', status='old', iostat=ios)
+       call chopen (ios, 'wscrn.dat', 'ffmod2(xsph)')
+       read(13,*)  !KJ 12-2011 I added a header
+       open (unit=14, file='vtot.dat', status='replace',iostat=ios)
+       call chopen (ios, 'vtot.dat', 'ffmod2(xsph)')
+       do i = 1, 251
+          read(13,'(2e20.10)',end=20) dum1, dum2
+          dum3 = vtot(i,0)
+          vtot(i,0) = vtot(i,0) - dum2
+          write(14,'(3e20.10)') dum1, dum3, dum2
+       end do
+20     continue
+
+       ! Add xc interaction. JK - 11/2010
+       DO i = 1, 251
+          ri(i) = exp(-x0+dx*(i-1))
+          ! Get rhotot
+          ! dum1 is rs here.
+          if(edens(i,0).le.0) then
+             dum1 = 10.d0
+          else
+             dum1 = (edens(i,0)/3)**(-third)
+          end if
+          CALL vbh(dum1,0.d0,dum2) ! dum2 is vxctot
+          ! Now do it for density with core-hole
+          ! dum1 = rho - rhoch
+          dum1 = edens(i,0) - (dgc0(i)**2 + dpc0(i)**2)/ri(i)**2
+          ! dum1 = rs
+          if(dum1.le.0.d0) then
+             dum1 = 10.d0
+          else
+             dum1 = (dum1/3)**(-third)
+          end if
+          CALL vbh(dum1,0.d0,dum3) ! dum3 is vxc with ch
+          dum1 = dum3 - dum2
+          !KJ WRITE(18,'(8(f10.4,x))') ri(i), dum1,dum2,dum3   !KJ 1-2012 This was going to "fort.18" so I'm guessing it's debugging output?
+          vtot(i,0) = vtot(i,0) + dum1
+       END DO
+
+       nohole = 0
+       close(13)
+       close(14)
+    end if
+! Josh END
+
 !   calculate operators of interest (s_z, l_z, t_z)
     xmuvr = xmu - vr0
     if (ipr2.ge.3) call szlz(ispinp,ecv,nph,nat,rgrd,nohole,rfms2,  &
@@ -518,7 +566,7 @@ endif
          ipol, ispinp, abs(le2), angks,ptz, iph) !KJ iph      !, & ! abs is new
  !            qtrans,kfinmax,jmax,jinit,indmax,ldecmx) ! nrixs vars
 
-  ELSE  ! no nrixs
+    ELSE  ! no nrixs
 
     if (itdlda.eq.0) then
 ! Josh - added argument iPl to control many pole self energy
