@@ -381,13 +381,14 @@
 ./POT/m_atomicpotio.o: ./ERRORMODS/m_errormod.o ./IOMODS/m_iomod.o ./POT/m_mtdp.o ./IOMODS/m_iofiles.o Compiler.mk
 ./POT/m_broydn_workspace.o: ./COMMON/m_inpmodules.o ./COMMON/m_dimsmod.o Compiler.mk
 ./POT/m_mtdp.o: ./COMMON/m_kinds.o Compiler.mk
+./POT/m_sommerfeld_scf.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./PAR/m_par.o Compiler.mk
 ./POT/m_thermal_scf.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./PAR/m_par.o Compiler.mk
 ./POT/moveh.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./POT/movrlp.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
 ./POT/ovp2mt.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
 ./POT/ovrlp.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
 ./POT/pot.o: ./COMMON/m_dimsmod.o ./COMMON/m_stkets.o ./COMMON/m_rotx.o ./COMMON/m_lnlm.o ./COMMON/m_xstruc.o ./COMMON/m_t3j.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o ./POT/m_broydn_workspace.o Compiler.mk
-./POT/potsub.o: ./POT/m_atomicpotio.o ./COMMON/m_dimsmod.o ./PAR/m_par.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./KSPACE/m_workstrfacs2.o ./KSPACE/m_controls.o ./POT/m_thermal_scf.o Compiler.mk
+./POT/potsub.o: ./POT/m_atomicpotio.o ./COMMON/m_dimsmod.o ./PAR/m_par.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./KSPACE/m_workstrfacs2.o ./KSPACE/m_controls.o ./POT/m_thermal_scf.o ./POT/m_sommerfeld_scf.o Compiler.mk
 ./POT/reapot.o: ./KSPACE/m_controls.o ./KSPACE/m_struct.o ./KSPACE/m_kklist.o ./KSPACE/m_strfacs.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
 ./POT/rhofmslie.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o ./COMMON/m_inpmodules.o Compiler.mk
 ./POT/rholie.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk

@@ -5,13 +5,18 @@
 ! $Date: 2020/4/1 $
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-module m_thermal_scf
-  ! Note: Thermal_scf with bad count fix
-  !     If experience problem, try using more atoms. It will converge.
+MODULE m_sommerfeld_scf
+  ! This module contains a version of the SCF loop-step that
+  ! computes the densities using Sommerfeld expansion.
   !
-  ! This module contains a version of the SCF loop-step that uses a finite temperature
-  ! Fermi distribution for the valence electron occupation.
+  ! The formulation here follows the path PhysRevB.52.11502 Equation (7)
+  ! 1) Convert finite temperature integral to complex contour
+  ! 2) Sommerfeld expand leg (2) -> (3)
+  ! 3) Sum of poles are approximate as integrals
   !
+  ! T=0K result is consistent with scmtmp.f90 (diff Efermi ~ 0.001 eV)
+  ! Speed is similar to scmtmp; could be slower since points are computed
+  ! dynamically in scmtmp.
   ! To use, include a TEMPERATURE card in feff.inp with the temperature in eV
   !
   ! The calling procedure is:
@@ -21,133 +26,122 @@ module m_thermal_scf
   !
   ! The algorithm proceeds as follows:
   !
-  ! I. the energy-dependent density is calculated in the imaginary plane along a contour connecting the points (ecv,0) -> (ecv,e1) -> (mu + 10 * kT, e1) where ecv is the core-valence separation energy and e1 is currently the smallest multiple of 2*pi*kT that is larger than 4 eV.
+  ! I. the energy-dependent density is calculated in the imaginary plane along
+  !    a contour connecting the points (ecv,0) -> (ecv,eimmax) -> (??, eimmax)
+  !    where ecv is the core-valence separation energy and eimmax is height of
+  !    contour.
   !
   ! II. Starting with a guess for the chemical potential mu:
-  !   A. The density * fermi distribution is integrated over pre-calculated energies and
-  !      the contributions from the Matsubara poles are added on
-  !   B. mu is adjusted using the secant rule until the total number of electrons is correct
+  !     A. The density * fermi distribution is integrated over pre-calculated
+  !        energies and correction term are added on
+  !     B. mu is adjusted using the secant rule until the total number of
+  !        electrons is correct
   !
-  ! III. The densities are updated from the previous interaction of the SCF loop using the broydn algorithm
+  ! III. The densities are updated from the previous interaction of the SCF
+  !      loop using the broydn algorithm
   !
   ! Paralellization notes:
   !
-  ! Step I. will use one processor per energy point
-  ! Step II. will use one processor per Matsubara pole, but is serial in optimizing mu
+  ! Step I.  will use one processor per energy point
+  ! Step II. will use one processor per energy point for leg (3) -> (4)
+  !          but is serial in optimizing mu
   ! Step III. is fast and performed by all processors
 
   use DimsMod, only: nphx=>nphu, lx, nrptx, istatx
   use constants
-
   use atoms_inp, only: nat, nph, iatph, iphat, rat
   use potential_inp, only: ixc, xnatph, xion, iunf, iz, ihole, lmaxsc, &
     nohole, nscmt, icoul, ca1, rfms1, lfms1, jumprm, scf_temperature, xntol, nmu
 
   implicit none
-
   private
-
-  public thscf_init, thscf_deinit, thscf_main, thscf_debug
-  ! public fermi_distribution
+  public sommerfeld_scf_main, sommerfeld_scf_init, sommerfeld_scf_deinit
   ! public energies
 
-  real*8 temp ! temperature
+  real*8 kT ! temperature
+  real*8 deim   ! minimum de along imaginary axis
   real*8 mu0  ! initial guess at chemical potential
   real*8 ecv  ! core valence separation
 
   double precision ri05(251)
-
-  INTEGER :: window_size_terp ! region around chemical potential to interpolate
-  integer :: ne ! number of energy points
-  integer :: iter_step ! step number
-  integer :: np ! number of Matsubara poles within contour
+  integer :: iter_step ! Track iscmt
+  integer :: ne ! number of energy points for legs 1,2,3
+  integer :: np ! number of points in leg (3) -> (4)
   complex*16, allocatable :: energies(:)
   complex*16, allocatable :: rhoe(:,:,:) ! LDOS
   complex*16, allocatable :: rhore(:,:,:) ! spatial density
   DOUBLE PRECISION, ALLOCATABLE :: history_xntot(:), history_xmu(:)
-  real*8, parameter :: eimmax = 0.15d0
-  REAL*8 :: lower_bound, upper_bound
-
+  COMPLEX*16, ALLOCATABLE :: rhoe1(:,:,:), rhore1(:,:,:) ! points for d/dx
+  DOUBLE PRECISION:: lower_bound, upper_bound
+  COMPLEX*16 :: dstep ! for d/dx
 CONTAINS
 
-  subroutine thscf_init(ecv0, mu, iscmt)
-    integer i, iter_step
-    integer iscmt
-    double precision ecv0, mu
+  subroutine sommerfeld_scf_init(ecv0, mu, iscmt)
+    implicit none
+    !
+    ! Input module parameters: kT, mu0, ecv, ne
+    !
+    integer, intent(in) :: iscmt
+    double precision, intent(in) :: ecv0, mu
+    integer :: i
 
-    temp = scf_temperature / hart
+    kT = scf_temperature / hart ! convert to hartree
     mu0  = mu
     ecv  = ecv0
     iter_step = iscmt
     do i = 1,251
-      ri05(i) = exp (-8.8+0.05*(i-1))
+      ri05(i) = exp (-8.8+0.05*(i-1)) ! radial grid
     end do
 
-    ! this should be dependent on the temperature
-    ! added multiplication by 2 then temperatur is less then 1 eV
-    ! Was needed for SiC calculations, SCF was failing due to bad counts
-    ! for low temperatures, the fermi distribution is sharp, and fine spacing is
-    ! required around mu
-    ! for high temperatures, the fermi distribution and the DOS (at i*2*pi*kT)
-    ! are both quite smooth, and only a smal number of points are needed
-
-    ne = 320 ! Default: 200
-    ! if (scf_temperature <= 1.0) then
-    !   ne = ne*2
-    ! end if
-    allocate(history_xntot(nmu), history_xmu(nmu))
-    call thscf_energies_init(mu)
+    ! ne = 80
+    ne = 220
+    call sommerfeld_scf_energies_init()
   end subroutine
 
-  subroutine thscf_energies_init(mu)
+  subroutine sommerfeld_scf_energies_init()
     ! initialize integration grid, `energies
-    !
-    ! Input module parameters: temp, mu0, ecv, ne
-    !
     ! Grid connects vertices:
     !    1) (ecv,0)
-    !    2) (ecv,e1)
-    !    3) (emax,e1)
-    !   [4) (emax,0)] ! The fermi function vanishes on leg (3)->(4), so it is not included
+    !    2) (ecv,eimmax)
+    !    3) (emax,eimmax)
+    !   [4) (mu,0)] !  leg (3)->(4) will be constructed in the main routine
     !
-    ! This routine determines values for e1 and ecv, generates the energy grid and calculates the
-    ! number of Matsubara poles (np) lying within the contour
-    ! n1 number of energy points on vertical leg
-    ! n2 number of points in horizontal leg in case of first and second iteration
-    ! n3 number of points around chemical potential.
-    real*8,intent(in) :: mu
-    real*8  :: e1, emax, de, demu, previous_energy
-    integer :: n1, n2, n3, i
+    ! This routine determines values for e1 and ecv, generates the energy grid
+    ! and calculates the
+    !   np - number of  points  for leg (3) -> (4)
+    !   n1 - number of energy points on vertical leg
+    !   n2 - number of points in horizontal leg in case of first and second iteration
+    implicit none
+    real*8  :: e1, emax, demu, previous_energy, de, eimmax
+    integer :: n1, n2, i
     logical :: final_leg = .false.
+    allocate(history_xntot(nmu), history_xmu(nmu))
 
-    ! Determine imaginary part based on temperature (this should be configurable / overridable)
-    ! For now, use the smallest multiple of 2*pi*kT that is greater than 0.15 Hartree (~4 eV)
-    ! Modified: 1. window_size_terp: Only +/-12kT is important
-    !           2. emax: 2.5 Hartree should be large enough for Mu to oscillate
+    eimmax = 0.15d0 ! 4.05 eV same as grids.f90
+    ! eimmax = 0.30d0
+    emax = mu0 + 0.5
 
-    window_size_terp = 12
-    emax = mu +2.5 !+ 1.5
-
-    e1 = 2 * pi * temp
+    e1 = 2*pi*kT
     np = 1
     if (e1 < eimmax) then
-      np = ceiling(eimmax / (2*pi*temp))
-      e1 = np * 2*pi*temp
+        np = ceiling(eimmax / (2*pi*kT))
+        e1 = np * 2 * pi * kT
     endif
 
-    n1 = 10
+    n1 = 30
+    ! eimmax = e1*n1**2 ! max height similar to scmtmp
     n2 = ne - n1
     if (final_leg) n2 = ne - n1*2
 
-    if (.NOT.ALLOCATED(energies)) allocate(energies(ne+np))
-    if (.NOT.ALLOCATED(rhoe)) allocate(rhoe(0:lx,0:nphx,ne+np))
-    if (.NOT.ALLOCATED(rhore)) allocate(rhore(251,0:nphx,ne+np))
+    allocate(energies(ne+np))
+    allocate(rhoe(0:lx,0:nphx,ne+np), rhore(251,0:nphx,ne+np))
+    ALLOCATE(rhoe1(0:lx,0:nphx,2), rhore1(251,0:nphx,2))
 
     ! vertical leg (1) -> (2)
-    de = e1 / n1**2
+    de = e1/n1**2
     do i = 1,n1
-      energies(i) = ecv + de * i**2 * coni
-      if (final_leg) energies(ne + 1 - i) = emax + de * i**2 * coni
+      energies(i) = ecv + coni * de * i**2
+      if (final_leg) energies(ne + 1 - i) = emax + de* i**2 * coni
     end do
 
     ! horizontal leg (2) -> (3) Linear grid
@@ -156,18 +150,22 @@ CONTAINS
       energies(n1+i) = ecv + i * de + e1 * coni
     end do
 
+    ! save for leg4
+    deim = e1
+
     ! Track search bounds
     lower_bound = DBLE(energies(1))
     upper_bound = DBLE(energies(ne))
   end subroutine
 
-  subroutine thscf_deinit
+  subroutine sommerfeld_scf_deinit
     deallocate(energies)
     deallocate(rhoe, rhore)
     deallocate(history_xntot, history_xmu)
+    DEALLOCATE(rhoe1, rhore1)
   end subroutine
 
-  subroutine thscf_main(iscmt, ecv, vclap, edens, edenvl, vtot, vvalgs, &
+  subroutine sommerfeld_scf_main(iscmt, ecv, vclap, edens, edenvl, vtot, vvalgs, &
     rmt, rnrm, qnrm, rhoint, vint, xmu, xnferm, xnvmu, xnval, x0, ri, dx, &
     adgc, adpc, dgc, dpc, rhoval, xnmues, ok, rgrd)
 
@@ -178,7 +176,7 @@ CONTAINS
     ! Parameters
 
     use par
-
+    implicit none
     integer, intent(in) :: iscmt
     double precision, intent(in) :: ecv, vclap(251,0:nphx)
     double precision, intent(in) :: vtot (251,0:nphx), vvalgs (251,0:nphx)
@@ -204,14 +202,13 @@ CONTAINS
     double precision xntot, xntotprev, xmunew, xmuprev
     double precision dq(0:nphx)
     double precision diff
-    INTEGER :: iOrder(nmu)
+
     character*512 slog
     complex,    allocatable :: gtr(:,:)
     complex*16, allocatable, dimension(:,:):: xrhoce, xrhole, ph
     complex*16, allocatable :: yrhole(:,:,:)
     allocate(gtr(0:lx, 0:nphx),xrhoce(0:lx,0:nphx))
     allocate(xrhole(0:lx,0:nphx),yrhole(251,0:lx,0:nphx),ph(lx+1, 0:nphx))
-
 
     rhoe(:,:,:) = 0.0d0
     rhore(:,:,:) = 0.0d0
@@ -227,7 +224,6 @@ CONTAINS
     !call wlog (' Calculating energy and space dependent l-DOS ....')
 
     xntotprev = 0
-
     ok = .false.
     converged = 0 ! use integer instead of logical so we can send with MPI
 
@@ -236,26 +232,22 @@ CONTAINS
                            & vint, xnval, x0, ri, dx, adgc, adpc, dgc, dpc, &
                            & xrhole, yrhole, ph, gtr, nr05, iscmt)
 
-    if (master) then
-        write(slog,*) "Poles = ", np
-        call wlog(slog)
-    endif
-
     ! II. find mu which gives correct number of electrons
+    ! nmu = 100 ! TO DO make this configurable
     xmunew = xmu
-    do imu = 1,nmu
+    do imu = 1, nmu
       call par_barrier
 
-      ! A. Calculate contributions from Matsubara poles
+      ! A. Calculate vertical leg (3) -> (EF) residues
       !    Note that these are stored at the end of the rhoe,rhore arrays
       do ip = 1, np
         ie = ne + ip
-        iproc = mod(ie-1, numprocs)
-
+        iproc = mod(ip-1, numprocs)
         if (this_process .eq. iproc) then
-          ee = xmunew + coni * pi * temp * (2*ip - 1)
+          ! Step gets smaller closer to efermi
+          ! ee = xmunew + de * ((np-ip+1)**2) *coni
+          ee = xmunew + coni * pi * kT * (2*ip - 1)
           energies(ie) = ee
-
           call rhofmslie(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint, vint, &
                         xnval, x0, ri, dx, adgc, adpc, dgc, dpc, ie,       &
                         rhoe(:,:,ie), rhore(:,:,ie), xrhole, yrhole, ph,&
@@ -276,32 +268,68 @@ CONTAINS
       end do
       call par_barrier
 
+      ! Set dstep
+      if (master) then
+        ! PRINT*, "Number of poles = ", np
+          ! step size 0.1% of xmunew
+        !   dstep = xmunew*0.01d0
+        ! call print_poles()
+        dstep = 0.001d0/hart ! step size of 0.02 V
+        ! dstep = 1e-6
+      endif
+      call par_bcast_double(dstep, 1, 0)
+      call par_barrier
+
+      !    Compute points needed for derivatives
+      do ip = 1, 2
+          ie = ip
+          iproc = mod(ip-1, numprocs)
+          if (this_process .eq. iproc) then
+              ! Step gets smaller closer to efermi
+              if (ie.EQ.1) then
+                !   ee = xmunew + coni*DIMAG(energies(ne)) - dstep
+                  ee = xmunew + coni*deim
+              else
+                  ee = xmunew + dstep + coni*deim
+                !   ee = xmunew + coni*DIMAG(energies(ne)) + dstep
+              endif
+              call rhofmslie(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint, vint, &
+                          xnval, x0, ri, dx, adgc, adpc, dgc, dpc, ie,       &
+                          rhoe1(:,:,ie), rhore1(:,:,ie), xrhole, yrhole, ph,&
+                          gtr, ri05, nr05, ee, iscmt)
+              ! send result back to master
+              if (worker) then
+                  call par_send_dc(rhoe1(0,0,ie), (lx+1) * (nphx+1), 0, ie)
+                  call par_send_dc(rhore1(1,0,ie), 251 * (nphx+1), 0, ie)
+              end if
+          end if
+
+        if (master .and. iproc .ne. 0) then
+          call par_recv_dc(rhoe1(0,0,ie), (lx+1) * (nphx+1), iproc, ie)
+          call par_recv_dc(rhore1(1,0,ie), 251 * (nphx+1), iproc, ie)
+        end if
+      end do
+      call par_barrier
       if (master) then
         ! B. Integrate rhoe,rhore over fermi distribution
         call integrate_rhos_lt(nr05,xmunew,xntot,xnmues,rhoval,.FALSE.)
         history_xntot(imu) = xntot
         history_xmu(imu) = xmunew
 
-        write(slog,*) imu, xntot, xnferm, xmunew*hart
-        call wlog(slog)
-
-        ! C. Check for convergence. (TODO make tolerance configurable) xntol = 1e-4 default
+        ! C. Check for convergence.
         if (abs(xntot - xnferm) .lt. xntol) then
           converged = 1
         else
           ! We will use secant method to explore the landscape
           ! When secant method failed to converge, we will use
           ! bisection method.
-          if (imu.LE.30) then
-              ! If not converged, adjust mu appropriately and repeat
-              call update_mu(imu, xntot-xnferm, xntotprev-xnferm, xmunew, xmuprev, iscmt) ! updates xmu and xmuprev
+          if (imu.LE.10) then
+              call update_mu(imu, xntot-xnferm, xntotprev-xnferm, xmunew, xmuprev, xnferm, iscmt) ! updates xmu and xmuprev
           else
-            ! call set_bounds(imu, xnferm)
-            ! xmuprev = xmunew
-            ! xmunew = 0.5d0*(lower_bound+upper_bound)
-            call bracketing_method(imu, xnferm, xmunew, xmuprev)
+              call bracketing_method(imu,xnferm,xmunew,xmuprev)
           endif
           xntotprev = xntot
+
           if (ABS(xmunew-xmuprev).LT.1.0e-20) then
               ! Usually not a problem
               converged = 1
@@ -309,9 +337,10 @@ CONTAINS
               PRINT*, "         Delta xntot is", xntot-xnferm
           endif
         end if
-
+        ! write(slog,*) imu, xmunew*hart, xntot, xnferm
+        ! call wlog(slog)
       end if
-
+      call par_barrier
       call par_bcast_int(converged, 1, 0)
       call par_bcast_int(imu, 1, 0)
       call par_bcast_double(xmunew, 1, 0)
@@ -324,12 +353,13 @@ CONTAINS
         if (imu.EQ.nmu .AND. master)then
             WRITE(slog,*) "WARNING: Reached end of cycle but not converged"
             CALL wlog(slog)
-            CALL print_history()
+            call print_history()
         endif
       end if
     end do
 
     ! the rest of this routine is quick and is performed by all nodes
+
     call par_bcast_double(xntot, 1, 0)
     call par_bcast_double(xnmues, (lx+1)*(nphx+1), 0)
     call par_bcast_double(rhoval, 251*(nphx+1), 0)
@@ -383,69 +413,12 @@ CONTAINS
     deallocate(xrhole,yrhole,ph)
   end subroutine
 
-  SUBROUTINE bracketing_method(current_step, xnferm, xmunew, xmuprev)
-      ! This subroutine sets the search interval for xmu
-      ! based on previous values.
-      ! Note: current_step must be > 1
-      implicit none
-      integer, intent(in) :: current_step
-      double precision, intent(in) :: xnferm
-      real*8, intent(inout) :: xmunew, xmuprev
-
-      ! Local variable
-      integer :: iOrder(current_step), i_left, i_right, imu, ip
-      double precision :: sorted_xmu(current_step), sorted_xntot(current_step)
-      character(512) :: slog
-
-      sorted_xmu(:) = -100.d0
-      sorted_xntot(:) = -1.d0
-      CALL qsortd(iOrder, current_step, history_xmu(1:current_step))
-
-      do imu = 1, current_step
-          ip = iOrder(imu)
-          sorted_xmu(imu) = history_xmu(ip)
-          sorted_xntot(imu) = history_xntot(ip)
-      enddo
-      ! open(file="history.dat", status="replace", unit=1818)
-      ! write(1818,*) imu, sorted_xmu(imu), sorted_xntot(imu)
-      ! close(1818)
-
-      ! Find the search bounds for xmu
-      ! The integrated dos is strictly increasing
-      ! Picked an off centered search to avoid having xmu on
-      ! the bounds.
-      i_left = binarysearch(xnferm, sorted_xntot, current_step)-1
-      i_right = i_left+1
-      if (i_right.GT.current_step) then
-          write(slog,*) "Bracketing error: i_right out of bound", i_right
-          call wlog(slog)
-      endif
-
-      lower_bound = sorted_xmu(i_left)
-      upper_bound = sorted_xmu(i_right)
-
-      xmuprev = xmunew
-
-      ! Regula falsi
-      xmunew = (sorted_xntot(i_right)-xnferm)*lower_bound - (sorted_xntot(i_left)-xnferm)*upper_bound
-      xmunew = xmunew / (sorted_xntot(i_right) - sorted_xntot(i_left))
-
-      ! Bisection method
-      ! xmunew = 0.5d0*(lower_bound+upper_bound)
-      !write(slog,*) "Set bounds to ", lower_bound*hart, upper_bound*hart
-      !call wlog(slog)
-      !write(slog,*) "index =  ", i_left, i_right
-      !call wlog(slog)
-      !write(slog,*) "Checkking val ", sorted_xntot(i_left), !sorted_xntot(i_right)
-      !call wlog(slog)
-  END SUBROUTINE
-
-  subroutine update_mu(imu, dn, dnprev, xmunew, xmuprev, iscmt)
+  subroutine update_mu(imu, dn, dnprev, xmunew, xmuprev, xnferm, iscmt)
     integer, intent(in) :: imu, iscmt
-    double precision, intent(in):: dn, dnprev
+    double precision, intent(in):: dn, dnprev, xnferm
     double precision, intent(inout):: xmunew, xmuprev
 
-    integer :: inrange, maxs
+    integer :: inrange, ncycle
     double precision xmutmp, xmutmp2, step_size
     character(512) :: slog
 
@@ -459,130 +432,29 @@ CONTAINS
         xmunew = xmunew - 0.1;
       end if
     else
-      ! use secant method
-      ! f'(x) = (dn -dnprev)/(xmunew-xmuprev)
-      !  f(x) = dn
-      ! xmunew = xmunew - f(x)/f'(x)
-      xmutmp = xmunew
-      inrange = 0
-      step_size = 1.d0
-      maxs = 0
-      ! will always exit when step_size is close to zero
-      do while (inrange.eq.0)
-          xmutmp2 = xmunew - step_size*dn * (xmunew - xmuprev) / (dn - dnprev)
-          if (xmutmp2.GE.lower_bound .AND. xmutmp2.LE.upper_bound) then
-             inrange = 1
-          else
-            step_size = 0.5d0*step_size
-            maxs = maxs + 1
-          endif
-          if (maxs.GT.8) exit
-      enddo
-      xmunew = xmutmp2
-      xmuprev = xmutmp
-      if (.NOT.is_in_grid(xmunew)) then
-          write(slog,*) "xmunew is not in grid"
-          call wlog(slog)
-          call par_stop
-      endif
+        xmutmp = xmunew
+        inrange = 0
+        step_size = 1.d0
+        ! will always exit when step_size is close to zero
+        do ncycle = 1, 4
+            xmutmp2 = xmunew - step_size*dn * (xmunew - xmuprev) / (dn - dnprev)
+            if (is_in_grid(xmutmp2)) then
+               inrange = 1
+               exit
+            else
+              step_size = 0.5d0*step_size
+              write(slog,*) "increase step size ", step_size
+              call wlog(slog)
+            endif
+        enddo
+        xmunew = xmutmp2
+        xmuprev = xmutmp
+        ! if (.NOT.is_in_grid(xmunew)) then
+        !     write(slog,*) "xmunew is not in grid"
+        !     call wlog(slog)
+        !     call par_stop
+        ! endif
     end if
-  end subroutine
-
-  subroutine integrate_rhos(nr05,xmu,xntot,xnmues,rhoval)
-    ! Integrate densities over energy including Fermi distribution
-
-    ! Input:
-    !   nr05:   indices of Norman radii for each potential type
-    !   xmu:    chemical potential
-    ! Output:
-    !   xntot:  total number of electrons in cluster
-    !   xnmues: number of electrons for each potential type and L value
-    !   rhoval: valence electron density vs r for each potential type
-
-    integer, intent(in) :: nr05(0:nphx)
-    double precision, intent(in) :: xmu
-    double precision, intent(out) :: xntot, xnmues(0:lx, 0:nphx), rhoval(251,0:nphx+1)
-    double precision ::  xnmues_old(0:lx, 0:nphx)
-    complex*16 ee, ep, de, f, fp
-    integer iph, il, ir, ie, iep, ip
-    xntot = 0
-    xnmues(:,:) = 0
-    rhoval(:,:) = 0
-
-    ! I. Integrate density over energy, fermi distribution
-    !    The first calculated point has finite imaginary part. So, include contribution from
-    !    leg between real axis and this point by approximating the integrand as constant
-    !    along that leg (this is the same as what is done in scmt.f90).
-    ep = dble(energies(1))
-    iep = 1
-
-    open(unit=99,file='rhoe_th.dat')
-    open(unit=899,file='fermi_th.dat')
-    do ie = 1, ne+np
-      f = fermiF(energies(ie), temp, xmu)
-
-      if (ie > ne) f = -2*pi*coni
-      ! write(99,'(i4,20e14.8)') ie, energies(ie), rhoe(0,0,ie)*f, rhoe(1,0,ie)*f, rhoe(2,0,ie)*f
-      write(899,'(20E20.10E3)') DBLE(energies(ie)), DIMAG(energies(ie)), DBLE(f), DIMAG(f)
-      write(99,'(20E20.10E3)') DBLE(energies(ie)), DIMAG(energies(ie)),  DBLE(rhoe(0,0,ie)), DIMAG(rhoe(0,0,ie)), &
-                                                    & DBLE(rhoe(1,0,ie)), DIMAG(rhoe(1,0,ie)), DBLE(rhoe(2,0,ie)), DIMAG(rhoe(2,0,ie))
-    end do
-    write(99,*)
-    write(899,*)
-    close(99)
-    close(899)
-
-
-    do ie = 1, ne
-      ee = energies(ie)
-      de = ee - ep
-
-      f = fermiF(ee, temp, xmu)
-      fp = fermiF(ep, temp, xmu)
-
-      do iph = 0, nph
-        do il = 0, lx
-          if (iunf.eq.0 .and. il.gt.2) cycle
-          xnmues(il,iph) = xnmues(il,iph) + dimag( (rhoe(il,iph,ie)*f + rhoe(il,iph,iep)*fp) * de )
-        end do
-
-        do ir = 1, nr05(iph)
-          rhoval(ir, iph) = rhoval(ir, iph) + dimag( (rhore(ir,iph,ie)*f + rhore(ir,iph,iep)*fp) * de )
-        end do
-      end do
-
-      ep = ee
-      iep = ie
-    end do
-    ! xnmues_old = xnmues
-
-    ! II. Add on contribution from Matsubara poles
-    do ip = 1, np
-      do iph = 0, nph
-        do il = 0, lx
-          if (iunf.eq.0 .and. il.gt.2) cycle
-          xnmues(il, iph) = xnmues(il, iph) + dimag( -4*pi*coni*temp * rhoe(il,iph,ne+ip) )
-        end do
-        do ir = 1, nr05(iph)
-          rhoval(ir, iph) = rhoval(ir, iph) + dimag( -4*pi*coni*temp * rhore(ir,iph,ne+ip) )
-        end do
-      end do
-    end do
-    ! WRITE(299,'(20F10.5)') xnmues_old
-    ! WRITE(299,'(20F20.10)') SUM(xnmues_old(:,0)), SUM(xnmues_old(:,1))
-    ! WRITE(299,'(20F20.10)') SUM(xnmues(:,0)-xnmues_old(:,0)), SUM(xnmues(:,1)-xnmues_old(:,1))
-    ! Sum over angular momenta and sites to get total electron count
-    do iph = 0, nph
-      do il = 0, lx
-        xntot = xntot + xnmues(il, iph) * xnatph(iph)
-      end do
-    end do
-  end subroutine
-
-  subroutine thscf_debug()
-    integer i
-    do i = 1,ne
-    end do
   end subroutine
 
   SUBROUTINE integrate_rhos_lt(nr05,xmu,xntot,xnmues,rhoval,print_flag)
@@ -590,6 +462,9 @@ CONTAINS
     ! Integrate densities over energy including Fermi distribution
     ! An implementation of 'integrate_rhos' using interpolation around
     ! the chemical potential.
+    ! Integrate densities over energy by finding the fermi level
+    ! interpolate the original grid up to fermi level
+    ! attach the segment (3)->(4) to the end of array, discard e > mu.
     !
     ! Input:
     !   nr05:   indices of Norman radii for each potential type
@@ -607,52 +482,39 @@ CONTAINS
     ! Local variables
     !   bug     - If there is a problem (when  xmu_m3 is outside of array bound)
     !   ne_terp - Number of points to interpolate
-    !   nxmu    - Number of points in window_size_terp
-    !   dx      - window_size_terp * kT
-    !   xmu_m3  - chemical potential - dx
-    !   xmu_p3  - chemical potential + dx
+    !   nxmu    - Number of points in
+    !   xmu_m3  - a point below chemical potential
+    !   xmu_p3  - a point above chemical potential
     DOUBLE PRECISION ::  xnmues_old(0:lx, 0:nphx)
-    DOUBLE PRECISION :: dxmu, dx
-    COMPLEX*16 :: ee, ep, de, f, fp
-    COMPLEX*16 :: xmu_m3, xmu_p3
-    COMPLEX*16, ALLOCATABLE :: rhoe_terp(:,:,:), rhore_terp(:,:,:), energies_terp(:)
-    INTEGER :: ne_terp
-    INTEGER :: iep, ip, ir
-    INTEGER :: ind_m3, ind_p3, ie, iph, il
+    DOUBLE PRECISION :: dxmu
+    REAL*8 :: sommerfeld_factor
+    COMPLEX*16 :: ee, ep, de, xmu_m3, xmu_p3
+    COMPLEX*16, ALLOCATABLE :: rhoe_terp(:,:,:), rhore_terp(:,:,:)
+    COMPLEX*16, ALLOCATABLE :: energies_terp(:)
+    INTEGER :: ne_terp, ind_m3, ind_p3
+    INTEGER :: iep, ip, ir, ie, iph, il
     LOGICAL :: out_of_bound = .FALSE.
-    CHARACTER(512) message
-    INTEGER, PARAMETER :: nxmu = 1000 ! 2000 not working for 6kT
+    CHARACTER(512) message, filename
+    INTEGER, PARAMETER :: nxmu = 2 ! Add a few more points
 
 
+    sommerfeld_factor = pi*pi*kT*kT/6.d0
     xntot = 0
     xnmues = 0
     rhoval = 0
-    dx = window_size_terp*temp
-    dxmu = (2*dx)/nxmu
-    xmu_m3 = xmu - dx + coni*DIMAG(energies(11))
-    xmu_p3 = xmu + dx + coni*DIMAG(energies(11))
 
-    ! Find where does xmu +/- window_terp lies on the contour
-    ind_m3 = binarysearch(DBLE(xmu_m3), DBLE(energies(1:ne)), ne)-1
-    ind_p3 = binarysearch(DBLE(xmu_p3), DBLE(energies(1:ne)), ne)
-    ! IF (ind_m3.EQ.0) out_of_bound=.TRUE.
-    IF (.NOT.is_in_grid(DBLE(xmu_p3))) THEN
-        call thscf_energies_init(xmu)
-        ind_m3 = binarysearch(DBLE(xmu_m3), DBLE(energies(1:ne)), ne)-1
-        ind_p3 = binarysearch(DBLE(xmu_p3), DBLE(energies(1:ne)), ne)
-    ENDIF
-    IF (ind_m3.EQ.0) THEN
-        xmu_m3 = DBLE(energies(11))
-        dxmu = DBLE(xmu_p3-xmu_m3)/nxmu
-        ind_m3 = 11
-        ! out_of_bound=.TRUE.
-    ENDIF
+    ! Find where xmu lies on the contour
+    ind_m3 = binarysearch(DBLE(xmu), DBLE(energies(1:ne)), ne)-1 ! E(ind_m3) < xmu
+    ind_p3 = binarysearch(DBLE(xmu), DBLE(energies(1:ne)), ne)   ! xmu < E(ind_p3)
+    dxmu = (DBLE(xmu) - DBLE(energies(ind_m3)))/DBLE(nxmu)
+    xmu_m3 = energies(ind_m3)
+    xmu_p3 = xmu + coni*DIMAG(energies(11))
+
+    IF (ind_m3.EQ.0) out_of_bound=.TRUE.
+
     IF (out_of_bound) THEN
-      ! With the bracketing method, xmu should aways be in the grid
-      write(message,'(a,2f10.5)') "ERROR: xmu_m3 less than minimum. ", &
-                    & DBLE(xmu_m3*hart), DBLE(energies(1)*hart)
-      CALL wlog(message)
-      write(message,*) "This should not happen. Please contact the developer(s)."
+      WRITE(message,'(a,3f10.5)') "ERROR: xmu not in range. ", &
+                    & DBLE(xmu*hart), DBLE(energies(1)*hart), DBLE(energies(ne)*hart)
       CALL wlog(message)
       ! If xmu below ecv then, we dont do interpolation, we treat
       ! everything below that as zero
@@ -660,29 +522,38 @@ CONTAINS
       ! Fermi-occupations of fixed energy core-states.
       ! We could actually change the total density accordingly as well.
       ! That is \rho = \rho_val + \rho_core
-      ! \rho_val  = \int_ecv^inf f(mu,E,T)ImG/pi
-      ! \rho_core = \sum_i |\phi_i|^2 f(mu,E_i,T)
-      ! I think the above indicates a serious problem, so I'm going to put a stop here
+      !         \rho_val  = \int_ecv^inf f(mu,E,T)ImG/pi
+      !         \rho_core = \sum_i |\phi_i|^2 f(mu,E_i,T)
+      ! I think the above indicates a serious problem,
+      ! so I'm going to put a stop here
+      !
+      ! TTS - Quick fix. Decrease gradient size if the new xmu is out of range
+
       call par_stop
     ELSE
-      ! Interpolating
-      ne_terp = ind_m3 + nxmu + (ne-ind_p3+1)
+      ! Generate a new grid by removing points above chemical potential
+
+      ! Define number of points for legs (1) -> (3)
+      ne_terp = ind_m3 + nxmu
       ALLOCATE(rhoe_terp(0:lx,0:nphx,ne_terp+np))
       ALLOCATE(rhore_terp(251,0:nphx,ne_terp+np))
       ALLOCATE(energies_terp(ne_terp+np))
       energies_terp = 0.d0
       rhoe_terp =  0.d0
       rhore_terp = 0.d0
+
+      ! Define number of points for legs (1) -> mu - epsilon
       DO ie=1, ind_m3
-        ! Copy vertical points and all points less than xmu-3kT
+        ! Copy vertical points and all points less than xmu
         energies_terp(ie) = energies(ie)
         rhoe_terp(:,:,ie) = rhoe(:,:,ie)
         rhore_terp(:,:,ie) = rhore(:,:,ie)
       ENDDO
 
+      ! Define number of points for mu - epsilon -> mu
       DO ie=ind_m3+1, ind_m3+nxmu
-        ! Remove xmu +/- 3kT from original grid and replaced by interpolated points
-        energies_terp(ie) = xmu_m3 + (ie-ind_m3-1) * dxmu
+        ! Interpolate from [ e<xmu, xmu ]
+        energies_terp(ie) = energies(ind_m3) + (ie-ind_m3) * dxmu
 
         DO iph=0, nphx
           DO il = 0, lx
@@ -692,103 +563,97 @@ CONTAINS
             rhore_terp(il,iph,ie) = interp1d(DBLE(energies_terp(ie)), DBLE(energies(1:ne)), rhore(il,iph,1:ne))
           ENDDO
         ENDDO
+        ! write(message,*) DBLE(energies_terp(ie)), DBLE(rhoe_terp(2,0,ie)), DIMAG(rhoe_terp(2,0,ie))
+        ! call wlog(message)
       ENDDO
 
-      ! Insert xmu_p3 into the thing
-      energies_terp(ind_m3+nxmu+1) = DBLE(xmu_p3) + coni*DIMAG(energies_terp(ind_m3+nxmu))
-
-      DO ie=1, (ne-ind_p3)+np
-        !  Going back to original grid at ind_p3
-        energies_terp(ind_m3+nxmu+1+ie) = energies(ie+ind_p3)
-        rhoe_terp(:,:,ind_m3+nxmu+1+ie) = rhoe(:,:,ie+ind_p3)
-        rhore_terp(:,:,ind_m3+nxmu+1+ie) = rhore(:,:,ie+ind_p3)
+      ! Define number of points for leg(3) -> leg(4)
+      DO ie = 1, np
+        ! Attach leg (3) -> (4)
+        energies_terp(ne_terp+ie) = energies(ne+ie)
+        rhoe_terp(:,:,ne_terp+ie) = rhoe(:,:,ne+ie)
+        rhore_terp(:,:,ne_terp+ie) = rhore(:,:,ne+ie)
       ENDDO
     ENDIF
 
-    ! OPEN(unit=99, file='RHOE_TH.dat')
-    ! OPEN(unit=1233, file="rhoe_th.dat")
-    ! OPEN(unit=899, file='FERMI_TH.dat')
-    ! DO ie = 1, ne_terp
-    !   f = fermiF(energies_terp(ie), temp, xmu)
-    !   IF (ie > ne_terp) f = -2*pi*coni
-    !   WRITE(899,'(20E20.10E3)') DBLE(energies_terp(ie)*hart), DBLE(f)
-    !   WRITE(99,'(20E20.10E3)') DBLE(energies_terp(ie)*hart), DIMAG(energies_terp(ie)),  DBLE(rhoe_terp(0,0,ie)*f), DIMAG(rhoe_terp(0,0,ie)*f), &
-    !     & DBLE(rhoe_terp(1,0,ie)*f), DIMAG(rhoe_terp(1,0,ie)*f), DBLE(rhoe_terp(2,0,ie)*f), DIMAG(rhoe_terp(2,0,ie)*f)
-    !
-    ! ENDDO
-    ! DO ie=1,ne
-    !   f = fermiF(energies(ie), temp, xmu)
-    !   f = 1.d0
-    !   WRITE(1233,'(20E20.10E3)') DBLE(energies(ie)*hart), DIMAG(energies(ie)),  DBLE(rhoe(0,0,ie)*f), DIMAG(rhoe(0,0,ie)*f), &
-    !         & DBLE(rhoe(1,0,ie)*f), DIMAG(rhoe(1,0,ie)*f), DBLE(rhoe(2,0,ie)*f), DIMAG(rhoe(2,0,ie)*f)
-    ! ENDDO
-    ! WRITE(99,*)
-    ! WRITE(899,*)
-    ! CLOSE(99)
-    ! CLOSE(899)
-    ! CLOSE(1233)
-
-
-    ! I. Integrate density over energy, fermi distribution
-    !    The first calculated point has finite imaginary part. So, include contribution from
-    !    leg between real axis and this point by approximating the integrand as constant
+    ! I. Integrate density over energy
+    !    The first calculated point has finite imaginary part.
+    !    So, include contribution from leg between real axis and
+    !    this point by approximating the integrand as constant
     !    along that leg (this is the same as what is done in scmt.f90).
     ep = DBLE(energies(1))
     iep = 1
 
+    ! Smooth integral part
     DO ie = 1, ne_terp
       ee = energies_terp(ie)
       de = ee - ep
 
-      f = fermiF(ee, temp, xmu)
-      fp = fermiF(ep, temp, xmu)
-
       DO iph = 0, nph
         DO il = 0, lx
           if (iunf.EQ.0 .AND. il.GT.2) CYCLE
-          xnmues(il,iph) = xnmues(il,iph) + dimag( (rhoe_terp(il,iph,ie)*f + rhoe_terp(il,iph,iep)*fp) * de )
+          xnmues(il,iph) = xnmues(il,iph) + dimag( (rhoe_terp(il,iph,ie) + rhoe_terp(il,iph,iep)) * de )
         END DO
 
         DO ir = 1, nr05(iph)
-          rhoval(ir, iph) = rhoval(ir, iph) + dimag( (rhore_terp(ir,iph,ie)*f + rhore_terp(ir,iph,iep)*fp) * de )
+          rhoval(ir, iph) = rhoval(ir, iph) + dimag( (rhore_terp(ir,iph,ie) + rhore_terp(ir,iph,iep)) * de )
         END DO
       END DO
 
       ep = ee
       iep = ie
     END DO
-    xnmues_old = xnmues
-    IF (print_flag) PRINT*, "    xnmues (contour) = ", SUM(xnmues)
 
-    ! II. Add on contribution from Matsubara poles
-    !     degeneracy*2*i*pi*sum{G(poles)}*-kT
+    ! Sum of residues
     DO ip = 1, np
       DO iph = 0, nph
         DO il = 0, lx
           if (iunf.EQ.0 .AND. il.GT.2) CYCLE
-          xnmues(il, iph) = xnmues(il, iph) + dimag( -4*pi*coni*temp * rhoe_terp(il,iph,ne_terp+ip) )
+          xnmues(il, iph) = xnmues(il, iph) + dimag( -4.d0*pi*coni*kT * rhoe_terp(il,iph,ne_terp+ip) )
         END DO
         DO ir = 1, nr05(iph)
-          rhoval(ir, iph) = rhoval(ir, iph) + dimag( -4*pi*coni*temp * rhore_terp(ir,iph,ne_terp+ip) )
+          rhoval(ir, iph) = rhoval(ir, iph) + dimag( -4.d0*pi*coni*kT * rhore_terp(ir,iph,ne_terp+ip) )
         END DO
       END DO
     END DO
-    IF (print_flag)  PRINT*, "    xnmues (Poles) = ", SUM(xnmues-xnmues_old)
 
-    ! Sum over angular momenta and sites to get total electron count
+
+    ! II. Compute the derivative at z = mu + i*eimmax
+    !      Evaluate the derivative by linear interpolation
+    !      G'(z) = slope between point energies(ind_m3) and energies(ind_p3)
+    ! We need to compute the derivatives for rhoe, rhore
+
+    !! de = energies(ind_p3)-energies(ind_m3)
+    de = dstep
+    DO iph = 0, nph
+      DO il = 0, lx
+        if (iunf.EQ.0 .AND. il.GT.2) CYCLE
+        ! Factor of 2 for degeneracy
+        xnmues(il,iph) = xnmues(il,iph) + 2.d0*sommerfeld_factor*DIMAG(&
+                            (rhoe1(il,iph,2)-rhoe1(il,iph,1))/de)
+      END DO
+
+      DO ir = 1, nr05(iph)
+        rhoval(ir, iph) = rhoval(ir, iph) + 2.d0*sommerfeld_factor*DIMAG( &
+                            (rhore1(ir,iph,2)-rhore1(ir,iph,1))/de)
+      END DO
+    END DO
+
+    ! III. Sum over angular momenta and sites to get total electron count
     DO iph = 0, nph
       DO il = 0, lx
         xntot = xntot + xnmues(il, iph) * xnatph(iph)
       END DO
     END DO
     IF (print_flag) PRINT*, "    xntot = ", xntot
-
+    ! call print_rhoe(energies_terp, rhoe_terp, ne_terp)
+    ! call print_grid(energies_terp, ne_terp)
     DEALLOCATE(rhoe_terp, rhore_terp)
     DEALLOCATE(energies_terp)
   END SUBROUTINE
 
-  SUBROUTINE calculate_contour(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint, &
-                              & vint, xnval, x0, ri, dx, adgc, adpc, dgc, dpc, &
+  SUBROUTINE calculate_contour(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint,&
+                              & vint, xnval, x0, ri, dx, adgc, adpc, dgc, dpc,&
                               & xrhole, yrhole, ph, gtr, nr05, iscmt)
     ! Calculate densities along energy contour.
     ! Note: Original version was hard coded in "thscf_main" subroutine.
@@ -944,30 +809,66 @@ CONTAINS
     222 return
   END FUNCTION binarysearch
 
-  COMPLEX*16 FUNCTION fermiF(x,t,mu)
-    ! Fermi function with cutoff to prevent float overflow
-    IMPLICIT none
-    COMPLEX*16, INTENT(IN) :: x
-    REAL(8), INTENT(IN) :: t, mu
-    REAL(8) :: b
-    COMPLEX*16 :: a
-    IF (t.GT.0.d0) THEN
-        a = (x-mu)/t
-        b = DIMAG((x-mu)/t)
-        if (DBLE(x-mu)/t.le.5e2) then
-            fermiF =  1/(1+EXP((x-mu)/t))
-        else
-          fermiF = 0.d0
-        endif
-    ELSE
-        IF(DBLE(x).GT.mu) THEN
-            fermiF=0.d0
-        ELSE
-            fermiF=1.d0
-        ENDIF
-    ENDIF
-    RETURN
-  END FUNCTION fermiF
+  SUBROUTINE bracketing_method(current_step, xnferm, xmunew, xmuprev)
+      ! This subroutine sets the search interval for xmu
+      ! based on previous values.
+      ! Note: current_step must be > 1
+      implicit none
+      integer, intent(in) :: current_step
+      double precision, intent(in) :: xnferm
+      real*8, intent(inout) :: xmunew, xmuprev
+
+      ! Local variable
+      integer :: iOrder(current_step), i_left, i_right, imu, ip
+      real*8 :: sorted_xmu(current_step), sorted_xntot(current_step)
+      character(512) :: slog
+
+      ! quad precision for arithematics
+      real*8 :: aa, bb, cc, dd, xnferm_precise
+
+      sorted_xmu(:) = -100.d0
+      sorted_xntot(:) = -1.d0
+      CALL qsortd(iOrder, current_step, history_xmu(1:current_step))
+
+      do imu = 1, current_step
+          ip = iOrder(imu)
+          sorted_xmu(imu) = history_xmu(ip)
+          sorted_xntot(imu) = history_xntot(ip)
+      enddo
+      ! open(file="history.dat", status="replace", unit=1818)
+      ! write(1818,*) imu, sorted_xmu(imu), sorted_xntot(imu)
+      ! close(1818)
+
+      ! Find the search bounds for xmu
+      ! The integrated dos is strictly increasing
+      ! Picked an off centered search to avoid having xmu on
+      ! the bounds.
+      xnferm_precise = xnferm
+      i_left = binarysearch(xnferm_precise, sorted_xntot, current_step)-1
+      i_right = i_left+1
+      if (i_right.GT.current_step) then
+          write(slog,*) "Bracketing error: i_right out of bound", i_right
+          call wlog(slog)
+      endif
+      lower_bound = sorted_xmu(i_left)
+      upper_bound = sorted_xmu(i_right)
+      if ((sorted_xntot(i_right)-xnferm)*(sorted_xntot(i_left)-xnferm).GT.0) then
+          print*, "Error points are not bounded", i_left, i_right
+          call par_stop
+      endif
+      xmuprev = xmunew
+
+      ! Regula falsi
+    !   if (imu.LT.40) then
+        !   xmunew = (sorted_xntot(i_right)-xnferm)*lower_bound - (sorted_xntot(i_left)-xnferm)*upper_bound
+        !   xmunew = xmunew / (sorted_xntot(i_right) - sorted_xntot(i_left))
+    !   else
+    !       ! Bisection method
+      aa = lower_bound
+      bb = upper_bound
+      cc = (bb+aa)*0.5d0
+      xmunew = cc
+  END SUBROUTINE
 
   SUBROUTINE print_history()
         ! This subroutine sets the search interval for xmu
@@ -998,6 +899,110 @@ CONTAINS
         close(1919)
   END SUBROUTINE
 
+  SUBROUTINE print_grid(energies_terp, ne_terp)
+    IMPLICIT none
+    INTEGER, INTENT(IN) :: ne_terp
+    COMPLEX*16, INTENT(IN) :: energies_terp(ne_terp+np)
+    INTEGER :: ie
+
+    ! To generate animation for grid
+    OPEN(UNIT=9991, FILE="contour.sommerfeld", STATUS="OLD",action='write',position='append')
+    DO ie = 1, ne_terp+np
+        WRITE(9991,*) DBLE(energies_terp(ie)), DIMAG(energies_terp(ie))
+    ENDDO
+    WRITE(9991,*)
+    WRITE(9991,*)
+    CLOSE(9991)
+  END SUBROUTINE
+
+  SUBROUTINE print_poles()
+      IMPLICIT none
+      INTEGER :: ip, iph, il
+
+      DOUBLE PRECISION :: xn_arr(0:lx, 0:nphx), xntot
+
+      OPEN(UNIT=9991, FILE="poles.dat", STATUS="OLD",action='write',position='append')
+
+      DO ip = 1, np
+        xn_arr(:,:) = 0.d0
+        xntot = 0.d0
+        DO iph = 0, nph
+          DO il = 0, lx
+            if (iunf.EQ.0 .AND. il.GT.2) CYCLE
+            xn_arr(il, iph) = xn_arr(il, iph) + dimag( -4.d0*pi*coni*kT * rhoe(il,iph,ne+ip) )
+          END DO
+        END DO
+        DO iph = 0, nph
+          DO il = 0, lx
+            xntot = xntot + xn_arr(il, iph) * xnatph(iph)
+          END DO
+        END DO
+        WRITE(9991,100) ip, DBLE(energies(ne+ip)), DIMAG(energies(ne+ip)), xntot
+      END DO
+      100 format(i4, 1x, f30.25, 1x, f30.25, 1x, f30.25)
+      WRITE(9991,*)
+      WRITE(9991,*)
+      CLOSE(9991)
+  END SUBROUTINE
+
+  SUBROUTINE print_rhoe(energies_terp, rhoe_terp, ne_terp)
+      IMPLICIT none
+      INTEGER, INTENT(IN) :: ne_terp
+      COMPLEX*16, INTENT(IN) :: energies_terp(ne_terp+np)
+      COMPLEX*16, INTENT(IN) :: rhoe_terp(0:lx,0:nphx,ne_terp+np)
+      INTEGER :: ie
+      COMPLEX*16 :: aa, bb, cc, ee
+
+      OPEN(UNIT=9991, FILE="rhoe.sommerfeld", STATUS="OLD",action='write',position='append')
+      OPEN(UNIT=99911, FILE="rhoe.real.sommerfeld", STATUS="OLD",action='write',position='append')
+      OPEN(UNIT=9981, FILE="rhoe.xmu.sommerfeld", STATUS="OLD",action='write',position='append')
+      OPEN(UNIT=99811, FILE="rhoe.xmu.real.sommerfeld", STATUS="OLD",action='write',position='append')
+      OPEN(UNIT=777, FILE="rhoe.div.sommerfeld", STATUS="OLD",action="write",position='append')
+      DO ie = 1, ne
+          WRITE(9991,1818) DBLE(energies(ie)), DIMAG(energies(ie)), dimag(rhoe(0,0,ie)), dimag(rhoe(1,0,ie)), dimag(rhoe(2,0,ie))
+          WRITE(99911,1818) DBLE(energies(ie)), DIMAG(energies(ie)), DBLE(rhoe(0,0,ie)), DBLE(rhoe(1,0,ie)), DBLE(rhoe(2,0,ie))
+      ENDDO
+
+      DO ie = 1, ne_terp
+          WRITE(9981,1818) DBLE(energies_terp(ie)), DIMAG(energies_terp(ie)), dimag(rhoe_terp(0,0,ie)), dimag(rhoe_terp(1,0,ie)), dimag(rhoe_terp(2,0,ie))
+          WRITE(99811,1818) DBLE(energies_terp(ie)), DIMAG(energies_terp(ie)), DBLE(rhoe_terp(0,0,ie)), DBLE(rhoe_terp(1,0,ie)), DBLE(rhoe_terp(2,0,ie))
+      ENDDO
+      DO ie = 10, ne-1
+          bb = interp1d(DBLE(energies(ie)), &
+                & DBLE(energies(10:ne)), rhoe(0,0,10:ne)) &
+                & + interp1d(DBLE(energies(ie)), &
+                & DBLE(energies(10:ne)), rhoe(1,0,10:ne)) &
+                & + interp1d(DBLE(energies(ie)), &
+                & DBLE(energies(10:ne)), rhoe(2,0,10:ne))
+          aa = interp1d(DBLE(energies(ie+1)), &
+                 & DBLE(energies(10:ne)), rhoe(0,0,10:ne)) &
+                 & + interp1d(DBLE(energies(ie+1)), &
+                 & DBLE(energies(10:ne)), rhoe(1,0,10:ne)) &
+                 & + interp1d(DBLE(energies(ie+1)), &
+                 & DBLE(energies(10:ne)), rhoe(2,0,10:ne))
+          ee = energies(ie+1) - energies(ie)
+          cc = (bb-aa)/ee
+          WRITE(777,1818) DBLE(energies(ie)), DIMAG(energies(ie)), DBLE(cc), DIMAG(cc)
+      ENDDO
+      1818 format (f10.5, 1x, 4(1pe13.6,1x))
+      WRITE(9991,*)
+      WRITE(9991,*)
+      WRITE(99911,*)
+      WRITE(99911,*)
+      WRITE(99811,*)
+      WRITE(99811,*)
+      WRITE(9981,*)
+      WRITE(9981,*)
+      WRITE(777,*)
+      WRITE(777,*)
+
+      CLOSE(99811)
+      CLOSE(99911)
+      CLOSE(9991)
+      CLOSE(9981)
+      CLOSE(777)
+  END SUBROUTINE
+
   LOGICAL FUNCTION is_in_grid(xmu)
       ! Check if xmu is in the grid generated
       implicit none
@@ -1009,4 +1014,4 @@ CONTAINS
       endif
       return
   END FUNCTION
-end module
+END MODULE

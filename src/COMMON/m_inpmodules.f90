@@ -560,6 +560,8 @@
 	    real*8 scf_temperature ! Electronic temperature in eV
 	    integer scf_thermal_vxc
 
+        real*8 xntol
+        INTEGER iscfth ! TS 07/2020
 		contains
 
         subroutine potential_allocate
@@ -609,6 +611,8 @@
         ! Electronic temperature for thermal scf routine
               write(3,10) 'Temperature (in eV):'
               write(3,*) scf_temperature, scf_thermal_vxc
+              write(3,10) 'Scf_th,  xntol,  nmu'
+              write(3,*) iscfth, xntol, nmu ! TS 07/2020
 		close(3)
 		! standard formats for string, integers and real numbers
 	  10  format(a)
@@ -642,6 +646,7 @@
 			  read(3,*) ; read(3,*) ChSh_Type
 			  read(3,*,end=55) ; read(3,*,end=55) configtype
 			  read(3,*) ; read(3,*) scf_temperature, scf_thermal_vxc
+              read(3,*) ; read(3,*) iscfth, xntol, nmu
 			  55 continue
 			close(3)
 		end subroutine potential_read
@@ -689,6 +694,9 @@
 			corval_emin=-70.d0 ! eV
 			scf_temperature = 0.0 ! eV
 			scf_thermal_vxc = 1
+            xntol = 1.D-4
+            nmu = 100
+            iscfth = 1
 		end subroutine potential_init
 
 	end module

@@ -16,6 +16,8 @@ subroutine pot !KJ put everything in modules 7-09
   use workstrfacs2,only: eta,eta0 !KJ
   use controls,only: ispace !KJ
   use m_thermal_scf, only: thscf_main, thscf_init, thscf_deinit
+  use m_sommerfeld_scf, only: sommerfeld_scf_main, sommerfeld_scf_init, sommerfeld_scf_deinit
+  ! use m_sommerfeld_scf_real, only: sommerfeld_scf_real_main, sommerfeld_scf_real_init, sommerfeld_scf_real_deinit
   !     Cluster code -- multiple shell single scattering version of FEFF
   !     This program (or subroutine) calculates potentials
   !     for unique potentials specifed by atoms and overlap cards.
@@ -380,12 +382,23 @@ subroutine pot !KJ put everything in modules 7-09
     xnmues_old=xnmues
 
     if (scf_temperature.gt.0) then
-      ! call thermal SCF routine. the init and de-init will eventually be moved outside of this loop (need to be careful with gotos to avoid leaks...)
-      call thscf_init(ecv, xmunew, iscmt)
-      call thscf_main(iscmt, ecv, vclap, edens, edenvl, vtot, vvalgs, &
-      rmt, rnrm, qnrm, rhoint, vint, xmunew, xntot, xnvmu, xnval, x0, &
-      ri, dx, adgc, adpc, dgc, dpc, rhoval, xnmues, ok, rgrd)
-      call thscf_deinit
+      ! call thermal SCF routine. the init and de-init will eventually be moved
+      ! outside of this loop (need to be careful with gotos to avoid leaks...)
+      if (iscfth.EQ.1) then
+          ! Sommerfeld expansion
+          call sommerfeld_scf_init(ecv, xmunew, iscmt)
+          call sommerfeld_scf_main(iscmt, ecv, vclap, edens, edenvl, vtot, vvalgs, &
+          rmt, rnrm, qnrm, rhoint, vint, xmunew, xntot, xnvmu, xnval, x0, &
+          ri, dx, adgc, adpc, dgc, dpc, rhoval, xnmues, ok, rgrd)
+          call sommerfeld_scf_deinit
+      elseif (iscfth.EQ.2) then
+          ! m_thermal_scf
+          call thscf_init(ecv, xmunew, iscmt)
+          call thscf_main(iscmt, ecv, vclap, edens, edenvl, vtot, vvalgs, &
+          rmt, rnrm, qnrm, rhoint, vint, xmunew, xntot, xnvmu, xnval, x0, &
+          ri, dx, adgc, adpc, dgc, dpc, rhoval, xnmues, ok, rgrd)
+          call thscf_deinit
+      endif
     else
       if (npr.le.1) then
         PRINT*, "Zero temperature single thread"

@@ -671,6 +671,7 @@
 !              convergence accelerator
                nscmt = nbr
                ca1 = 0.2d0
+
                read(words(2),30,err=900)  rfms1
                if (nwords.gt.2) read(words(3),20,err=900)  lfms1
                if (nwords.gt.3) read(words(4),20,err=900)  nscmt
@@ -678,6 +679,8 @@
                if (nwords.gt.5) read(words(6),20,err=900)  nmix
                if (nwords.gt.6) read(words(7),30,err=900)  ecv
                if (nwords.gt.7) read(words(8),20,err=900)  icoul
+               if (nwords.gt.8) read(words(9),20,err=900)  xntol
+               if (nwords.gt.9) read(words(10),20,err=900) nmu
                if (nscmt.le.0 .or. nscmt.gt.nbr) then  !KJ 12-2011 I added the diagnostic message - the user may want to know, y'know?
             call wlog('Invalid number of SCF iterations specified.  Reset to hardwired limit.')
           nscmt = nbr
@@ -1358,6 +1361,12 @@
                 11 for vBH, 12 for PZ, 21 for PDW, or 22 for KSDT ... stopping')
                 stop
                endif
+      elseif (itok .eq. 108) then
+                xntol = 1e-4
+                nmu = 100
+                read(words(2),20,err=900) iscfth
+                if (nwords.gt.2) read(words(3),30,err=900) xntol
+                if (nwords.gt.3) read(words(4),20,err=900) nmu
 
       elseif (itok .eq. -1)  then
 !              END
