@@ -562,6 +562,7 @@
 
         real*8 xntol
         INTEGER iscfth ! TS 07/2020
+	integer nmu ! cja 10/15/20
 		contains
 
         subroutine potential_allocate
