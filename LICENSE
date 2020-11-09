@@ -1,0 +1,58 @@
+Copyright Information, Restrictions and License
+
+A.1 Restrictions and License Information
+The FEFF10 distribution is copyrighted software according to the terms in the FEFF10 License
+and Government copyrights in Appendices A.2 and A.3 below.
+
+A.2 Government Copyrights
+This work was supported in part by Grants from DOE. In accordance with the DOE FAR rules
+part 600.33 "Rights in Technical Data - Modified Short Form" the following clause applies to
+feff:
+(c)(1)The grantee agrees to and does hereby grant to the U.S. Government and to others
+acting on its behalf:
+(i) A royalty-free, nonexclusive, irrevocable, world-wide license for Governmental purposes
+to reproduce, distribute, display, and perform all copyrightable material rst produced or
+composed in the performance of this grant by the grantee, its employees or any individual or
+concern specifically employed or assigned to originate and prepare such material and to prepare
+derivative works based thereon,
+(ii) A license as aforesaid under any and all copyrighted or copyrightable work not first
+produced or composed by the grantee in the performance of this grant but which is incorporated
+in the material furnished under the grant, provided that such license shall be only to the extent
+the grantee now has, or prior to completion or close-out of the grant, may acquire the right
+to grant such license without becoming liable to pay compensation to others solely because of
+such grant.
+(c)(2) The grantee agrees that it will not knowingly include any material copyrighted by
+others in any written or copyrightable material furnished or delivered under this grant without
+A.3. FEFF10 LICENSE 113
+a license as provided for in paragraph (c)(1)(ii) of this section, or without the consent of the
+copyright owner, unless it obtains specific written approval of the Contracting Oficer for the
+inclusion of such copyright material.
+A.3 FEFF10 LICENSE
+Distribution: FEFF10.0 Copyright (c) 2020 FEFF Project, University of Washington and
+SLAC National Accelerator Laboratory. All rights reserved.
+This software was prepared with support in part from the U.S. DOE, Oce of Basic Energy
+Sciences, DMSE grants DE-FG03-97ER45623 (Dept. of Physics, U.Washington) and DE-AC02-
+76SF00515 (Theory Institute for Materials and Energy Spectroscopies (TIMES) at SLAC.
+Redistribution and use of this Distribution in source and binary formats, with or without
+modication, is permitted, provided the following conditions are met:
+Redistributions must retain the above notices and the following list of conditions and disclaimer;
+Modied formats carry the marking "Based on or developed using Distribution: FEFF10.0
+Copyright (c) 2020 FEFF Project, University of Washington and SLAC National Accelerator
+Laboratory. All rights reserved."
+Recipient acknowledges the rights of the University of Washington and SLAC to prepare
+uses of this Distribution and its modifications that may be substantially similar or functionally
+equivalent to Recipient-prepared modifications.
+Recipient and anyone obtaining access to the Distribution through recipient's actions accept
+all risk associated with possession and use of the Distribution.
+THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE UNIVERSITY OF WASHINGTON OR CONTRIBUTORS TO
+THE DISTRIBUTION BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR REVENUE; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
