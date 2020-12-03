@@ -36,7 +36,8 @@ potSRC = \
 ./POT/ff2g.f90 ./POT/broydn.f90 ./POT/coulom.f90 \
 ./ATOM/potslw.f90 ./POT/frnrm.f90 ./POT/scmtmp.f90 \
 ./POT/wpot.f90 ./COMMON/head.f90 ./TDLDA/correorb.f90 \
-./TDLDA/cdos.f90 ./POT/wrpot.f90 ./POT/rhofmslie.f90 
+./TDLDA/cdos.f90 ./POT/wrpot.f90 ./POT/rhofmslie.f90 \
+./MATH/qsortd.f90 
 pot_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_constants.f90 ./KSPACE/m_struct.f90 \
 ./KSPACE/m_controls.f90 ./KSPACE/m_boundaries.f90 ./KSPACE/m_kklist.f90 \
