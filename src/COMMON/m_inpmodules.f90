@@ -614,7 +614,6 @@
               write(3,*) scf_temperature, scf_thermal_vxc
               write(3,10) 'Scf_th,  xntol,  nmu'
               write(3,*) iscfth, xntol, nmu ! TS 07/2020
-		close(3)
               write(3,10) 'FiniteNucleus'
               write(3,*) FiniteNucleus
               close(3)
