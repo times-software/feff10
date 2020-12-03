@@ -170,7 +170,7 @@
 
       real sig2u(npx)
 
-      parameter (nfinex = 601)
+      parameter (nfinex = nex*100) ! 
 	  !KJ 11-2011 The following 4 arrays were defined as (nfinex).  However the compiler doesn't like this.  Furthermore, they are only used
 	  ! over (1:nkx) where nkx is a calling argument; it is (afaik) given as "ne" which one expects to be smaller than "nex" in dimsmod.
 	  ! Hence I am changing the definition of these arrays to match that in the calling routine.

@@ -14,6 +14,7 @@
       use constants
       use DimsMod, only: nrptx, lx
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
 !     INPUT
 !     dx, x0, ri(nr)
@@ -39,8 +40,8 @@
       parameter (nrx = nrptx)
 
 !     output
-      complex*16  xrhole(-4:3,-4:3)
-      complex*16  xrhoce(-4:3, -4:3)
+      complex*16  xrhole(-5:4,-5:4)
+      complex*16  xrhoce(-5:4, -5:4)
 
 
       complex*16, intent(inout) ::  ph(lx+1)
@@ -48,8 +49,8 @@
       dimension ri(nrptx), ri05(251)
       dimension  vtot(nrptx), vvalgs(nrptx)
       complex*16 vtotc(nrptx), vvalc(nrptx)
-      dimension xnval(30), iorb(-4:3), dgcn(nrptx,30), dpcn(nrptx,30)
-      dimension adgc(10,30), adpc(10,30)
+      dimension xnval(41), iorb(-5:4), dgcn(nrptx,41), dpcn(nrptx,41)
+      dimension adgc(10,41), adpc(10,41)
 
 !     energy grid in complex e-plane
       complex*16 em, eref
@@ -96,7 +97,7 @@
 !c    nesvi
 !c    dgcn and dpcn should be normalized <n|n>=1, check this here
      
-      do 440 j = -4, 3
+      do 440 j = -5, 4
         jj = iorb(j)
         if (jj.le.0) goto 440
 
@@ -132,8 +133,8 @@
 
       if (ilast1.gt.nrptx) ilast1=nrptx
 
-      do 10 i = -4,3
-      do 10 j = -4,3
+      do 10 i = -5,4
+      do 10 j = -5,4
          xrhole(i,j) = 0
          xrhoce(i,j) = 0
   10  continue

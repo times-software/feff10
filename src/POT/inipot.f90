@@ -10,20 +10,21 @@
         use DimsMod, only: nphx=> nphu, lx
         
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       parameter (zero=0.0d0)
 
-      dimension dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
+      dimension dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
       dimension edenvl(251,0:nphx), vvalgs (251,0:nphx)
 
       real*8, intent(inout) :: xnmues(0:lx,0:nphx)
 
       do 10 iph  = 0,nphx+1
-      do 10 iorb = 1,30
+      do 10 iorb = 1,41
       do 10 i = 1,251
    10    dgc(i,iorb,iph) = zero
 
       do 20 iph  = 0,nphx+1
-      do 20 iorb = 1,30
+      do 20 iorb = 1,41
       do 20 i = 1,251
    20    dpc(i,iorb,iph) = zero
 

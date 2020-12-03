@@ -21,10 +21,10 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
   use par
   use ldos_inp,only: neldos
   implicit none
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   ! Input
   integer, intent(in) :: nph,nat,ihole,ixc,iunf
-  real*8,  intent(in) :: xnval(30,0:nphx)
+  real*8,  intent(in) :: xnval(41,0:nphx)
   real*8,  intent(in) :: xnmues(0:lx,0:nphx)
   integer, intent(in) :: iphat(natx)
   real*8,  intent(in) :: rat(3,natx)
@@ -41,8 +41,8 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
   real*8,  intent(inout) :: xmu, eimag
 
   real*8,  intent(inout), dimension(251,0:nphx) :: edens,edenvl
-  real*8,  intent(inout), dimension(251,30,0:nphx) :: dgc, dpc   !KJ 12-2011 changed "nphx+1" to "nphx" ; extra field isn't used anywhere, and conflicts with declaration in other routines
-  real*8,  intent(inout), dimension(10,30,0:nphx) :: adgc, adpc  !KJ 12-2011 changed "nphx+1" to "nphx" ; extra field isn't used anywhere, and conflicts with declaration in other routines
+  real*8,  intent(inout), dimension(251,41,0:nphx) :: dgc, dpc   !KJ 12-2011 changed "nphx+1" to "nphx" ; extra field isn't used anywhere, and conflicts with declaration in other routines
+  real*8,  intent(inout), dimension(10,41,0:nphx) :: adgc, adpc  !KJ 12-2011 changed "nphx+1" to "nphx" ; extra field isn't used anywhere, and conflicts with declaration in other routines
 
   ! Local variables
   integer iph
@@ -72,7 +72,7 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
   ! Allocate local variables
   !-JPR-See above ! allocate(gtr(0:lx,0:nphx,nex)  
   allocate(dum(nrptx), vtotph(nrptx), vvalph(nrptx),           &
-       &   dgcn(nrptx,30), dpcn(nrptx,30),                     &
+       &   dgcn(nrptx,41), dpcn(nrptx,41),                     &
        &   xrhoce(0:lx,nex,0:nphx),                            &
        &   xrhole(0:lx,nex,0:nphx),   &
        &   ph(nex, ltot+1, 0:nphx), inclus(0:nphx),            & 
@@ -193,6 +193,7 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
   ! Deallocate local variables
   deallocate(dum, vtotph, vvalph,dgcn, dpcn, xrhoce, xrhole,   &
        &     ph, inclus, em, eref)
+
   !-JPR-See above  deallocate(gtr)
 
   return

@@ -25,10 +25,12 @@
 !        this program uses akeato,bkeato
 !        fdrocc fdrirk bkmrdf
 
+! Josh Kas - Changed array dimensions from 30 to 41 for high Z elements
+
       implicit double precision (a-h,o-z)
       parameter (ryd  = 13.605698d0)
       parameter (hart = 2*ryd)
-      dimension kap(30),xnel(30),en(30), xnval(30)
+      dimension kap(41),xnel(41),en(41), xnval(41)
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
       dimension mk(12),ener(4)
       dimension cer(17),mbi(9),mii(9),mjj(9)

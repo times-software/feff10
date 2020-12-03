@@ -40,11 +40,12 @@ subroutine rhofmslie(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint, vint, &
   use potential_inp, only: ixc, xion, iunf, iz, ihole, lmaxsc, nohole, rfms1, lfms1, jumprm0=>jumprm, rgrd
 
   implicit None
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
   ! Input
   integer, intent(in):: ie, iscmt
   double precision, intent(in):: vtot (251,0:nphx), vvalgs (251,0:nphx)
-  double precision, intent(in):: xnval (30,0:nphx)
+  double precision, intent(in):: xnval (41,0:nphx)
   double precision:: ri(nrptx)
   double precision, intent(in):: vint, rhoint, dx, x0
   real*8, intent(in) :: rmt(0:nphx),rnrm(0:nphx)
@@ -57,9 +58,9 @@ subroutine rhofmslie(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint, vint, &
   ! Internal variables
   double precision:: dmagx(nrptx), dmag0(251), vjump
   double precision:: dum(nrptx), vtotph(nrptx), vvalph(nrptx)
-  double precision:: dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
-  double precision:: adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1)
-  double precision:: dgcn(nrptx,30), dpcn(nrptx,30)
+  double precision:: dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
+  double precision:: adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
+  double precision:: dgcn(nrptx,41), dpcn(nrptx,41)
   complex*16 yrhoce(251,0:nphx)
 
   integer iph, jri, jri1, i, itmp, iph0, il, ir, jumprm

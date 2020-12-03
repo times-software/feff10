@@ -37,15 +37,16 @@
 	  use potential_inp,only: corval_emin
 
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
 !     input
       dimension dmagx(nrptx), dmag0(251)
       dimension vtot (251,0:nphx), vvalgs (251,0:nphx)
       dimension rmt(0:nphx),rnrm(0:nphx)
       dimension ri(nrptx), ri05(251)
-      dimension iz(0:nphx), xion(0:nphx),xnval(30,0:nphx)
-      dimension norb(0:nphx), kappa(30,0:nphx)
-      dimension eorb(30,0:nphx)
+      dimension iz(0:nphx), xion(0:nphx),xnval(41,0:nphx)
+      dimension norb(0:nphx), kappa(41,0:nphx)
+      dimension eorb(41,0:nphx)
       dimension lmaxsc(0:nphx)
       
       real*8, intent(inout) :: xnvmu(0:lx,0:nphx+1)
@@ -55,9 +56,9 @@
 
 !     work space
       dimension dum(nrptx), vtotph(nrptx),vvalph(nrptx)
-      dimension dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
-      dimension adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1)
-      dimension dgcn(nrptx,30), dpcn(nrptx,30)
+      dimension dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
+      dimension adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
+      dimension dgcn(nrptx,41), dpcn(nrptx,41)
 
       real*8, allocatable  :: eldos(:,:)
       integer, allocatable :: iiorb(:,:), ival(:,:), ifound(:)
@@ -87,7 +88,6 @@
       
       allocate(xrhoce(0:lx), xrhole(0:lx), yrhole(251,0:lx), ph(lx+1))
       allocate(xp(0:lx),xpeak(0:lx))
-
 
       !call wlog('              Core-valence separation ')
 
@@ -125,8 +125,9 @@
           if (lll.lt.0) lll = kappa(iorb,iph)
 !        skip in special case for Hf,Lu,Ta; treat f-electrons as valence
 !        or as core according to UNFREEZEF
-          if((iz(iph).ge.71.and.iz(iph).le.73) .and. lll.eq.3) goto 100
-          if(iunf.eq.0 .and. lll.eq.3) goto 100
+          ! JK - change to .ge. 3 to freeze g states for superheavies.
+          if((iz(iph).ge.71.and.iz(iph).le.73) .and. lll.ge.3) goto 100
+          if(iunf.eq.0 .and. lll.ge.3) goto 100
 
           eldos(lll,iph) = eorb(iorb,iph)
           ival(lll,iph) = 1

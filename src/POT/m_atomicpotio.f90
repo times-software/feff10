@@ -9,7 +9,7 @@ MODULE AtomicPotIO
   USE ErrorMod
   USE IOMod
   IMPLICIT NONE
-  
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016  
   CHARACTER(3),PRIVATE :: FileType
   !PARAMETER(FileType = 'PAD')
   PARAMETER(FileType = 'TXT')
@@ -143,7 +143,7 @@ MODULE AtomicPotIO
       CALL Write2D('apot.bin', xnvmu, Headers = Headers, FileType = FileType)
 
       ! Write xnval.
-      Headers(1) = 'xnval(30,nph) - occupation of each orbital.'
+      Headers(1) = 'xnval(41,nph) - occupation of each orbital.'
       CALL Write2D('apot.bin', xnval, Headers = Headers, FileType = FileType)
 
       ! Write eorb.
@@ -176,15 +176,15 @@ MODULE AtomicPotIO
       CALL Write2D('apot.bin', kappa, Headers = Headers, FileType = FileType)
 
       ! Write iorb.
-      Headers(1) = 'iorb(-4:3,0:nphx+1) - last occupied orbital of a particular kappa or zero if none.'
+      Headers(1) = 'iorb(-5:4,0:nphx+1) - last occupied orbital of a particular kappa or zero if none.'
       CALL Write2D('apot.bin', iorb, Headers = Headers, FileType = FileType)
       
       ! Write dgc.
-      Headers(1) = 'dgc(r,30,nph) - upper component of each obital for each unique potential.'
+      Headers(1) = 'dgc(r,41,nph) - upper component of each obital for each unique potential.'
       CALL WriteData('apot.bin',Headers = Headers)
       DO iph = 1, SIZE(dgc,3)
          IF(iph.eq.1) THEN
-             Headers(1) = 'dgc(r,30,nph) - upper component of each obital for each unique potential.'
+             Headers(1) = 'dgc(r,41,nph) - upper component of each obital for each unique potential.'
              Headers(2) = 'dgc(r,norb,' // ACHAR(iph+48) // ')'
           ELSEIF(iph.lt.10) THEN
              Headers(1) = 'dgc(r,norb,' // ACHAR(iph+48) // ')'
@@ -197,11 +197,11 @@ MODULE AtomicPotIO
       END DO
 
       ! Write dpc.
-      Headers(1) = 'dpc(r,30,nph) - lower component of each obital and unique potential.'
+      Headers(1) = 'dpc(r,41,nph) - lower component of each obital and unique potential.'
       CALL WriteData('apot.bin',Headers = Headers)
       DO iph = 1, SIZE(dpc,3)
          IF(iph.eq.1) THEN
-            Headers(1) = 'dpc(r,30,nph) - lower component of each obital and unique potential.'
+            Headers(1) = 'dpc(r,41,nph) - lower component of each obital and unique potential.'
              Headers(2) = 'dpc(r,norb,' // ACHAR(iph+48) // ')'
           ELSEIF(iph.lt.10) THEN
              Headers(1) = 'dpc(r,norb,' // ACHAR(iph+48) // ')'
@@ -216,7 +216,7 @@ MODULE AtomicPotIO
       ! Write adgc.
       DO iph = 1, SIZE(adgc,3)
          IF(iph.eq.1) THEN
-            Headers(1) = 'adgc(r,30,nph) - upper development coeficients for each obital and unique potential.'            
+            Headers(1) = 'adgc(r,41,nph) - upper development coeficients for each obital and unique potential.'            
             WRITE(Headers(2),'(A,I10,A)') 'adgc(r,norb,', iph, ')'
          ELSE
             WRITE(Headers(1),'(A,I10,A)') 'adgc(r,norb,', iph, ')'
@@ -225,17 +225,26 @@ MODULE AtomicPotIO
       END DO
 
       ! Write adpc.
-      Headers(1) = 'adpc(r,30,nph) - lower development coeficients for each obital and unique potential.'
+      Headers(1) = 'adpc(r,41,nph) - lower development coeficients for each obital and unique potential.'
       CALL WriteData('apot.bin',Headers = Headers)
       DO iph = 1, SIZE(adpc,3)
          IF(iph.eq.1) THEN
-             Headers(1) = 'adpc(r,30,nph) - lower development coeficients for each obital and unique potential.'
+             Headers(1) = 'adpc(r,41,nph) - lower development coeficients for each obital and unique potential.'
              WRITE(Headers(2),'(A,I10,A)') 'adpc(r,norb,', iph, ')'
           ELSE
              WRITE(Headers(1),'(A,I10,A)') 'adpc(r,norb,', iph, ')'
           END IF
          CALL Write2D('apot.bin', adpc(:,:,iph), Headers = Headers, FileType = FileType)
       END DO
+
+      ! Write hx and dr
+      !Headers(1) = 'Radial grid parameter dx'
+      !CALL WriteData('apot.bin',Headers = Headers)
+      !CALL WriteData('apot.bin', Double1 = hx, ForceNewSection = .TRUE.)
+
+      !Headers(1) = 'Radial grid dr'
+      !CALL WriteData('apot.bin',Headers = Headers)
+      !CALL WriteArrayData('apot.bin', Double1 = dr, ForceNewSection = .TRUE.)
 
       ! Close the file so that we can read it later.
       CALL CloseFl('apot.bin')
@@ -255,7 +264,7 @@ MODULE AtomicPotIO
 !  CALL ReadAtomicPots(nph = nph, iz = iz(0:nph), ihole = ihole, dmag = dmag(:,0:nph), &
 !            dgc0 = dgc0, dpc0 = dpc0, dgc = dgc(:,:,0:nph+1), dpc = dpc(:,:,0:nph+1),  &
 !            adgc = adgc(:,:,0:nph+1), adpc = adpc(:,:,0:nph+1), erelax = erelax,       &
-!            emu = emu_apot, xnval = xnval(:,0:nph+1), eorb = eorbTmp, rnrm = rnrm(0:nph))
+!            emu = emu_apot, xnval = xnval(:,0:nphd+1), eorb = eorbTmp, rnrm = rnrm(0:nph))
 
       ! Scalar data
       INTEGER,INTENT(OUT),OPTIONAL :: nph, nat, ihole
@@ -530,6 +539,16 @@ MODULE AtomicPotIO
             CALL Read2D('apot.bin', adpc(:,:,iph), n1, n2, FileType = FileType)
          END DO
       END IF
+
+      !NSect = NSect + 1
+      !IF(PRESENT(hx)) THEN
+      !   CALL ReadData('apot.bin', Double1 = hx)
+      !END IF
+!
+!      NSect = NSect + 1
+!      IF(PRESENT(dr)) THEN
+!         CALL ReadArrayData('apot.bin', Double1 = dr)
+!      END IF
 
       CALL CloseFl('apot.bin')
       ! PRINT*, 'Done reading information from atomic calculation.' 

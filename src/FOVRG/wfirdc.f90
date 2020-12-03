@@ -19,9 +19,10 @@
 !        this programmes utilises nucdec,dentfa,soldir et messer
       use dimsmod, only: nrptx
       implicit double precision (a-h,o-z)
-      common/dff/cg(nrptx,30),cp(nrptx,30),bg(10,30),bp(10,30),         &
-     &             fl(30), fix(30), ibgp
-      dimension kap(30),nmax(30)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
+      common/dff/cg(nrptx,41),cp(nrptx,41),bg(10,41),bp(10,41),         &
+     &             fl(41), fix(41), ibgp
+      dimension kap(41),nmax(41)
 !    for photoelectron potential and wavefunction will be complex
       complex*16 eph,dg,ag,dp,ap,dv,av,eg,ceg,ep,cep,vxc(nrptx)
       complex*16 ps(nrptx),qs(nrptx),aps(10),aqs(10),vm(nrptx)

@@ -28,6 +28,7 @@
       use errorfile
 	  use constants
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
       complex*16 vxc(nrptx), p2, p2p
       complex*16 vxcp(nrptx)
@@ -36,7 +37,7 @@
       complex*16 ps(nrptx), qs(nrptx), aps(10),aqs(10), xnorm1
       complex*16  api(10),aqi(10)
 !     DOS information
-      dimension neg(30), eng(nex,30), rhoj(nex,30), kappa(30)
+      dimension neg(41), eng(nex,41), rhoj(nex,41), kappa(41)
 
 !     new arrays for TDLDA
 !     solution of homogeneous equations (needed for normalization)
@@ -57,11 +58,11 @@
 
 
 !     all atoms' dirac components and their development coefficients
-      dimension dgcn(nrptx,30), dpcn(nrptx,30)
-      dimension adgc(10,30), adpc(10,30)
+      dimension dgcn(nrptx,41), dpcn(nrptx,41)
+      dimension adgc(10,41), adpc(10,41)
  
 !     iph atom's dirac components and their development coefficients
-      common/dff/cg(nrptx,30), cp(nrptx,30), bg(10,30), bp(10,30), fl(30), fix(30), ibgp
+      common/dff/cg(nrptx,41), cp(nrptx,41), bg(10,41), bp(10,41), fl(41), fix(41), ibgp
 !     fl power of the first term of development limits.
 !     ibgp first dimension of the arrays bg and bp (=10)
 
@@ -72,8 +73,9 @@
       common/messag/dlabpr,numerr
       character*8 dlabpr
 !      xnel here - number of core electrons only
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),nq(30),kap(30),nmax(30)
-      common/scrhf1/eps(435),nre(30),ipl
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),nq(41),kap(41),nmax(41)
+      ! JK - 435 below may need to be 820 for superheavies.
+      common/scrhf1/eps(820),nre(41),ipl
       common/snoyac/dvn(nrptx),anoy(10),nuc
       common/tabtec/hx,dr(nrptx),test1,test2,ndor,np,nes,method,idm
 
@@ -134,11 +136,11 @@
       if (iwkb.lt. 10) iwkb = 10
       
 !     copy information into common's of atomic code
-      do 13 j = 1, 30
+      do 13 j = 1, 41
       do 13 i = 1, 10
          bg(i,j) = adgc(i,j) 
  13      bp(i,j) = adpc(i,j) 
-      do 15 j = 1, 30
+      do 15 j = 1, 41
       do 15 i = 1, nrptx
          cg(i,j) = dgcn(i,j) 
  15      cp(i,j) = dpcn(i,j) 

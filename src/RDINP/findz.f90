@@ -1,7 +1,7 @@
  subroutine findz(elem,z)
 ! This routine simply translates the element name into the atomic number.
    implicit none
-   character*2,intent(in) :: elem
+   character*3,intent(in) :: elem
    integer,intent(out) :: z
    
    
@@ -109,6 +109,45 @@
      if (elem.eq.'Yb') z= 70 
      if (elem.eq.'Zn') z= 30 
      if (elem.eq.'Zr') z= 40 
+     if (elem.eq.'Bh') z= 107
+     if (elem.eq.'Cn') z= 112
+     if (elem.eq.'Db') z= 105
+     if (elem.eq.'Ds') z= 110
+     if (elem.eq.'Fe') z= 26
+     if (elem.eq.'Fl') z=114 
+     if (elem.eq.'Hs') z= 108
+     if (elem.eq.'Lu') z= 71
+     if (elem.eq.'Lv') z=116 
+     if (elem.eq.'Mt') z= 109
+     if (elem.eq.'Re') z= 75
+     if (elem.eq.'Rf') z= 104
+     if (elem.eq.'Rg') z= 111 
+     if (elem.eq.'Sg') z= 106
+     if (elem.eq.'Ubb') z= 122
+     if (elem.eq.'Ube') z= 129
+     if (elem.eq.'Ubh') z= 126
+     if (elem.eq.'Ubn') z= 120
+     if (elem.eq.'Ubo') z= 128
+     if (elem.eq.'Ubp') z= 125
+     if (elem.eq.'Ubq') z= 124
+     if (elem.eq.'Ubs') z= 127
+     if (elem.eq.'Ubt') z= 123
+     if (elem.eq.'Ubu') z= 121
+     if (elem.eq.'Utb') z= 132
+     if (elem.eq.'Ute') z= 139
+     if (elem.eq.'Uth') z= 136
+     if (elem.eq.'Utn') z= 130
+     if (elem.eq.'Uto') z= 138
+     if (elem.eq.'Utp') z= 135
+     if (elem.eq.'Utq') z= 134
+     if (elem.eq.'Uts') z= 137
+     if (elem.eq.'Utt') z= 133
+     if (elem.eq.'Utu') z= 131
+     if (elem.eq.'Uue') z= 119
+     if (elem.eq.'Uuo') z= 118
+     if (elem.eq.'Uup') z= 115
+     if (elem.eq.'Uus') z= 117
+     if (elem.eq.'Uut') z= 113
 
      if (z.lt.0) stop 'unknown element specified'
 

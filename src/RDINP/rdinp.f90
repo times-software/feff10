@@ -1368,6 +1368,12 @@
                 if (nwords.gt.2) read(words(3),30,err=900) xntol
                 if (nwords.gt.3) read(words(4),20,err=900) nmu
 
+      elseif (itok .eq. 108) then ! JK
+              ! HIGHZ: Use finite nucleus to calculate atomic wavefunctions
+              ! No real change for low z elements, but high z needs this for 
+              ! atomic energies and wavefunctions.
+              FiniteNucleus = .TRUE.
+              CALL wlog('Using finite nucleus.')
       elseif (itok .eq. -1)  then
 !              END
                goto 220

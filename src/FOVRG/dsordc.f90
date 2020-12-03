@@ -18,13 +18,14 @@
 !        this program uses   aprdec
       use dimsmod, only: nrptx
       implicit double precision (a-h,o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       complex*16 aprdec
-      common/dff/ cg(nrptx,30), cp(nrptx,30), bg(10,30), bp(10,30),     &
-     &              fl(30), fix(30), ibgp
+      common/dff/ cg(nrptx,41), cp(nrptx,41), bg(10,41), bp(10,41),     &
+     &              fl(41), fix(41), ibgp
       complex*16 dg(nrptx),ag(10),dp(nrptx),ap(10)
       complex*16 hg(nrptx),chg(10)
-!     common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),
-!    1   nq(30),kap(30),nmax(30)
+!     common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),
+!    1   nq(41),kap(41),nmax(41)
       common/tabtec/hx,dr(nrptx),test1,test2,ndor,np,nes,method,idim
       dimension bgj(10),bpj(10)
 

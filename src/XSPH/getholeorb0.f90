@@ -9,15 +9,16 @@
       use constants
       use dimsmod, only: nphx=>nphu, nrptx
 	  implicit none
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
 !KJ      dimension dgc(251,30,0:nphx), dpc(251,30,0:nphx)
-      double precision dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1) !KJ 7-09 definitions have changed ...
+      double precision dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1) !KJ 7-09 definitions have changed ...
       double precision dgcx0(nrptx), dpcx0(nrptx)
       double precision gc0(nrptx), pc0(nrptx)
       double precision xion(0:nphx)
       integer iz(0:nphx)
-      integer nqn(30), nk(30), iorb(-4:3)
-	  double precision xnel(30), xnval(30), xmag(30)
+      integer nqn(41), nk(41), iorb(-5:4)
+	  double precision xnel(41), xnval(41), xmag(41)
       double precision xorg(nrptx), xnew(nrptx)
       double precision xxx(nrptx), rrr(nrptx)
       real*8, parameter :: xx00 = 8.80d0

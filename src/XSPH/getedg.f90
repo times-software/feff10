@@ -14,7 +14,13 @@
         real(8), intent(out) :: emu
 
       ! Insert corrected edges from G.P. Williams' and W.T. Elam's tables.
-      if(exmu(iz,ihole).gt.0.) emu = exmu(iz,ihole) / hart
+      ! J Kas - if iz > 100, don't use tables
+      IF(iz > 100) THEN
+         PRINT*, 'Elam energies only exist up to Z=100: ' //  &
+     &           'ignoring SETEDGE' 
+      ELSE
+         if(exmu(iz,ihole).gt.0.) emu = exmu(iz,ihole) / hart
+      END IF
 
       return
       end

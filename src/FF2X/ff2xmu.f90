@@ -308,7 +308,8 @@ subroutine ff2xmu (ispec, ipr4, idwopt, critcw, s02, sig2g,       &
                 !        compare grids in xsect.bin and feff.bin
                 do i = 1, nxsec
                   del = xk(i)**2 - xkxs(i)**2
-                  if (abs(del) .gt.  10*eps4)  then
+                  ! JK - added extra test below because very large k fails the first test even if points are relatively very close
+                  if (abs(del) .gt.  eps4 .and. (abs(del)/xk(i)**2) .gt.eps4)  then 
                     call wlog(' Emesh in feff.bin and xsect.bin different.')
                     call par_stop('FF2XMU-1')
                   endif

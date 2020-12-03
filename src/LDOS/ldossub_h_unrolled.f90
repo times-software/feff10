@@ -13,13 +13,14 @@
       use hubbard_inp,only: i_hubbard, l_hubbard
 
       implicit none
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       real*8,intent(in) :: vint_sp(2)
       real*8,intent(in) :: dmag(251,0:nphx)
       real*8,intent(in) :: vtot_sp(251,0:nphx,2), vvalgs_sp(251,0:nphx,2)
       real*8,intent(in) :: rnrm(0:nphx)
       real*8,intent(out) :: rmt(0:nphx)
       real*8,intent(in) :: rmt_sp(0:nphx,2) !, rnrm_sp(0:nphx,2)
-      real*8,intent(in) :: xnval(30,0:nphx)
+      real*8,intent(in) :: xnval(41,0:nphx)
       integer,intent(in) :: iz(0:nphx)
       real*8,intent(in) :: xnmues(0:lx,0:nphx), qnrm(0:nphx)
       integer,intent(in) :: lmaxph(0:nphx), iphat(natx)
@@ -39,9 +40,9 @@
       real*8 edens(251,0:nphx), edenvl(251,0:nphx),dmagx(nrptx)
       real*8 dum(nrptx), vtotph(nrptx),vvalph(nrptx)
       real*8 vtotph_sp(nrptx,2),vvalph_sp(nrptx,2)
-      real*8,intent(in) :: dgc(251,30,0:nphx), dpc(251,30,0:nphx)
-      real*8,intent(in) :: adgc(10,30,0:nphx), adpc(10,30,0:nphx)
-      real*8 dgcn(nrptx,30), dpcn(nrptx,30)
+      real*8,intent(in) :: dgc(251,41,0:nphx), dpc(251,41,0:nphx)
+      real*8,intent(in) :: adgc(10,41,0:nphx), adpc(10,41,0:nphx)
+      real*8 dgcn(nrptx,41), dpcn(nrptx,41)
       real*8 xrhoce(0:lx,nex,0:nphx)
       real*8 xrhoce_sp(0:lx,2,nex,0:nphx)
       real*8 xmrhoce(0:lx,nspx*(lx+1)**2,nex,0:nphx)

@@ -17,13 +17,14 @@ subroutine fpf0 ( iz, iholep, srho, dr, hx,                       &
   implicit none
 
   !     save central atom dirac components, see comments below.
-
+! Josh Kas - Changed array dimensions from 30 to 41 for high Z elements
+! according to Pavlo Baranov's changes.
   integer, intent(in) :: iz,iholep, norb
   real*8, intent(in)  :: eatom,hx
   real*8, intent(in), dimension(251) :: dgc0, dpc0, srho,dr
-  real*8, intent(in), dimension(30)  :: xnel, eorb !, kappa
-  real*8, intent(in), dimension(251, 30, 0:nphx) :: dgc, dpc
-  integer,intent(in), dimension(30) :: kappa
+  real*8, intent(in), dimension(41)  :: xnel, eorb !, kappa
+  real*8, intent(in), dimension(251, 41, 0:nphx) :: dgc, dpc
+  integer,intent(in), dimension(41) :: kappa
 
   real*8, dimension(251) :: xpc, xqc
 
@@ -123,7 +124,7 @@ subroutine fpf0 ( iz, iholep, srho, dr, hx,                       &
 
   !     calculate and write out f0(Q) on grid delq=0.5 Angstorm**(-1)
   dq=0.5*bohr 
-  do iq = 1,81
+  do iq = 1,81 ! This may need to be increased for high z elements.
      xk0 = dq*(iq-1)
      !        srho is 4*pi*density 
      do i = 1, np

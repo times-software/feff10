@@ -68,17 +68,18 @@
 
       use dimsmod, only: nphx=>nphu, nheadx, lx
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 41 to account for superheavy elements. Pavlo Baranov 07/2016
 
       dimension imt(0:nphx), rmt(0:nphx), inrm(0:nphx),  rnrm(0:nphx)
       dimension folp(0:nphx), folpx(0:nphx), dgc0(251), dpc0(251)
-      dimension dgc(251, 30, 0:nphx), dpc(251, 30, 0:nphx)
-      dimension adgc(10, 30, 0:nphx), adpc(10, 30, 0:nphx)
+      dimension dgc(251, 41, 0:nphx), dpc(251, 41, 0:nphx)
+      dimension adgc(10, 41, 0:nphx), adpc(10, 41, 0:nphx)
       dimension edens(251, 0:nphx), vclap(251, 0:nphx)
       dimension vtot(251, 0:nphx), edenvl(251, 0:nphx)
       dimension vvalgs(251, 0:nphx), dmag(251, 0:nphx)
-      dimension xnval(30,0:nphx), qnrm(0:nphx), xnmues(0:lx,0:nphx)
-      dimension eorb(30), kappa(30)
-      dimension iorb(-4:3,0:nphx), iz(0:nphx), xion(0:nphx)
+      dimension xnval(41,0:nphx), qnrm(0:nphx), xnmues(0:lx,0:nphx)
+      dimension eorb(41), kappa(41)
+      dimension iorb(-5:4,0:nphx), iz(0:nphx), xion(0:nphx)
       dimension xnatph(0:nphx)
 
       character*80 title(nheadx)
@@ -131,7 +132,7 @@
       call rdpadd(3, npadx, rmt(0), nph+1)
       read (3, 40) (inrm(i),i=0,nph)
       read (3, 40) (iz(i),i=0,nph)
-      if(feff9format) read (3, 40) (kappa(i),i=1,30)  !KJ added "if"
+      if(feff9format) read (3, 40) (kappa(i),i=1,41)  !KJ added "if"
       call rdpadd(3, npadx, rnrm(0), nph+1)
       call rdpadd(3, npadx, folp(0), nph+1)
       call rdpadd(3, npadx, folpx(0), nph+1)
@@ -139,20 +140,20 @@
       call rdpadd(3, npadx, xion(0), nph+1)
       call rdpadd(3, npadx, dgc0(1), 251)
       call rdpadd(3, npadx, dpc0(1), 251)
-      call rdpadd(3, npadx, dgc(1,1,0), 251*30*(nph+1) )
-      call rdpadd(3, npadx, dpc(1,1,0), 251*30*(nph+1) )
-      call rdpadd(3, npadx, adgc(1,1,0), 10*30*(nph+1) )
-      call rdpadd(3, npadx, adpc(1,1,0), 10*30*(nph+1) )
+      call rdpadd(3, npadx, dgc(1,1,0), 251*41*(nph+1) )
+      call rdpadd(3, npadx, dpc(1,1,0), 251*41*(nph+1) )
+      call rdpadd(3, npadx, adgc(1,1,0), 10*41*(nph+1) )
+      call rdpadd(3, npadx, adpc(1,1,0), 10*41*(nph+1) )
       call rdpadd(3, npadx, edens(1,0), 251*(nph+1) )
       call rdpadd(3, npadx, vclap(1,0), 251*(nph+1) )
       call rdpadd(3, npadx, vtot(1,0), 251*(nph+1) )
       call rdpadd(3, npadx, edenvl(1,0), 251*(nph+1) )
       call rdpadd(3, npadx, vvalgs(1,0), 251*(nph+1) )
       call rdpadd(3, npadx, dmag(1,0), 251*(nph+1) )
-      call rdpadd(3, npadx, xnval(1,0), 30*(nph+1) )
-      if(feff9format) call rdpadd(3, npadx, eorb(1), 30) !KJ added "if"
+      call rdpadd(3, npadx, xnval(1,0), 41*(nph+1) )
+      if(feff9format) call rdpadd(3, npadx, eorb(1), 41) !KJ added "if"
       do iph=0,nph
-         read (3, 60) (iorb(i,iph),i=-4,3)
+         read (3, 60) (iorb(i,iph),i=-5,4)
       enddo
       call rdpadd(3, npadx, qnrm(0), nph+1 )
       nn = (lx+1)*(nph+1)

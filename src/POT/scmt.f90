@@ -20,7 +20,7 @@
       dimension dmagx(nrptx), dmag0(251)
       dimension vclap(251,0:nphx)
       dimension vtot (251,0:nphx), vvalgs (251,0:nphx)
-      dimension xnval (30,0:nphx)
+      dimension xnval (41,0:nphx)
       dimension qnrm(0:nphx), dq(0:nphx)
       dimension ri(nrptx), ri05(251), nr05(0:nphx)
       dimension xnatph(0:nphx), iz(0:nphx), xion(0:nphx)
@@ -37,9 +37,9 @@
 
 !     work space
       dimension dum(nrptx), vtotph(nrptx),vvalph(nrptx)
-      dimension dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
-      dimension adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1)
-      dimension dgcn(nrptx,30), dpcn(nrptx,30)
+      dimension dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
+      dimension adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
+      dimension dgcn(nrptx,41), dpcn(nrptx,41)
       complex*16 yrhoce(251,0:nphx), yrhocp(251,0:nphx)
 
       integer iph

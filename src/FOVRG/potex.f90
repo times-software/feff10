@@ -9,21 +9,21 @@
 !        this programm uses bkeato,aprdec,multrk,yzkrdc
       use dimsmod, only: nrptx,ltot  !KJ 2014 added "only" to protext 'nx'
       implicit double precision (a-h,o-z)
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       complex*16 aprdec, p2
       complex*16 ps(nrptx),qs(nrptx),aps(10),aqs(10)
-      common/dff/cg(nrptx,30),cp(nrptx,30),bg(10,30),bp(10,30),         &
-     &             fl(30), fix(30), ibgp
+      common/dff/cg(nrptx,41),cp(nrptx,41),bg(10,41),bp(10,41),         &
+     &             fl(41), fix(41), ibgp
       complex*16 dg,ag,dp,ap,dv,av,eg,ceg,ep,cep
       common/comdic/cl,dz,dg(nrptx),ag(10),dp(nrptx),ap(10),dv(nrptx),  &
      &          av(10),eg(nrptx),ceg(10),ep(nrptx),cep(10)
 !     dg,dp to get data from yzkrdc, dv,eg,ep -output for soldir
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),            &
-     &nq(30),kap(30),nmax(30)
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),            &
+     &nq(41),kap(41),nmax(41)
       common/tabtec/hx,dr(nrptx),test1,test2,ndor,np,nes,method,idim
       common/mulabc/afgkc
-      dimension afgkc(-ltot-1:ltot,30,0:3)
+      dimension afgkc(-ltot-1:ltot,41,0:4)
       dimension bgj(10),bpj(10)
 !#mn
        external aprdec

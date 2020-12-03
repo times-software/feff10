@@ -23,7 +23,7 @@ subroutine pot !KJ put everything in modules 7-09
   !     for unique potentials specifed by atoms and overlap cards.
 
   implicit none !double precision (a-h, o-z)
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   !     Notes:
   !        nat    number of atoms in problem
   !        nph    number of unique potentials
@@ -71,15 +71,15 @@ subroutine pot !KJ put everything in modules 7-09
   real*8 dgc0(251), dpc0(251)
 
   !     additional data needed for relativistic version
-  real*8 dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
-  real*8 adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1)
+  real*8 dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
+  real*8 adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
   real*8 rhoval(251,0:nphx+1), edenvl(251,0:nphx)
   real*8 vvalgs (251,0:nphx)
 
   real*8 ri(nrptx)
   real*8 dmag(251,0:nphx+1)
-  real*8 xnval(30,0:nphx+1), eorb(30,0:nphx+1)
-  integer kappa(30,0:nphx+1), iorb(-4:3,0:nphx+1), norb(0:nphx+1)
+  real*8 xnval(41,0:nphx+1), eorb(41,0:nphx+1)
+  integer kappa(41,0:nphx+1), iorb(-5:4,0:nphx+1), norb(0:nphx+1)
   logical lpass, EmptyCell(nph)
   character*512 slog
   real*8 qtotel,xmu,wp,dx,x0,xntot,xnvmup,sum,e_chsh,ecv,s02,rhoint,vint,rs,xf,xmunew,rnrmav,ecv_save
@@ -97,15 +97,15 @@ subroutine pot !KJ put everything in modules 7-09
   logical, parameter :: track_dos_convergence = .false.
   ! Debug: Fer
   ! correorb input
-  integer          sh_iz, sh_ihole, sh_jri, sh_kappa(30)
+  integer          sh_iz, sh_ihole, sh_jri, sh_kappa(41)
   real*8    	   sh_rmt, sh_dx, sh_p2f, sh_edge, sh_ri(nrptx), &
-  sh_dgcn(nrptx,30), sh_dpcn(nrptx,30), &
-  sh_adgc(10,30), sh_adpc(10,30), &
-  sh_eorb(30)
+  sh_dgcn(nrptx,41), sh_dpcn(nrptx,41), &
+  sh_adgc(10,41), sh_adpc(10,41), &
+  sh_eorb(41)
   complex*16       sh_vxc(nrptx)
   ! correorb output
-  integer          sh_neg(30), sh_norbp
-  real*8    	   sh_eng(nex,30), sh_rhoj(nex,30)
+  integer          sh_neg(41), sh_norbp
+  real*8    	   sh_eng(nex,41), sh_rhoj(nex,41)
 
   ! Added by FDV
   real*8 Q_Tot
@@ -225,12 +225,13 @@ subroutine pot !KJ put everything in modules 7-09
   !       end do
 
   idmag = 0
+ 
   call istprm (nph, nat, iphat, rat, iatph, xnatph,                 &
   &            novr, iphovr, nnovr, rovr, folp, folpx, iafolp,       &
   &            edens, edenvl, idmag,                                 &
   &            dmag, vclap, vtot, vvalgs, imt, inrm, rmt, rnrm,      &
   &            ixc, rhoint,vint, rs, xf, xmu, xmunew,                &
-  &            rnrmav, qtotel, inters, totvol ) !KJ ,EmptyCell)
+  &            rnrmav, qtotel, inters, totvol) !KJ ,EmptyCell)
   xmu = xmunew
 
   ! Debug: FDV
@@ -249,7 +250,6 @@ subroutine pot !KJ put everything in modules 7-09
     &               ixc, rhoint,vint, rs, xf, xmu, xmunew,             &
     &               rnrmav, qtotel, inters, totvol)
     xmu =xmunew
-
     ! Debug: FDV
     !     do iph=0,nph
     !       write(6,fmt='(a,i4,f16.10)'), 'rmt: ', iph, rmt(iph)*bohr

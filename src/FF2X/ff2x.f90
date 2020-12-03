@@ -40,12 +40,12 @@
 
 !     read  input files
       call reff2x
-
       if (mchi .eq. 1)  then
          call wlog('Calculating XAS spectra ...')
-
+                 ! JK - added abs(ispec) below, to keep XANES grids if
+                 ! XANES is specified.
 		 if (do_nrixs .eq. 1) then					!NRIXS
-			if (ispec.gt.0 .and. ispec.lt.3) then
+			if (abs(ispec).gt.0 .and. ispec.lt.3) then
 !				using FMS+Paths method
 				call ff2xmujas (ispec, ipr6, idwopt, critcw, s02, sig2g, tk, thetad, mbconv, &
                          vrcorr, vicorr, alphat, thetae, iabs, nabs, kfinmax, xivec, ldecmx,abs(ldecmx))
@@ -59,9 +59,9 @@
                          vrcorr, vicorr, alphat, thetae, iabs, nabs, kfinmax, xivec, ldecmx,abs(ldecmx))
 			endif
          else										!REGULAR FEFF
-			if (ispec.gt.0 .and. ispec.lt.3) then 
+			if (abs(ispec).gt.0 .and. ispec.lt.3) then ! JJK - added abs still use XANES grid if XANES is specified.
 !				using FMS+Paths method
-            call ff2xmu (ispec, ipr6, idwopt, critcw, s02, sig2g, tk, thetad, mbconv, absolu,  &
+            call ff2xmu (abs(ispec), ipr6, idwopt, critcw, s02, sig2g, tk, thetad, mbconv, absolu,  &
                          vrcorr, vicorr, alphat, thetae, iabs, nabs, elnes,ipmin,ipmax,ipstep,iGammaCH)    
 			elseif (ispec.eq.3 .or. ispec.eq.4) then 
 !				using FMS+Paths method

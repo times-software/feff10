@@ -1,0 +1,38 @@
+i=1
+rm HighZ.out
+while [ $i -le 138 ]
+do
+	rm -rf $i
+	echo
+	echo
+	echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+	echo "%%%%%%%%       $i       " 
+	echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+	mkdir -p $i
+	mkdir -p $i/feff10HZ
+	sed -e"s/XXX/$i/g" feff.inp > $i/feff10HZ/feff.inp
+	cd $i/feff10HZ
+	../../../../bin/Seq/rdinp
+	../../../../bin/Seq/atomic
+	if [ -f "atom00.dat" ]
+	then
+		echo -n "$i: pass" >> ../../HighZ.out
+	else
+		echo -n "$i: fail" >> ../../HighZ.out
+	fi
+
+	cd ../..
+	if [ $i -le 99 ]
+	then
+		mkdir -p $i/feff10
+		sed -e"s/XXX/$i/g" feff.inp |grep -v HIGHZ > $i/feff10/feff.inp
+		cd $i/feff10
+		feff
+		cd ../../
+	fi
+	enHZ=`grep -m 1 1s $i/feff10HZ/atom00.dat |awk '{print $3}'`
+	en=`grep -m 1 1s $i/feff10/atom00.dat |awk '{print $3}'`
+	diff=`echo "$enHZ $en" |awk '{print sqrt(($1-$2)^2)/sqrt(($2)^2)*100.0}'`
+	echo "  $enHZ $en $diff" >> HighZ.out
+	let i=i+1
+done

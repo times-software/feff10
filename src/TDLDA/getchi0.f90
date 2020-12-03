@@ -1,8 +1,8 @@
 module getchi0_workspace
       use dimsmod,only: nex
 !     to pass energy levels and projected DOS
-      integer neg(30)
-      real*8 rhoj(nex,30), eng(nex,30)
+      integer neg(41)
+      real*8 rhoj(nex,41), eng(nex,41)
 
       integer norbp
 end module
@@ -28,17 +28,18 @@ end module
 	  use constants
       use getchi0_workspace
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
       complex*16 xrcold(nrptx) , xncold(nrptx)
 
       real*8 ri(nrptx), edens(nrptx),fxcim(nrptx)
       real*8 fxc(nrptx), fxc0(nrptx)
-      real*8 eorb(30)
-      integer kappa(30)
-      real*8 dgcn(nrptx,30), dpcn(nrptx,30)
-      real*8 dgcnp(nrptx,30), dpcnp(nrptx,30)
-      real*8 adgc(10,30), adpc(10,30), xnval(30)
-      integer iorb(-4:3)
+      real*8 eorb(41)
+      integer kappa(41)
+      real*8 dgcn(nrptx,41), dpcn(nrptx,41)
+      real*8 dgcnp(nrptx,41), dpcnp(nrptx,41)
+      real*8 adgc(10,41), adpc(10,41), xnval(41)
+      integer iorb(-5:4)
    
       real*8 xp(nrptx)
 
@@ -50,8 +51,8 @@ end module
       complex*16 p(nrptx), q(nrptx), pn(nrptx), qn(nrptx), fscf(nrptx)
       complex*16 pp(nrptx), qp(nrptx), pnp(nrptx), qnp(nrptx)
 !!     to pass energy levels and projected DOS
-!      integer neg(30), eng(nex,30)
-!      real*8 rhoj(nex,30)
+!      integer neg(41), eng(nex,41)
+!      real*8 rhoj(nex,41)
 
       complex*16  p2, ck, xkmt, xkmtp
       complex*16  pu, qu, dum1, factor

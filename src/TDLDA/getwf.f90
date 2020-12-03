@@ -13,6 +13,7 @@
       use dimsmod, only: nrptx
 	  use constants
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 !  information specific for finding basis set orbitals
 !     jj - index for the basis set orbital (starts from 0)
 !     nlp -number of (L+1) orbitals in basis (L-initial state orb.mom.)
@@ -45,9 +46,9 @@
 
       dimension ri(nrptx), vtot(nrptx), edens(nrptx),dmag(nrptx)
       dimension vvalgs(nrptx), edenvl(nrptx)
-      dimension dgcn(nrptx,30), dpcn(nrptx,30)
-      dimension adgc(10,30), adpc(10,30), xnval(30)
-      dimension dgcnp(nrptx,30), dpcnp(nrptx,30)
+      dimension dgcn(nrptx,41), dpcn(nrptx,41)
+      dimension adgc(10,41), adpc(10,41), xnval(41)
+      dimension dgcnp(nrptx,41), dpcnp(nrptx,41)
    
       dimension xp(nrptx), xq(nrptx)
 

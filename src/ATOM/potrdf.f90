@@ -8,16 +8,17 @@
       subroutine potrdf (ia)
 !        this programm uses akeato(bkeato),aprdev,multrk,yzkrdf
       implicit double precision (a-h,o-z)
-      common cg(251,30), cp(251,30), bg(10,30), bp(10,30),              &
-     &        fl(30), fix(30), ibgp
+      common cg(251,41), cp(251,41), bg(10,41), bp(10,41),              &
+     &        fl(41), fix(41), ibgp
       common/comdir/cl,dz,dg(251),ag(10),dp(251),ap(10),dv(251),av(10), &
      &              eg(251),ceg(10),ep(251),cep(10)
 !     dg,dp to get data from yzkrdf, dv,eg,ep -output for soldir
       dimension at(251),bt(251)
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),            &
-     &nq(30),kap(30),nmax(30)
-      common/scrhf1/eps(435),nre(30),ipl
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),            &
+     &nq(41),kap(41),nmax(41)
+      ! JK - 435 may need to be changed to 820 for high Z elements.
+      common/scrhf1/eps(820),nre(41),ipl
       common/snoyau/dvn(251),anoy(10),nuc
       common/tabtes/hx,dr(251),test1,test2,ndor,np,nes,method,idim
       dimension bgj(10),bpj(10)

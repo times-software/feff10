@@ -17,7 +17,7 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   use screen_inp
   use crpa_inp
   implicit none
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   integer, intent(in) :: ixc0, nrx
   double precision, intent(in) :: vr0, dx, x0, ri(nrptx)
   integer, intent(out) :: ilast
@@ -40,19 +40,19 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   double precision rmt(0:nphx), rnrm(0:nphx)
   double precision folp(0:nphx),folpx(0:nphx)
   double precision dgc0(251), dpc0(251)
-  double precision dgc(251, 30, 0:nphx+1), dpc(251, 30, 0:nphx+1)
-  double precision adgc(10, 30, 0:nphx+1), adpc(10, 30, 0:nphx+1)
+  double precision dgc(251, 41, 0:nphx+1), dpc(251, 41, 0:nphx+1)
+  double precision adgc(10, 41, 0:nphx+1), adpc(10, 41, 0:nphx+1)
   double precision edens(251, 0:nphx), vclap(251, 0:nphx)
   double precision vtot(251, 0:nphx), edenvl(251, 0:nphx)
   double precision vvalgs(251, 0:nphx), dmag(251, 0:nphx)
-  double precision xnval(30,0:nphx)
-  double precision eorb(30)
-  integer kappa(30)
+  double precision xnval(41,0:nphx)
+  double precision eorb(41)
+  integer kappa(41)
   double precision qnrm(0:nphx)
 
   real*8, allocatable :: xnmues(:,:)
 
-  integer iorb(-4:3,0:nphx)
+  integer iorb(-5:4,0:nphx)
   integer iz(0:nphx)
   double precision xion(0:nphx)
   double precision xnatph(0:nphx)
@@ -60,7 +60,7 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   double precision vtotph(nrptx,0:nphx), vvalph(nrptx,0:nphx)
   double precision rhoph(nrptx), rhphvl(nrptx), dmagx(nrptx)
   double precision dgcx(nrptx), dpcx(nrptx)
-  double precision dgcn(nrptx,30,0:nphx), dpcn(nrptx,30,0:nphx)
+  double precision dgcn(nrptx,41,0:nphx), dpcn(nrptx,41,0:nphx)
   integer iph, jnew
   double precision edge, vjump
 

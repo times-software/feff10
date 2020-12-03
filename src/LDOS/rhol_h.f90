@@ -10,6 +10,7 @@
       use DimsMod, only: nrptx, nex, lx, nspx=>nspu
       use hubbard_inp
       implicit none
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 !     INPUT
 !     dx, x0, ri(nr)
 !                  Loucks r-grid, ri=exp((i-1)*dx-x0)
@@ -46,8 +47,8 @@
       real*8, intent(in) ::   ri(nrptx)
       real*8, intent(in) ::   vtot(nrptx), vvalgs(nrptx)
       real*8, intent(in) ::   Vnlm(0:lx,(lx+1)**2,2)
-      real*8, intent(in) ::   xnval(30), dgcn(nrptx,30), dpcn(nrptx,30)
-      real*8, intent(in) ::   adgc(10,30), adpc(10,30)
+      real*8, intent(in) ::   xnval(41), dgcn(nrptx,41), dpcn(nrptx,41)
+      real*8, intent(in) ::   adgc(10,41), adpc(10,41)
       real*8 ri05(251)
       complex*16  xrhole(0:lx, nex)
       complex*16  xmrhole(0:lx,nspx*(lx+1)**2, nex)

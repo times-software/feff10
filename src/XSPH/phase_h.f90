@@ -18,6 +18,7 @@
       use constants
       USE SelfEnergyMod
       implicit double precision (a-h, o-z)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
 
 !     INPUT
 !     iph          unique pot index (used for messages only)
@@ -52,8 +53,8 @@
       complex*16 em(nex)
       dimension  ri(nrptx), vtot(nrptx), edens(nrptx)
       dimension  dmag(nrptx), vvalgs(nrptx), edenvl(nrptx)
-      dimension  adgc(10,30), adpc(10,30), xnval(30)
-      dimension  dgcn(nrptx,30), dpcn(nrptx,30)
+      dimension  adgc(10,41), adpc(10,41), xnval(41)
+      dimension  dgcn(nrptx,41), dpcn(nrptx,41)
       complex*16  eref(nex)
       complex*16  ph(nex,-ltot:ltot)
       integer ispin

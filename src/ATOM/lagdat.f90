@@ -12,11 +12,14 @@
 ! contribution of the exchange terms is omitted if iex=0
 !        this program uses akeato(bkeato) fdrirk multrk
 
+! Josh Kas - Changed array dimensions from 30 to 41 for high Z elements
+! according to Pavlo Baranov's changes.
       implicit double precision (a-h,o-z)
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),            &
-     &nq(30),kap(30),nmax(30)
-      common/scrhf1/eps(435),nre(30),ipl
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),            &
+     &nq(41),kap(41),nmax(41)
+      ! JK - 435 below may need to be changed to 820 for high Z elements
+      common/scrhf1/eps(820),nre(41),ipl
       dimension ni(2),nj(2)
 !#mn
        external akeato, bkeato, fdrirk

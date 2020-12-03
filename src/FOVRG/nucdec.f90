@@ -20,7 +20,10 @@
       use dimsmod, only: nrptx
       implicit double precision (a-h,o-z)
       dimension av(10),dr(nrptx),dv(nrptx),at(nrptx)
+      integer iz
+      double precision, external :: nucmass
 
+! JK - changed to accept nuclear mass as coded by Pavlo Baranov
 !    specify atomic mass and thickness of nuclear shell
 ! a atomic mass (negative or null for the point charge)
 ! epai parameter of the fermi density distribution
@@ -29,13 +32,15 @@
 ! with nuclear radius rn= 2.2677e-05 * (a**(1/3))
 
 ! calculate radial mesh
-      a = 0.0
+      iz = int(dz)
+      a = nucmass(iz)
+      a = 0.d0
       epai = 0.0
 
       if (a.le.1.0d-01) then
          nuc=1
       else
-         a=dz*(a**(1./3.))*2.2677d-05
+         a=dz*(a**(1./3.))*2.2677d-05 
          b=a/ exp(hx*(nuc-1))
          if (b.le.dr1) then
             dr1=b

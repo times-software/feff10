@@ -12,17 +12,18 @@
 
       use dimsmod, only: ltot
       implicit double precision (a-h,o-z)
-      dimension xnval(30)
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
+      dimension xnval(41)
       common/itescf/testy,rap(2),teste,nz,norb,norbsc
       common/mulabc/afgkc
-      dimension afgkc(-ltot-1:ltot,30,0:3)
-      common/ratom1/xnel(30),en(30),scc(30),scw(30),sce(30),            &
-     &nq(30),kap(30),nmax(30)
+      dimension afgkc(-ltot-1:ltot,41,0:4)
+      common/ratom1/xnel(41),en(41),scc(41),scw(41),sce(41),            &
+     &nq(41),kap(41),nmax(41)
 !#mn
        external cwig3j
 
       do 511 i=-ltot-1,ltot
-      do 511 j=1,30
+      do 511 j=1,41
       do 511 k=0,3
  511  afgkc(i,j,k)=0.0d00
  601  do 701 ikap=-ltot-1,ltot

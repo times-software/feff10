@@ -17,36 +17,51 @@
 ! ndor number of the coefficients for development at the origin
 ! the declared below arguments are saved, dr1 is the first
  
+! Josh Kas - Changed for high Z elements
+! according to Pavlo Baranov's changes.
+! Added nucmass to inputarguments.
       implicit double precision (a-h,o-z)
       dimension av(10),dr(251),dv(251),at(251)
-
+      integer iz
+      double precision, external :: nucmass      
 !    specify atomic mass and thickness of nuclear shell
 ! a atomic mass (negative or null for the point charge)
 ! epai parameter of the fermi density distribution
 ! (negative or null for uniform distribution), which is
-!       cte / (1. + exp((r-rn)/epai) )
+!      cte / (1. + exp((r-rn)/epai) )
 ! with nuclear radius rn= 2.2677e-05 * (a**(1/3))
 
 ! calculate radial mesh
       a = 0.0
+      ! JK - added below for HIGHZ control card.
+      IF (nuc.LT.0) THEN 
+         iz = int(dz)
+         a = nucmass(iz)
+         nuc = -nuc
+      END IF
       epai = 0.0
-
+      !print*, 'Nuclear mass:', a
+      !a = 0.d0
       if (a.le.1.0d-01) then
          nuc=1
       else
-         a=dz*(a**(1./3.))*2.2677d-05
-         b=a/ exp(hx*(nuc-1))
-         if (b.le.dr1) then
-            dr1=b
+         a=dz*(a**(1./3.))*2.2677d-05 ! a is now the nuclear radius * z
+         b=a/ exp(hx*(nuc-1))  ! b is now the first point in an 
+         if (b.le.dr1) then ! This is true for all atoms up to 138! Do we want this to be the case?
+            dr1=b ! JK - changed this because it fails for several low z
+            !atoms otherwise. Doesn't change results much at all for
+            !atoms where the above condition is true, i.e., low Z. 
+            !nuc=1
          else
             b=log(a/dr1)/hx
             nuc=3+2*int(b/2.0)
             if (nuc.ge.np) call par_stop('dr1 too small')
 !           index of atomic radius larger than dimension of dr
-            dr1=a*exp(-(nuc-1)*hx)
+            dr1=a*exp(-(nuc-1)*hx) ! This now seems to be the closest 
+                                   ! you can get to dr1 = exp(-8.8)
+                                   ! while having the point dr(nuc) = a.
          endif
       endif
-
       dr(1)=dr1/dz
       do 181 l=2,np
  181  dr(l)=dr(1)* exp(hx*(l-1))

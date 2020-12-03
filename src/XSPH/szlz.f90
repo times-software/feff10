@@ -17,14 +17,14 @@
       use constants
       use DimsMod, only: nphx=>nphu, natx, nrptx, lx
       implicit double precision (a-h, o-z)
-
+!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
       integer ispin
 
 !     input
       dimension dmagx(nrptx), dmag(251,0:nphx) !KJ 12-2011 removed "+1" from dmag(,0:nphx+1) - extra field not used and conflicts with declaration in other routines
       dimension vtot (251,0:nphx), vvalgs (251,0:nphx)
       dimension rmt(0:nphx),rnrm(0:nphx)
-      dimension xnval (30,0:nphx), iorb (-4:3,0:nphx)
+      dimension xnval (41,0:nphx), iorb (-5:4,0:nphx)
       dimension ri(nrptx)
       dimension iz(0:nphx), xion(0:nphx), lmaxph(0:nphx)
       dimension rat(3,natx),iphat(natx)
@@ -35,10 +35,10 @@
 !     work space
 
       dimension dum(nrptx), vtotph(nrptx),vvalph(nrptx)
-      dimension dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
-      dimension adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1)
-      dimension dgcn(nrptx,30), dpcn(nrptx,30)
-      complex*16 xrhoce(-4:3, -4:3, 0:nphx), xrhole(-4:3, -4:3, 0:nphx)
+      dimension dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
+      dimension adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
+      dimension dgcn(nrptx,41), dpcn(nrptx,41)
+      complex*16 xrhoce(-5:4, -5:4, 0:nphx), xrhole(-5:4, -5:4, 0:nphx)
 
       integer iph
 !     complex energy grid emg is decomposed into em and eref
@@ -141,17 +141,17 @@
          if (icount.gt.0) then
             call rholat( icount, rgrd, x0, ri, ee,                      &
      &           ixc, rmt(iph), rnrm(iph),                              &
-     &           vtotph, vvalph, xnval(1,iph), iorb(-4,iph),            &
+     &           vtotph, vvalph, xnval(1,iph), iorb(-5,iph),            &
      &           dgcn, dpcn, eref,                                      &
-     &           adgc(1,1,iph), adpc(1,1,iph), xrhole(-4,-4,iph),       &
-     &           xrhoce(-4,-4,iph), ph(1,iph),                          &
+     &           adgc(1,1,iph), adpc(1,1,iph), xrhole(-5,-5,iph),       &
+     &           xrhoce(-5,-5,iph), ph(1,iph),                          &
      &           iz(iph), xion(iph), iunf, itmp,3, iph) !KJ iph
          else
             call rholsz( rgrd, x0, ri, ee,                              &
      &           ixc, rmt(iph), rnrm(iph),                              &
      &           vtotph, vvalph, xnval(1,iph), dgcn, dpcn, eref,        &
-     &           adgc(1,1,iph), adpc(1,1,iph), xrhole(-4,-4,iph),       &
-     &           xrhoce(-4,-4,iph), ph(1,iph),                          &
+     &           adgc(1,1,iph), adpc(1,1,iph), xrhole(-5,-5,iph),       &
+     &           xrhoce(-5,-5,iph), ph(1,iph),                          &
      &           iz(iph), xion(iph), iunf, itmp,3, iph) !KJ iph
          endif
   100 continue

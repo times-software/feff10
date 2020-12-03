@@ -187,10 +187,10 @@ CONTAINS
     double precision, intent(in) :: rhoint, vint, xnferm
     double precision, intent(inout) :: xmu
     real*8, intent(inout) :: xnvmu(0:lx,0:nphx+1)
-    double precision, intent(in) :: xnval (30,0:nphx)
+    double precision, intent(in) :: xnval (41,0:nphx)
     double precision, intent(in) :: x0, ri(nrptx), dx
-    double precision, intent(in) :: adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1)
-    double precision, intent(in) :: dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
+    double precision, intent(in) :: adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
+    double precision, intent(in) :: dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
     double precision, intent(inout) :: rhoval(251,0:nphx+1)
     real*8, intent(inout) :: xnmues(0:lx, 0:nphx)
     logical :: ok
@@ -799,10 +799,10 @@ CONTAINS
     DOUBLE PRECISION, INTENT(INOUT) :: edens(251,0:nphx), edenvl(251,0:nphx)
     DOUBLE PRECISION, INTENT(IN) :: vtot (251,0:nphx), vvalgs (251,0:nphx)
     REAL*8, INTENT(IN) :: rmt(0:nphx),rnrm(0:nphx)
-    DOUBLE PRECISION, INTENT(IN) :: rhoint, vint, xnval (30,0:nphx)
+    DOUBLE PRECISION, INTENT(IN) :: rhoint, vint, xnval (41,0:nphx)
     DOUBLE PRECISION, INTENT(IN) :: x0, ri(nrptx), dx
-    DOUBLE PRECISION, INTENT(IN) :: adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1)
-    DOUBLE PRECISION, INTENT(IN) :: dgc(251,30,0:nphx+1), dpc(251,30,0:nphx+1)
+    DOUBLE PRECISION, INTENT(IN) :: adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
+    DOUBLE PRECISION, INTENT(IN) :: dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
     COMPLEX*16, INTENT(INOUT) :: xrhole(:,:), yrhole(:,:,:)
     COMPLEX*16, INTENT(INOUT) :: ph(:, :)
     COMPLEX, INTENT(INOUT) :: gtr(:, :)

@@ -13,7 +13,7 @@ SUBROUTINE AtomicPotentials
   USE par
   use config,only: IsOccupied, DumpConfig2
   use atoms_inp,only: nat,nph,iphat,iatph,rat
-  use potential_inp,only: nohole, ihole, novr, iphovr, nnovr, rovr, xion, iunf, iz, ipr1
+  use potential_inp,only: nohole, ihole, novr, iphovr, nnovr, rovr, xion, iunf, iz, ipr1, FiniteNucleus
   use rixs_inp
   !     Josh Kas - modified pot.f to calculate the atomic potentials separately from
   !                the scf loop. Note also that moveh has been removed.
@@ -60,7 +60,7 @@ SUBROUTINE AtomicPotentials
   real*8, allocatable :: rnrm(:), rnrmTmp(:)
   !     vcoul(NRPts,0:nphx+1)   -   coulomb potential
   real*8, allocatable :: vcoul(:,:)
-  real*8 dr(NRPts), drho(NRPts), dvcoul(NRPts)
+  real*8 dr(NRPts), drho(NRPts), dvcoul(NRPts), xorg(NRPts), xnew(NRPTS), temp(NRPts)
 
   !     need irregular solution for complex potential. fix later
   real*8 dgc0(NRPts), dpc0(NRPts), dgc00(NRPts), dpc00(NRPts)
@@ -68,7 +68,7 @@ SUBROUTINE AtomicPotentials
   !     additional data needed for relativistic version
   real*8, allocatable, dimension(:,:,:) :: dgc, dpc, adgc, adpc
   real*8, allocatable, dimension(:,:) :: rhoval,dmag, xnvmu, xnval, eorb,xnel !KJ 5-2012 added xnel througout to enable configuration output
-  real*8 et, etinit, etfin, efrozn, erelax, emu, s02, hx, x0, Mkkp, gamch  ! JK - added Mkkp matrix elements and gamch for RIXS calcs.
+  real*8 et, etinit, etfin, efrozn, erelax, emu, s02, hx, x0(0:nphx+1), Mkkp, gamch  ! JK - added Mkkp matrix elements and gamch for RIXS calcs.
   integer, allocatable :: kappa(:,:), iorb(:,:), norb(:), nqn(:,:)  !KJ 9-2012 added nqn
   
   CHARACTER*512 slog
@@ -78,16 +78,17 @@ SUBROUTINE AtomicPotentials
 
 10 format (4x, a, i5)
 
-  ! Allocate local arrays:
+  ! Allocate local arrays: JK - changed dimensions to 40 for arrays, and -5:4 for iorb
+  ! for high Z version as per Pavlo Baranov's edits.
   allocate(edens(NRPts,0:nphx), edenvl(NRPts,0:nphx),vclap(NRPts,0:nphx))
   allocate(rho(NRPts,0:nphx+1))
   allocate(rnrm(0:nphx), rnrmTmp(0:nphx))
   allocate(vcoul(NRPts,0:nphx+1))
-  allocate(dgc(NRPts,30,0:nphx+1), dpc(NRPts,30,0:nphx+1))
-  allocate(adgc(10,30,0:nphx+1), adpc(10,30,0:nphx+1), rhoval(NRPts,0:nphx+1))
+  allocate(dgc(NRPts,41,0:nphx+1), dpc(NRPts,41,0:nphx+1))
+  allocate(adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1), rhoval(NRPts,0:nphx+1))
   allocate(dmag(NRPts,0:nphx+1), xnvmu(0:lx,0:nphx+1))
-  allocate(xnval(30,0:nphx+1), eorb(30,0:nphx+1), xnel(30,0:nphx+1))
-  allocate(kappa(30,0:nphx+1), iorb(-4:3,0:nphx+1), norb(0:nphx+1),nqn(30,0:nphx+1))
+  allocate(xnval(41,0:nphx+1), eorb(41,0:nphx+1), xnel(41,0:nphx+1))
+  allocate(kappa(41,0:nphx+1), iorb(-5:4,0:nphx+1), norb(0:nphx+1),nqn(41,0:nphx+1))
   CALL rixs_read
 
   
@@ -185,8 +186,8 @@ SUBROUTINE AtomicPotentials
         !            etfin(itmp) = et
         !         END IF
         !      end do
-        ! Now calculate from 29 to ihole
-        !     do itmp = 29, ihole, -1
+        ! Now calculate from 40 to ihole
+        !     do itmp = 40, ihole, -1
         !KJ     IF(IsOccupied(iz(0),ihole)) THEN
         IF(IsOccupied(0,ihole)) THEN  !KJ 12-2010 
            if (nohole.ge.0) then
@@ -197,8 +198,9 @@ SUBROUTINE AtomicPotentials
                    &     vcoul(1,nph+1), rho(1,nph+1), dmag(1,nph+1), rhoval(1,nph+1),&
                    &     ispinr, dgc0, dpc0, dgc, dpc, adgc, adpc,                    &
                    &     s02, efrozn, et, xnvmu(0,nph+1),                             &                           
-                   &     xnval(1,nph+1), xnel(1,nph+1), iorb(-4,nph+1), norb(nph+1),  &
-                   &     eorb(1,nph+1), kappa(1,nph+1), nqn(:,nph+1) )
+                   &     xnval(1,nph+1), xnel(1,nph+1), iorb(-5,nph+1), norb(nph+1),  &
+                   &     eorb(1,nph+1), kappa(1,nph+1), nqn(:,nph+1), FiniteNucleus)
+              x0(nph+1) = log(dr(1))
            else
               xionp = xion(iph)
               if (nfree.eq.2 .and. ifree.eq.1) xionp = 0
@@ -207,8 +209,9 @@ SUBROUTINE AtomicPotentials
                    &         vcoul(1,iph), rho(1,iph), dmag(1,iph), rhoval(1,iph),    &
                    &         ispinr, dgc0, dpc0, dgc, dpc, adgc, adpc,                &
                    &         s02, efrozn, et, xnvmu(0,iph),                           &
-                   &         xnval(1,iph), xnel(1,iph), iorb(-4,iph), norb(iph),                   &
-                   &         eorb(1,iph), kappa(1,iph), nqn(:,iph) )
+                   &         xnval(1,iph), xnel(1,iph), iorb(-5,iph), norb(iph),                   &
+                   &         eorb(1,iph), kappa(1,iph), nqn(:,iph), FiniteNucleus)
+              x0(iph) = log(dr(1))        
            endif
            ! etfin is absorbing atom final state total energy, see nohole case below.
            etfin = et
@@ -234,8 +237,9 @@ SUBROUTINE AtomicPotentials
                    &         vcoul(1,iph), rho(1,iph), dmag(1,iph), rhoval(1,iph),    &
                    &         ispinr, dgc0, dpc0, dgc, dpc, adgc, adpc,                &
                    &         s02, efrozn, et, xnvmu(0,iph),                           &
-                   &         xnval(1,iph), xnel(1,iph), iorb(-4,iph), norb(iph),                   &
-                   &         eorb(1,iph), kappa(1,iph), nqn(:,iph) )
+                   &         xnval(1,iph), xnel(1,iph), iorb(-5,iph), norb(iph),                   &
+                   &         eorb(1,iph), kappa(1,iph), nqn(:,iph), FiniteNucleus)
+              x0(iph) = log(dr(1))
            END IF
         end do ! End of loop over iph
         
@@ -256,9 +260,9 @@ SUBROUTINE AtomicPotentials
                 &         vcoul(1,iph), rho(1,iph), dmag(1,iph), rhoval(1,iph),    &
                 &         ispinr, dgc0, dpc0, dgc, dpc, adgc, adpc,                &
                 &         s02, efrozn, etinit, xnvmu(0,iph),                       &
-                &         xnval(1,iph), xnel(1,iph), iorb(-4,iph), norb(iph),                   &
-                &         eorb(1,iph), kappa(1,iph), nqn(:,iph) )
-           
+                &         xnval(1,iph), xnel(1,iph), iorb(-5,iph), norb(iph),                   &
+                &         eorb(1,iph), kappa(1,iph), nqn(:,iph), FiniteNucleus)
+           x0(iph) = log(dr(1))           
            ! Otherwise, run with nohole and fill the iph = nph+1 element of arrays.
         else        
            xionp = xion(0)
@@ -267,8 +271,9 @@ SUBROUTINE AtomicPotentials
                 &     vcoul(1,nph+1), rho(1,nph+1), dmag(1,nph+1), rhoval(1,nph+1),&
                 &     ispinr, dgc0, dpc0, dgc, dpc, adgc, adpc,                    &
                 &     s02, efrozn, etinit, xnvmu(0,nph+1),                         &
-                &     xnval(1,nph+1), xnel(1,nph+1), iorb(-4,nph+1), norb(nph+1),                 &
-                &     eorb(1,nph+1), kappa(1,nph+1), nqn(:,nph+1) )
+                &     xnval(1,nph+1), xnel(1,nph+1), iorb(-5,nph+1), norb(nph+1),                 &
+                &     eorb(1,nph+1), kappa(1,nph+1), nqn(:,nph+1), FiniteNucleus)
+           x0(nph+1) = log(dr(1))           
         endif
         
         !KJ 5-2012.  Now that all calls to scfdat (->inmuat->getorb) are finished, output configuration information.
@@ -276,11 +281,14 @@ SUBROUTINE AtomicPotentials
         call DumpConfig2(112,xnel(:,0:nph+1),xnval(:,0:nph+1),nqn(:,0:nph+1),kappa(:,0:nph+1),norb(0:nph+1),nhtmp)
         
         !     testing new potential for the final state. ala
+        ! JK - When nuclear mass is specified, x0 is not -8.8 and should be changed. 
         hx = 0.05
-        x0 = -8.8
+        x0 = 8.8d0
+
         if (nohole.gt.0) then
-           do i = 1,NRPts
-              dr(i) = exp(x0+hx*(i-1))
+           ! JK - Now getting dr from scfdat
+           do i = 1,NRPts  
+              dr(i) = exp(-x0(0)+hx*(i-1))
            end do
            if (nohole.eq.1) then
               do i = 1,NRPts
@@ -291,7 +299,7 @@ SUBROUTINE AtomicPotentials
                  drho(i)=dr(i)**2 * (rho(i,0)-rhoval(i,0)-rho(i,nph+1)+rhoval(i,nph+1))
               end do
            endif
-           call potslw ( dvcoul, drho, dr, hx,NRPts)
+           call potslw ( dvcoul, drho, dr, hx, NRPts) ! JK - dr is correct here because last call to scfdat was with absorber.
            do i=1,NRPts
               !           drho(i) = drho(i)/ dr(i)**2
               !           use 1/2 of core-hole as in transition state
@@ -319,13 +327,14 @@ SUBROUTINE AtomicPotentials
         IF(emu.le.0.d0) emu = -efrozn
         ! Debug: Fer
         !    print *, ' emu 2: ', emu
+        ! 
         ! Find norman radius.
         ! Overlap potentials and densitites
         do iph = 0, nph
            write(slog,10)  'overlapped atomic potential and density for unique potential', iph
            call wlog(slog)
 ! Modified by FDV
-! Split line to fix error with Solaris Studio
+           ! Split line to fix error with Solaris Studio
            call ovrlp (iph, iphat, rat, iatph, novr, iphovr, nnovr, &
                        rovr, iz, nat, rho, dmag, rhoval, vcoul, edens, &
                        edenvl, vclap, rnrmTmp)
@@ -341,6 +350,8 @@ SUBROUTINE AtomicPotentials
         
      end do ! End of loop over ifree
      IF(iEdge.EQ.1) THEN
+        ! Before writing atomic potentials to file, interpolate all quantities onto standard atomic grid.
+        
         CALL WriteAtomicPots(nph, iz(0:nph), ihole, rho, dmag(:,0:nph+1), rhoval, vcoul, dgc0,  &
              & dpc0, dgc(:,:,0:nph+1), dpc(:,:,0:nph+1), adgc(:,:,0:nph+1), adpc(:,:,0:nph+1), &
              & erelax, emu, xnvmu, xnval(:,0:nph+1), norb, eorb, drho, dvcoul, iphat,    &
