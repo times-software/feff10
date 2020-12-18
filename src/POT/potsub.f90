@@ -17,7 +17,6 @@ subroutine pot !KJ put everything in modules 7-09
   use controls,only: ispace !KJ
   use m_thermal_scf, only: thscf_main, thscf_init, thscf_deinit
   use m_sommerfeld_scf, only: sommerfeld_scf_main, sommerfeld_scf_init, sommerfeld_scf_deinit
-  ! use m_sommerfeld_scf_real, only: sommerfeld_scf_real_main, sommerfeld_scf_real_init, sommerfeld_scf_real_deinit
   !     Cluster code -- multiple shell single scattering version of FEFF
   !     This program (or subroutine) calculates potentials
   !     for unique potentials specifed by atoms and overlap cards.
@@ -225,7 +224,7 @@ subroutine pot !KJ put everything in modules 7-09
   !       end do
 
   idmag = 0
- 
+
   call istprm (nph, nat, iphat, rat, iatph, xnatph,                 &
   &            novr, iphovr, nnovr, rovr, folp, folpx, iafolp,       &
   &            edens, edenvl, idmag,                                 &
