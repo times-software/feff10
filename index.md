@@ -25,5 +25,3 @@ Please cite an appropriate feff reference if the code or its results are used in
 *Calculations of x-ray spectroscopies using FEFF10 and Corvus*, J.J. Kas, F.D. Vila, D. Pemmaraju, Tun S. Tan, S. Vimolchalao, and J.J. Rehr, Unpublished, 2020.
 
 *Parameter-free calculations of x-ray spectra with FEFF9*, J.J. Rehr, J.J. Kas, F.D. Vila, M.P. Prange, K. Jorissen, Phys. Chem. Chem. Phys., 12, 5503-5513 (2010).
-
-FEFF10 User Manual can be found [here](/assets/doc/feff10_users_guide.pdf).
