@@ -17,7 +17,7 @@
      &                  ipol, ispin, le2, angks, ptz, itdlda, iph) !KJ
 
       USE IOMOD
-      use dimsmod, only: nrptx, lx, MxPole, nspx=>nspu
+      use dimsmod, only: nrptx, lx_xsph, MxPole, nspx=>nspu
       use constants
       USE SelfEnergyMod
 !     right now the same self-energy is used for calculation
@@ -80,7 +80,7 @@
       real*8 eorb(41)
       integer kappa(41)
       complex*16 rkk(nex, 8), xsec(nex)
-      complex*16 bmat(-lx:lx,0:1,8, -lx:lx,0:1,8)
+      complex*16 bmat(-lx_xsph:lx_xsph,0:1,8, -lx_xsph:lx_xsph,0:1,8)
       dimension kiind(8), lind(8) !KJ renamed kind to kiind to avoid conflicts with reserved name
      
       real*8 xp(nrptx), xq(nrptx), vch(nrptx)

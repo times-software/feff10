@@ -69,27 +69,27 @@
 !       in many cases bmat is diagonal due to the choice of xyz frame,
 !       but for general case full 16*(2*lx+1)*16*(2*lx+1) matrix is kept
 
-      use DimsMod ,only: lx,nspx=>nspu
+      use DimsMod ,only: lx_xsph, nspx=>nspu
 
       complex*16 coni
       parameter (coni = (0,1))
 
 !     need only parameter lx to set max orb momentum
 !KJ      complex*16 ptz, bmat, pmat, tmat
-      complex*16 ptz(-1:1,-1:1),  bmat(-lx:lx,0:1,8, -lx:lx,0:1,8)
+      complex*16 ptz(-1:1,-1:1),  bmat(-lx_xsph:lx_xsph,0:1,8, -lx_xsph:lx_xsph,0:1,8)
 !       to include all possible dipole and quadrupole transitions 
 !       final kp, and kpp have 8 possibilities
       logical ltrace
 
 !     local staff
-!KJ      dimension  t3j( 8, 0:1, -lx:lx+1), x3j(8, -1:1, -lx:lx+1)
-      real*8  t3j( 8, 0:1, -lx:lx+1), x3j(8, -1:1, -lx:lx+1) !KJ
+!KJ      dimension  t3j( 8, 0:1, -lx_xsph:lx_xsph+1), x3j(8, -1:1, -lx_xsph:lx_xsph+1)
+      real*8  t3j( 8, 0:1, -lx_xsph:lx_xsph+1), x3j(8, -1:1, -lx_xsph:lx_xsph+1) !KJ
 !     qmat = <J2|R'|J'><J'|L'S'> - diagonal in kappa index
-      real*8 qmat( -lx:lx+1, -lx:lx, 0:1, 8)
+      real*8 qmat( -lx_xsph:lx_xsph+1, -lx_xsph:lx_xsph, 0:1, 8)
 !     pmat = <J1|\alpha_j exp(i kz)|I> ptz <I|\alpha_k^* exp(-i kz)|J2>
-      complex*16 pmat( -lx:lx+1, 8, -lx:lx+1, 8)
+      complex*16 pmat( -lx_xsph:lx_xsph+1, 8, -lx_xsph:lx_xsph+1, 8)
 !     tmat = pmat*qmat ; bmat = qmat^T*tmat
-      complex*16 tmat( -lx:lx+1, 8, -lx:lx, 0:1, 8)
+      complex*16 tmat( -lx_xsph:lx_xsph+1, 8, -lx_xsph:lx_xsph, 0:1, 8)
 !     total and orbital momenta for 8 possible final kappa
 !KJ      dimension jind(8), lind(8), kind(8)
       integer jind(8), lind(8), kiind(8) !KJ
@@ -110,7 +110,7 @@
          lkap = kap
          if (kap.le.0) lkap = abs(kap) -1
 !        check that orbital momentum does not exceed max allowed
-         if (lkap .gt. lx) then
+         if (lkap .gt. lx_xsph) then
 !          set final j and l to unphysical values
            jkap = 0
            lkap = -1 
@@ -130,7 +130,7 @@
          if (kinit.gt.0 .and. abs(k).eq.1) kap=-jkap
          lkap = kap
          if(kap.le.0) lkap = - kap - 1
-         if (lkap.gt.lx .or. le2.eq.0                                   &
+         if (lkap.gt.lx_xsph .or. le2.eq.0                                   &
      &                  .or. (le2.eq.1 .and. abs(k).eq.2)) then
 !           set unphysical jkap and lkap to make shorter calculations
             jkap = 0
@@ -158,11 +158,11 @@
 !       polarizations
 !       Put 3j factors in x3j and t3j. t3j are multiplied by
 !       sqrt(2*j'+1) for  further convinience.
-        do 30  mp=-lx,lx+1
+        do 30  mp=-lx_xsph,lx_xsph+1
         do 30  ms=0,1
         do 30  k1=1,8
   30    t3j(k1,ms,mp) = 0.0d0
-        do 40  mp=-lx,lx+1
+        do 40  mp=-lx_xsph,lx_xsph+1
         do 40  ms=-1,1
         do 40  k1=1,8
   40      x3j(k1,ms,mp) = 0.0d0

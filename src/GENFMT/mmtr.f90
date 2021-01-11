@@ -19,7 +19,7 @@
 !        mtot,l0
 !        polarization data : ipol, ispin, ptz
 !     Output:  bmati(...) 
-      use dimsmod, only: mtot, lx,nspx=>nspu 
+      use dimsmod, only: mtot, lx_xsph,nspx=>nspu 
       use rotmat
       use pdata
 	  use constants
@@ -29,7 +29,7 @@
 
       complex*16 bmati, bmat
       dimension bmati(-mtot:mtot, 1:8, -mtot:mtot, 1:8)
-      dimension bmat(-lx:lx,0:1,8, -lx:lx,0:1,8)
+      dimension bmat(-lx_xsph:lx_xsph,0:1,8, -lx_xsph:lx_xsph,0:1,8)
       dimension kiind(8), lind(8)
       logical ltrace
 
