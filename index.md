@@ -1,37 +1,27 @@
-## Welcome to GitHub Pages
+--- 
+# FEFF10
+FEFF is an automated program for ab initio multiple scattering calculations of X-ray Absorption Fine Structure (XAFS), X-ray Absorption Near-Edge Structure (XANES) and various other spectra for clusters of atoms. The code yields scattering amplitudes and phases used in many modern XAFS analysis codes, as well as various other properties. 
 
-You can use the [editor on GitHub](https://github.com/times-software/feff10/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+FEFF10 includes the addition of the finite-temperature extension and is linked to CORVUS. However the JFEFF GUI is not supported in this version.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+This software was prepared with support in part from the U.S. DOE, Office of Basic Energy Sciences, DMSE grants DE-FG03-97ER45623 (Dept. of Physics, U.Washington) and DE-AC02-76SF00515 (Theory Institute for Materials and Energy Spectroscopies (TIMES)) at SLAC.
 
-### Markdown
+Distribution:  FEFF10.0 Copyright (c) [2020] FEFF Project, University of Washington and SLAC National Accelerator Laboratory.  All rights reserved.  
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Redistribution and use of this Distribution in source and binary formats, with or without modification, is permitted, provided the following conditions are met:
 
-```markdown
-Syntax highlighted code block
+Redistributions must retain the above notices and the following list of conditions and disclaimer;
 
-# Header 1
-## Header 2
-### Header 3
+Modified formats carry the marking "Based on or developed using Distribution: FEFF10.0 Copyright (c) 2020 FEFF Project, University of Washington and SLAC National Accelerator Laboratory. All rights reserved."
 
-- Bulleted
-- List
+Recipient acknowledges the rights of the University of Washington and SLAC to prepare uses of this Distribution and its modifications that may be substantially similar or functionally equivalent to Recipient-prepared modifications.
 
-1. Numbered
-2. List
+Please cite an appropriate feff reference if the code or its results are used in published work. The main reference for calculations using the current version feff10 is:
 
-**Bold** and _Italic_ and `Code` text
+*Calculations of x-ray spectroscopies using FEFF10 and Corvus*, J.J. Kas, F.D. Vila, D. Pemmaraju, Tun S. Tan, S. Vimolchalao, and J.J. Rehr, Unpublished, 2020.
 
-[Link](url) and ![Image](src)
-```
+*Parameter-free calculations of x-ray spectra with FEFF9*, J.J. Rehr, J.J. Kas, F.D. Vila, M.P. Prange, K. Jorissen, Phys. Chem. Chem. Phys., 12, 5503-5513 (2010).
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+**Please register your contact info for updates, news and workshops on the [FEFF10 Registration Page](https://docs.google.com/forms/d/1AHeer_ApfFkzJkIHJShcynl72Z61V2ouuv0BMbXRgfg).**
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/times-software/feff10/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+FEFF10 User Manual can be found [here](/assets/doc/feff10_users_guide.pdf).
