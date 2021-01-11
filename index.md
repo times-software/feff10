@@ -8,7 +8,11 @@ This software was prepared with support in part from the U.S. DOE, Office of Bas
 
 Distribution:  FEFF10.0 Copyright (c) [2020] FEFF Project, University of Washington and SLAC National Accelerator Laboratory.  All rights reserved.  
 
-Redistribution and use of this Distribution in source and binary formats, with or without modification, is permitted, provided the following conditions are met:
+**Please register your contact info for updates, news and workshops on the <a href="https://docs.google.com/forms/d/1AHeer_ApfFkzJkIHJShcynl72Z61V2ouuv0BMbXRgfg" target="_blank"><b>FEFF10 Registration Page</b></a>.**
+
+FEFF10 User Manual can be found [here](/assets/doc/feff10_users_guide.pdf).
+
+**Redistribution and use of this Distribution in source and binary formats, with or without modification, is permitted, provided the following conditions are met:**
 
 Redistributions must retain the above notices and the following list of conditions and disclaimer;
 
@@ -21,7 +25,5 @@ Please cite an appropriate feff reference if the code or its results are used in
 *Calculations of x-ray spectroscopies using FEFF10 and Corvus*, J.J. Kas, F.D. Vila, D. Pemmaraju, Tun S. Tan, S. Vimolchalao, and J.J. Rehr, Unpublished, 2020.
 
 *Parameter-free calculations of x-ray spectra with FEFF9*, J.J. Rehr, J.J. Kas, F.D. Vila, M.P. Prange, K. Jorissen, Phys. Chem. Chem. Phys., 12, 5503-5513 (2010).
-
-**Please register your contact info for updates, news and workshops on the [FEFF10 Registration Page](https://docs.google.com/forms/d/1AHeer_ApfFkzJkIHJShcynl72Z61V2ouuv0BMbXRgfg).**
 
 FEFF10 User Manual can be found [here](/assets/doc/feff10_users_guide.pdf).
