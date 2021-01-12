@@ -5,6 +5,8 @@
 ! $Date: 2010/02/23 23:52:06 $
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!     subroutine phamp (rmt, pu, qu, ck, jl, nl, jlp, nlp, ikap,        &
+!    &                  ph, amp, origin)
       subroutine phamp (rmt, pu, qu, ck, jl, nl, jlp, nlp, ikap,        &
      &                  ph, amp)
 !     calculate phase shift at mt radius
@@ -17,6 +19,14 @@
       complex*16 pu, qu, ck,  jl, nl, jlp, nlp, ph, amp
       complex*16 xkr, a, b, factor
 
+! Debug: FDV
+!     character(len=*), optional :: origin
+
+!     print *, present(origin)
+!     if ( present(origin) ) then
+!       print *, 'Called from ', origin
+!     end if
+
 !     initialize staff
       xkr = ck*rmt
       isign=1
@@ -24,9 +34,22 @@
       a = ck*alphfs
       factor = isign*a/(1+sqrt(1+a**2))
 
+! Debug: FDV
+!     print *, 'isign  ', isign
+!     print *, 'ck     ', ck
+!     print *, 'xkr    ', xkr
+!     print *, 'pu     ', pu
+!     print *, 'nlp    ', nlp
+!     print *, 'qu     ', qu
+!     print *, 'nl     ', nl
+!     print *, 'factor ', factor
 !     find a and b that pu = rmt*(a*jl+b*nl), qu=factor*rmt*(a*jlp+b*nlp)
       a = isign*ck*xkr* (pu*nlp - qu*nl/factor)
       b = isign*ck*xkr* (qu*jl/factor - pu*jlp)
+
+! Debug: FDV
+!     print *, 'a1 ', a
+!     print *, 'b1 ', b
 
 !     pu =  amp * rmt * (jl*cos(ph) - nl*sin(ph))
 !     qu =  amp * rmt * (jlp*cos(ph) - nlp*sin(ph)) * factor
@@ -66,20 +89,34 @@
       parameter (pi = 3.1415926535897932384626433d0)
       complex*16 a, b, ampl, phx, temp
 
+! Debug: FDV
+!     write(6,fmt='(a,2e30.20)'), 'a ',a
+!     write(6,fmt='(a,2e30.20)'), 'b ',b
+
       aa = abs(a)
       bb = abs(b)
       if (aa+bb.eq. 0) then
          ampl=0.d0
          phx =0.d0
+! Debug: FDV
+!        print *, 'ampl 1: ', real(ampl), imag(ampl)
       elseif ( aa.gt.bb) then
          temp = b/a
          call atancc ( temp, phx)
          ampl = a / cos(phx)
+! Debug: FDV
+!        print *, 'ampl 2: ', real(ampl), imag(ampl)
       else
          temp = a/b
+! Debug: FDV
+!        print *, 'temp 3: ', temp
          call atancc ( temp, phx)
+! Debug: FDV
+!        print *, 'temp, phx 3: ', temp, phx
          phx = pi / 2 - phx
          ampl = b/sin(phx)
+! Debug: FDV
+!        print *, 'ampl 3: ', real(ampl), imag(ampl), temp, phx
       endif
 
       if (dble(ampl).lt. 0.d0) then
@@ -87,5 +124,7 @@
          phx = phx + pi
       endif
 
+! Debug: FDV
+!     print *, 'ampl: ', real(ampl), imag(ampl)
       return
       end

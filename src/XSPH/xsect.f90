@@ -382,13 +382,16 @@ endif
             if (ikap .lt. 0) ilp = lfin + 1
             call exjlnl (xkmt, lfin, jl, nl)
             call exjlnl (xkmt, ilp, jlp1, nlp1)
-            call phamp(rmt,pu,qu, ck, jl,nl,jlp1,nlp1, ikap, ph0,temp)
+!           print *, 'kdif', kdif
+            call phamp(rmt,pu,qu, ck, jl,nl,jlp1,nlp1, ikap, ph0, &
+                       temp, 'pos1')
 
             sign = -1.0
             if (ikap.gt.0) sign = 1.0
             factor = ck*alphfs 
             factor = sign * factor/(1+sqrt(1+factor**2))
             dum1 = 1/ sqrt(1+factor**2)
+!           print *, 'FDV ', temp, dum1
             xfnorm = 1 / temp *dum1
 !           normalization factor
 !           xfnorm = dum1*rmt*(jl*cos(delta) - nl*sin(delta))/ Rl(rmt)

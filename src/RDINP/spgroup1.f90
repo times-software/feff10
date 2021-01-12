@@ -275,6 +275,7 @@
      if (sgname.eq.'Ccmm    ') lattyp='CXY'
      if (sgname.eq.'Amam    ') lattyp='CYZ'
      if (sgname.eq.'Cmca    ') lattyp='CXY'
+     if (sgname.eq.'Cmce    ') lattyp='CXY'
      if (sgname.eq.'Abma    ') lattyp='CYZ'
      if (sgname.eq.'Bbcm    ') lattyp='CXZ'
      if (sgname.eq.'Bmab    ') lattyp='CXZ'

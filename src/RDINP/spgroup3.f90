@@ -262,6 +262,7 @@
    if (sgnum.eq. 63) sgname='Ccmm    '
    if (sgnum.eq. 63) sgname='Amam    '
    if (sgnum.eq. 64) sgname='Cmca    '
+   if (sgnum.eq. 64) sgname='Cmce    '
    if (sgnum.eq. 64) sgname='Abma    '
    if (sgnum.eq. 64) sgname='Bbcm    '
    if (sgnum.eq. 64) sgname='Bmab    '
@@ -729,6 +730,7 @@
    if ( (sgnum.eq. 63) .and. ( sgname.eq.'Ccmm    ') ) checksgrhm=.true.
    if ( (sgnum.eq. 63) .and. ( sgname.eq.'Amam    ') ) checksgrhm=.true.
    if ( (sgnum.eq. 64) .and. ( sgname.eq.'Cmca    ') ) checksgrhm=.true.
+   if ( (sgnum.eq. 64) .and. ( sgname.eq.'Cmce    ') ) checksgrhm=.true.
    if ( (sgnum.eq. 64) .and. ( sgname.eq.'Abma    ') ) checksgrhm=.true.
    if ( (sgnum.eq. 64) .and. ( sgname.eq.'Bbcm    ') ) checksgrhm=.true.
    if ( (sgnum.eq. 64) .and. ( sgname.eq.'Bmab    ') ) checksgrhm=.true.

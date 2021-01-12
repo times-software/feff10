@@ -265,6 +265,7 @@ integer,intent(out) :: sgnum
      if (sgname.eq.'Ccmm    ')  sgnum = 63  
      if (sgname.eq.'Amam    ')  sgnum = 63  
      if (sgname.eq.'Cmca    ')  sgnum = 64  
+     if (sgname.eq.'Cmce    ')  sgnum = 64  
      if (sgname.eq.'Abma    ')  sgnum = 64  
      if (sgname.eq.'Bbcm    ')  sgnum = 64  
      if (sgname.eq.'Bmab    ')  sgnum = 64  

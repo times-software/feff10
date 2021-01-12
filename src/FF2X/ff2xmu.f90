@@ -422,7 +422,9 @@ subroutine ff2xmu (ispec, ipr4, idwopt, critcw, s02, sig2g,       &
                     !           rchtot(ie)*omega(ie)*prefac, xsec0*omega(ie)*prefac, chi0
                     !           with        prefac = alpinv / 4 / pi /bohr**2
 
-  700               format (1x, 3f20.10, 1p, 3e20.10)
+! Changed by FDV to account for some formatting errors for very large exponents
+! 700               format (1x, 3f20.10, 1p, 3e20.10)
+  700               format (1x, 3f20.10, 1p, 3e28.10)
 
                   enddo
 

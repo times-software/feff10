@@ -138,6 +138,8 @@
      &             rmt,jri, iwkb)
 
       if (numerr .ne. 0) call par_stop('error in wfirdc')
+! Debug: FDV
+!     print *, 'numerr, irr', numerr, irr      
       if (ncycle .eq. 0) go to 999
 
 !     to get orthogonalized photo e w.f., use alternative exit below
@@ -200,18 +202,42 @@
 !c        want to have vxc(jri)-smooth and vxc(jri+1)=v_mt
 !c        assume no exchange beyond jri 
            vu=vxc(jri+1)
+! Debug: FDV
+!          print *, 'ri(jri)', ri(jri)
+!          print *, 'rmt',     rmt
+!          print *, 'ps(jri)', ps(jri)
+!          print *, 'qs(jri)', qs(jri)
+!          print *, 'p2',      p2
+!          print *, 'vu',      vu
+!          print *, 'ikap',    ikap
+!          print *, 'pu',      pu
+!          print *, 'qu',      qu
            call flatv                                                   &
-     &     (ri(jri), rmt, ps(jri), qs(jri), p2, vu, ikap, pu, qu)
+     &     (ri(jri), rmt, ps(jri), qs(jri), p2, vu,                     &
+     &      ikap, pu, qu)
+!        D        D    C        C        C   C          C   C
+! flatv (ri(jri), rmt, ps(jri), qs(jri), p2, vu,  ikap, pu, qu)
+! flatv (r1,      r2,  p1,      q1,      en, vav, ikap, p2, q2, origin)
+!        D        D    C        C        C   C          C   C
            jlast = nmax(norb)
 !          jlast might change on very rare occasion
+! Debug: FDV
+!          print *, 'pu ', real(pu), imag(pu)
+!          print *, 'qu ', real(qu), imag(qu)
+
         endif
       else
         call par_stop('error in dfovrg.f')
       endif
 
+! Debug: FDV
+!     print *, 'pu ', pu
+!     print *, 'qu ', qu
+
       return
       end
 
+!     subroutine flatv (r1, r2, p1, q1, en, vav, ikap, p2, q2, origin)
       subroutine flatv (r1, r2, p1, q1, en, vav, ikap, p2, q2)
       use constants
 	  use dimsmod, only: ltot
@@ -225,6 +251,24 @@
 
       complex*16 p1, q1, en, vav, p2, q2
       complex*16 ck, xkr, jl(ltot+2), nl(ltot+2), a,b, factor 
+
+!     character(len=4), optional :: origin
+
+!Debug: FDV
+!          print *, '-----------'
+!          print *, 'r1', r1
+!          print *, 'r2', r2
+!          print *, 'p1', p1
+!          print *, 'q1', q1
+!          print *, 'en', en
+!          print *, 'vav', vav
+!          print *, 'ikap', ikap
+!          print *, 'p2', p2
+!          print *, 'q2', q2
+!     print *, present(origin)
+!     if ( present(origin) ) then
+!       print *, 'flatv called from ', origin
+!     end if
 
 !     initialize staff
       ck = sqrt(2*(en-vav) + (alphfs*(en-vav))**2)
@@ -251,6 +295,27 @@
       call besjn (xkr, jl, nl)
       p2 =  r2 * (jl(lp+1)*a + nl(lp+1)*b)
       q2 =  r2* factor * (jl(lq+1)*a + nl(lq+1)*b)
+
+! Debug: FDV
+!     print *, 'ck', ck
+!     print *, 'r2', r2
+!     print *, 'xkr', xkr
+!     print *, 'factor', factor
+!     print *, 'lp+1', lp+1
+!     print *, 'lq+1', lq+1
+!     print *, 'jl(lp+1)', jl(lp+1)
+!     print *, 'nl(lp+1)', nl(lp+1)
+!     print *, 'jl(lq+1)', jl(lq+1)
+!     print *, 'nl(lq+1)', nl(lq+1)
+!     print *, 'a', a
+!     print *, 'b', b
+!     print *, 'res p', r2 * (jl(lp+1)*a + nl(lp+1)*b)
+!     print *, 'res q', r2* factor * (jl(lq+1)*a + nl(lq+1)*b)
+
+! Debug: FDV
+!     print *, '+++++++'
+!     print *, 'p2', p2
+!     print *, 'q2', q2
 
       return
       end
