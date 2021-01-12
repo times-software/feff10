@@ -38,17 +38,17 @@
       external istrln
       character*10 shole(0:40)
       character*8  sout(0:7)
-      data shole /'no hole',   'K  shell',  'L1 shell',  'L2 shell',    &
-     &            'L3 shell',  'M1 shell',  'M2 shell',  'M3 shell',    &
-     &            'M4 shell',  'M5 shell',  'N1 shell',  'N2 shell',    &
-     &            'N3 shell',  'N4 shell',  'N5 shell',  'N6 shell',    &
-     &            'N7 shell',  'O1 shell',  'O2 shell',  'O3 shell',    &
-     &            'O4 shell',  'O5 shell',  'O6 shell',  'O7 shell',    &
-     &            'O8 shell',  'O9 shell',  'P1 shell',  'P2 shell',    &
-     &            'P3 shell',  'P4 shell',  'P5 shell',  'P6 shell',    &
-     &            'P7 shell',  'R1 shell',  'R2 shell',  'R3 shell',    &
-     &            'R4 shell',  'R5 shell',  'S1 shell',  'S2 shell',    &
-     &            'S3 shell'/
+
+
+      data shole / 'no hole','K  shell','L1 shell','L2 shell','L3 shell',        &
+              'M1 shell','M2 shell','M3 shell','M4 shell','M5 shell',        &
+              'N1 shell','N2 shell','N3 shell','N4 shell','N5 shell',        &
+              'N6 shell','N7 shell','O1 shell','O2 shell','O3 shell',        &
+              'O4 shell','O5 shell','O6 shell','O7 shell','P1 shell',        &
+              'P2 shell','P3 shell','P4 shell','P5 shell','R1 shell',        &
+              'R2 shell','R3 shell','S1 shell','S2 shell','S3 shell',        &
+              'R4 shell','R5 shell','P6 shell','P7 shell','O8 shell','O9 shell' /
+
       data sout /'H-L exch', 'D-H exch', 'Gd state', 'DH - HL ',        &
      &           'DH + HL ', 'val=s+d ', 'sigmd(r)', 'sigmd=c '/
 

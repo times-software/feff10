@@ -19,7 +19,7 @@
 
       USE IOMOD
       use constants
-      use DimsMod, only: nex, nrptx, lx, MxPole, nspx=>nspu
+      use DimsMod, only: nex, lx_xsph, nrptx, MxPole, nspx=>nspu
       USE SelfEnergyMod
 !     right now the same self-energy is used for calculation of the central atom part (xsec) and dipole m.e. for
 !     scattering (rkk). You may want to run xsect separately for xsec and for rkk, if you want to use different self-energy
@@ -127,11 +127,12 @@
       complex*16, allocatable :: bmat(:,:,:,:,:,:)
       logical,parameter :: correction_josh = .false.
       logical CorrectOrbitalEnergies ! Set to true until this is done, then set to false.
+
 !     Debug: FDV
 !     dimension sh_eng(nex, 41)
       
       CorrectOrbitalEnergies = .TRUE.
-      allocate(bmat(-lx:lx,0:1,8, -lx:lx,0:1,8))
+      allocate(bmat(-lx_xsph:lx_xsph,0:1,8, -lx_xsph:lx_xsph,0:1,8))
 
       call setkap(ihole, kinit, linit)
 

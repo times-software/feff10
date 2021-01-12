@@ -45,6 +45,7 @@ module DimsMod
   integer,parameter :: np1x = nx
   integer,parameter :: npx_path = 5000001  ! max number of retained paths for pathfinder.  I expect it's irrelevant if > nx.  Not used for dimensioning.
   integer,parameter :: npx_ff2x = 2000 ! max number of paths in ff2x.  Note that these are *unique paths after reducing for symmetry.  Hence can usually be much smaller than above limits.
+  integer,parameter :: lx_xsph = 6
 
 ! NON PARAMETER STATEMENTS
   integer :: nclusx    ! Maximum number of atoms for FMS.

@@ -10,7 +10,7 @@ subroutine getgtr
   !     uses Bruce Ravel subroutine to do FMS in self-consistency loop
   !     notice that it can do FMS with polarization dependence and always include l-->l-1 channel.
   !     written by alexei ankudinov 06.1997
-  use DimsMod, only: nphx=>nphu, ltot, nspx=>nspu, nex, lx
+  use DimsMod, only: nphx=>nphu, ltot, nspx=>nspu, nex, lx, lx_xsph
   use IOMod
   use ErrorMod
   use constants
@@ -50,12 +50,12 @@ subroutine getgtr
   ! FMS staff
   complex, allocatable, dimension(:,:,:,:) :: gg
   complex, allocatable, dimension(:,:) :: gtr
-  !KJ commented out  1-06    dimension bmat(-lx:lx,0:1,8, -lx:lx,0:1,8)
+  !KJ commented out  1-06    dimension bmat(-lx_xsph:lx_xsph,0:1,8, -lx_xsph:lx_xsph,0:1,8)
   complex*16, allocatable :: bmat(:,:,:,:,:,:,:) !KJ added last index
   complex*16, allocatable :: bmat0(:,:,:,:,:,:)  !KJ new variable 1-06      
   complex*16, allocatable :: rkk(:,:,:)
   complex*16, allocatable :: dum(:)
-  complex bmatsmall(2*lx+1,2*lx+1)
+  complex bmatsmall(2*lx_xsph+1,2*lx_xsph+1)
 
 
   ! Allocate local variables
@@ -65,9 +65,9 @@ subroutine getgtr
   allocate(potlbl(0:nphx))
   allocate(gg(nspx*(lx+1)**2, nspx*(lx+1)**2, 0:nphx, nex))
   allocate(gtr(ipmin:ipmax,nex))
-  allocate(bmat(-lx:lx,0:1,8, -lx:lx,0:1,8,ipmin:ipmax))
+  allocate(bmat(-lx_xsph:lx_xsph,0:1,8, -lx_xsph:lx_xsph,0:1,8,ipmin:ipmax))
   allocate(rkk(nex,8,nspx))
-  allocate(bmat0(-lx:lx,0:1,8, -lx:lx,0:1,8))
+  allocate(bmat0(-lx_xsph:lx_xsph,0:1,8, -lx_xsph:lx_xsph,0:1,8))
   allocate(dum(nex))
 
 
@@ -124,8 +124,8 @@ subroutine getgtr
   enddo
   if(ipr3.ge.4) then  !KJ debugging output
      do ms1=0,1 ; do k1=1,8 ; do ms2=0,1 ; do k2=1,8
-         bmatsmall(1:2*lx+1,1:2*lx+1)=cmplx(bmat(-lx:lx,ms2,k2,-lx:lx,ms1,k1,ipmin))
-	     call Write2D('bmat.dat',bmatsmall(1:2*lx+1,1:2*lx+1))
+         bmatsmall(1:2*lx_xsph+1,1:2*lx_xsph+1)=cmplx(bmat(-lx_xsph:lx_xsph,ms2,k2,-lx_xsph:lx_xsph,ms1,k1,ipmin))
+	     call Write2D('bmat.dat',bmatsmall(1:2*lx_xsph+1,1:2*lx_xsph+1))
      enddo ; enddo ; enddo ; enddo
      do ie=1,nspx 
         call Write2D('rkk.dat',cmplx(rkk(1:ne,1:8,ie)))
