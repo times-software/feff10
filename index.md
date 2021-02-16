@@ -11,6 +11,8 @@ Distribution:  FEFF10.0 Copyright (c) [2020] FEFF Project, University of Washing
 **In order to obtain access to the code and installer it is necessary to register on the <a href="https://docs.google.com/forms/d/1AHeer_ApfFkzJkIHJShcynl72Z61V2ouuv0BMbXRgfg" target="_blank"><b>FEFF10 Registration Page</b></a>.
 This will also enable you to receive updates, news and information on workshops.**
 
+If you've already registered, please access the installer page <a href="https://docs.google.com/forms/d/1AHeer_ApfFkzJkIHJShcynl72Z61V2ouuv0BMbXRgfg" target="_blank"><b>here</b></a>. 
+
 **Redistribution and use of this Distribution in source and binary formats, with or without modification, is permitted, provided the following conditions are met:**
 
 Redistributions must retain the above notices and the following list of conditions and disclaimer;
