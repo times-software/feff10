@@ -15,47 +15,19 @@ include vars.defs
 all: dmdw dym2feffinp
 
 # Here is the link step 
-dmdw:m_kinds.o m_const_and_conv.o m_strings.o m_ptable.o m_math.o m_dmdw.o dmdw.o m_errorfile.o str2dp.o str.o rdhead.o
+dmdw:m_ptable.o m_math.o dmdw.o m_dmdw.o m_kinds.o m_const_and_conv.o \
+	m_strings.o
 	$(F90) -o dmdw m_kinds.o m_const_and_conv.o m_strings.o \
-	m_errorfile.o \
-	m_ptable.o m_dmdw.o m_math.o dmdw.o \
-	str2dp.o str.o rdhead.o 
-dym2feffinp:m_kinds.o m_const_and_conv.o m_errorfile.o m_strings.o m_ptable.o m_cmdline.o m_math.o  \
-	m_dmdw.o dym2feffinp.o str2dp.o str.o rdhead.o
-	$(F90) -o dym2feffinp m_kinds.o m_const_and_conv.o m_errorfile.o m_strings.o m_ptable.o \
-	m_cmdline.o m_dmdw.o m_math.o dym2feffinp.o str2dp.o str.o rdhead.o
+	m_ptable.o m_dmdw.o m_math.o dmdw.o
+dym2feffinp:m_kinds.o m_const_and_conv.o m_strings.o m_ptable.o m_cmdline.o \
+	m_math.o m_dmdw.o dym2feffinp.o
+	$(F90) -o dym2feffinp m_kinds.o m_const_and_conv.o m_strings.o \
+	m_ptable.o m_cmdline.o m_dmdw.o m_math.o dym2feffinp.o
 
 # Here are the compile steps
 
-m_strfacs.o:$(KSPACE)/m_strfacs.f90
-	$(F90) -c $(KSPACE)/m_strfacs.f90
-
-m_controls.o:$(KSPACE)/m_controls.f90
-	$(F90) -c $(KSPACE)/m_controls.f90
-
-m_kklist.o:$(KSPACE)/m_kklist.f90
-	$(F90) -c $(KSPACE)/m_kklist.f90
-
 m_constants.o:$(COMMON)/m_constants.f90  
 	 $(F90) -c $(COMMON)/m_constants.f90 
-
-m_errorfile.o:$(ERROR)/m_errorfile.f90
-	$(F90) -c $(ERROR)/m_errorfile.f90
- 
-m_par.o:$(PAR)/m_par.f90  
-	 $(F90) -c $(PAR)/m_par.f90 
-
-par.o:$(PAR)/par.f90  m_par.o
-	 $(F90) -c $(PAR)/par.f90 
-
-str2dp.o:$(COMMON)/str2dp.f90
-	 $(F90) -c $(COMMON)/str2dp.f90 
-
-str.o:$(COMMON)/str.f90 str2dp.o
-	 $(F90) -c $(COMMON)/str.f90 
-
-rdhead.o:$(COMMON)/rdhead.f90  
-	 $(F90) -c $(COMMON)/rdhead.f90 
 
 m_kinds.o:$(COMMON)/m_kinds.f90  
 	 $(F90) -c $(COMMON)/m_kinds.f90 
@@ -78,10 +50,10 @@ m_cmdline.o:m_cmdline.f90
 m_dmdw.o:./m_dmdw.f90 m_kinds.o m_const_and_conv.o m_strings.o
 	 $(F90) -c ./m_dmdw.f90 
 
-dmdw.o:dmdw.f90 m_kinds.o m_const_and_conv.o m_dmdw.o m_errorfile.o
+dmdw.o:dmdw.f90 m_kinds.o m_const_and_conv.o m_dmdw.o
 	 $(F90) -c dmdw.f90
 
-dym2feffinp.o:dym2feffinp.f90 m_kinds.o m_const_and_conv.o m_dmdw.o m_errorfile.o 
+dym2feffinp.o:dym2feffinp.f90 m_kinds.o m_const_and_conv.o m_dmdw.o
 	 $(F90) -c dym2feffinp.f90 
 
 # This entry allows you to type " make clean " to get rid of
@@ -109,17 +81,19 @@ install:
 examples:
 	cd $(TEST_DIR); ./Run_Examples $(INST_DIR2)
 
-STANDALONE_FILES=vasp2dym.script ai2bdf.script dmdw.f90 \
+STANDALONE_FILES=Makefile vasp2dym.script ai2bdf.script dmdw.f90 \
 dym2feffinp.f90 fchk2dym.script dynG2dym.script m_cmdline.f90 \
 m_const_and_conv.f90 m_dmdw.f90 m_math.f90 \
 $(INPGEN)/m_ptable.f90 $(INPGEN)/m_strings.f90 \
 $(COMMON)/m_kinds.f90 $(COMMON)/m_constants.f90
+#$(ERROR)/m_errorfile.f90 $(COMMON)/m_inpmodules.f90 $(KSPACE)/m_controls.f90 \
+#$(COMMON)/str.f90 $(COMMON)/chopen.f90 $(COMMON)/rdhead.f90 \
+#$(KSPACE)/m_kklist.f90 $(KSPACE)/m_strfacs.f90 $(PAR)/m_par.f90 $(PAR)/par.f90 \
 
 standalone:
 	mkdir -p dmdw_standalone/src
 	mkdir -p dmdw_standalone/bin
 	cp $(STANDALONE_FILES) dmdw_standalone/src
-	cp Makefile.standalone dmdw_standalone/src/Makefile
 	cp standalone_vars.defs dmdw_standalone/src/vars.defs
 	cp DMDW_Documentation.txt dmdw_standalone
 	cp -R $(TEST_DIR) dmdw_standalone/examples

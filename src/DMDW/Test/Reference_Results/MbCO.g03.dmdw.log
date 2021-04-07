@@ -1,4 +1,13 @@
-Warning: There is an imaginary frequency.
-         Setting weight to 0:     0      -17.4062256947
-Warning: There is an imaginary frequency.
-         Setting weight to 0:     0      -17.4630660011
+Calculating Debye-Waller factors in the Dynamical Matrix approach ...
+Error: Found imaginary frequency with large weight.
+       Will ignore this pole for all properties.
+       Results are likely wrong.
+       Please check guide for possible solutions.
+       Pole, Frq, Wgt:     0    -17.40622569      0.54046631
+Error: Found imaginary frequency with large weight.
+       Will ignore this pole for all properties.
+       Results are likely wrong.
+       Please check guide for possible solutions.
+       Pole, Frq, Wgt:     0    -17.46306600      0.54056125
+Done with module: Debye-Waller factors (DMDW).
+

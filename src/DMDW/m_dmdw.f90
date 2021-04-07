@@ -87,6 +87,7 @@ module m_DMDW
       real(kind=r08), allocatable    :: Poles_Frq(:)
       real(kind=r08), allocatable    :: Poles_Wgt(:)
       real(kind=r08)                 :: SPole_Frq
+      real(kind=r08)                 :: RedMass
   end type DW_Out_Info
   
   type :: Paths
@@ -149,7 +150,9 @@ contains
 
   subroutine DMDW_Open_E
       implicit none
-      open(unit=IO_Err)
+      if ( .not. (IO_Err .eq. 6) ) then
+        open(unit=IO_Err)
+      end if
   end subroutine DMDW_Open_E
 
   subroutine DMDW_Open_PDOS(Label)
@@ -179,7 +182,12 @@ contains
 
   subroutine DMDW_Close_E
       implicit none
-      close(unit=IO_Err)
+! NOTE: FDV
+! This if ensures that the standard IO is not "closed" avoiding the generation
+! of fort.6 files under certain circumstances
+      if ( .not. (IO_Err .eq. 6) ) then
+        close(unit=IO_Err)
+      end if
   end subroutine DMDW_Close_E
 
   subroutine DMDW_Close_PDOS
@@ -1126,6 +1134,7 @@ END IF
   DW_Out%Poles_Frq = w_pole(0:mnull)/(2.0D0*pi)
   DW_Out%Poles_Wgt = wil(0:mnull)
   DW_Out%SPole_Frq = SPole_EinsteinFreq
+  DW_Out%RedMass   = mu
 
 ! Depending on the type of calculation we allocate only certain things
   select case ( Lanc_In%RunTyp )
@@ -3741,6 +3750,7 @@ FUNCTION R1MACH (I)
   INTEGER LOG10(2)
 !
   REAL RMACH(5)
+  INTEGER IMACH(5)
   SAVE RMACH
 !
   EQUIVALENCE (RMACH(1),SMALL(1))
@@ -3872,11 +3882,17 @@ FUNCTION R1MACH (I)
 !     MACHINE CONSTANTS FOR THE DEC ALPHA
 !     USING IEEE_FLOAT
 !
-      DATA RMACH(1) / Z'00800000' /
-      DATA RMACH(2) / Z'7F7FFFFF' /
-      DATA RMACH(3) / Z'33800000' /
-      DATA RMACH(4) / Z'34000000' /
-      DATA RMACH(5) / Z'3E9A209B' /
+!     DATA RMACH(1) / Z'00800000' /
+!     DATA RMACH(2) / Z'7F7FFFFF' /
+!     DATA RMACH(3) / Z'33800000' /
+!     DATA RMACH(4) / Z'34000000' /
+!     DATA RMACH(5) / Z'3E9A209B' /
+
+      DATA IMACH(1) / Z'00800000' /
+      DATA IMACH(2) / Z'7F7FFFFF' /
+      DATA IMACH(3) / Z'33800000' /
+      DATA IMACH(4) / Z'34000000' /
+      DATA IMACH(5) / Z'3E9A209B' /
 !
 !     MACHINE CONSTANTS FOR THE DEC RISC
 !
@@ -4081,7 +4097,9 @@ FUNCTION R1MACH (I)
     STOP 'SLATEC R1MACH I OUT OF BOUNDS'
   end if
 
-  R1MACH = RMACH(I)
+! Changed by FDV
+! R1MACH = RMACH(I)
+  R1MACH = REAL(IMACH(I))
 
   return
 end function
@@ -5130,21 +5148,22 @@ end function
 ! Print the single pole Einstein frequency
       if ( DW_Out%Path_nAt > 0 ) then
         write(IO_Out,FMT='(A)') &
-          ' PDOS Einstein freq (single pole) and associated temp: '
+          ' PDOS Einstein freq (single pole), associated temp and eff. force constant: '
       else
         write(IO_Out,FMT='(A)') &
-          ' PDOS Einstein freq (avg. of single poles) and associated temp: '
+          ' PDOS Einstein freq (avg. of single poles), associated temp and eff. force constant: '
       end if
-      write(IO_Out,FMT='(A)') ' Freq (THz)   Temp (K)'
-      write(IO_Out,FMT='(F8.3,A5,F8.2)') DW_Out%SPole_Frq, ' ', &
-                                      DW_Out%SPole_Frq*47.9908741942_r08
+      write(IO_Out,FMT='(A)') ' Freq (THz)   Temp (K)   Eff. FC (N/m)'
+      write(IO_Out,FMT='(F8.3,A5,F8.2,A1,F12.4)') &
+        DW_Out%SPole_Frq, ' ', DW_Out%SPole_Frq*47.9908741942_r08, &
+        ' ', DW_Out%RedMass*(2.0_r08*pi*DW_Out%SPole_Frq)**2*0.00166053873000_r08
       write(IO_Out,FMT='(A)') ''
 
 ! Print print some of the important moments and their associated Einstein freqs
       write(IO_Out,FMT='(A)') &
-        ' pDOS n Moments and associated Einstein freqs and temps:'
+        ' pDOS n Moments, associated Einstein freqs, temps and eff. force constants:'
       write(IO_Out,FMT='(A)') &
-        '  n     Mom (THz^n)   Freq (THz)     Temp (K) '
+        '  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)'
       do nMom=-2,2
         Mom  = 0.0_r08
         Corr = 0.0_r08
@@ -5161,9 +5180,10 @@ end function
 ! imaginary freqs.
         Mom = Mom/(1-Corr)
         if ( nMom /= 0 ) then
-          write(IO_Out,FMT='(I3,2F14.5,A5,F8.2)') nMom, &
+          write(IO_Out,FMT='(I3,2F14.5,A5,F8.2,A1,F12.4)') nMom, &
                 Mom, Mom**(1.0_r08/nMom), ' ', &
-                Mom**(1.0_r08/nMom)*47.9908741942_r08
+                Mom**(1.0_r08/nMom)*47.9908741942_r08, ' ', &
+                DW_Out%RedMass*(2.0_r08*pi*Mom**(1.0_r08/nMom))**2*0.00166053873000_r08
         else
           write(IO_Out,FMT='(I3,F14.5,A14,A5,A8)') nMom, &
                 Mom, '     ---------', ' ', &
@@ -5176,11 +5196,15 @@ end function
 
     if ( Lanc_In%RunTyp == 0 ) then
 
+! Add printout of path reduced mass
+      write(IO_Out,fmt='(a,$)') ' Path Red. Mass (AMU):'
+      write(IO_Out,fmt='(f12.6)') DW_Out%RedMass
+
 ! Print the results, depending on how many temperatures we have
       if ( Lanc_In%nT .eq. 1 ) then
         write(IO_Out,fmt='(a,$)') ' Path Length (Ang), s^2 (1e-3 Ang^2):'
         if ( allocated(DW_Out%s2) ) then
-          write(IO_Out,fmt='(f7.3,f8.3)') &
+          write(IO_Out,fmt='(f8.4,f9.4)') &
             DW_Out%Path_Len/ang2au, DW_Out%s2*1000
         else
           write(IO_Err,fmt='(a)') &
@@ -5189,11 +5213,11 @@ end function
         end if
       else
         write(IO_Out,fmt='(a,$)') ' Path Length (Ang):'
-        write(IO_Out,fmt='(f7.3)') DW_Out%Path_Len/ang2au
+        write(IO_Out,fmt='(f8.4)') DW_Out%Path_Len/ang2au
         write(IO_Out,fmt='(a)') ' Temp (K)   s^2 (1e-3 Ang^2)'
         if ( allocated(DW_Out%s2) ) then
           do iT=1,Lanc_In%nT
-            write(IO_Out,fmt='(f8.2,a5,f7.3)') Lanc_In%T(iT), ' ', &
+            write(IO_Out,fmt='(f8.2,a5,f8.4)') Lanc_In%T(iT), ' ', &
                   DW_Out%s2(iT)*1000
           end do
         else

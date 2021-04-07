@@ -31,12 +31,19 @@
   type(Error_Info)   :: Err
 
 #ifdef FEFF
- call par_begin
- if(worker) goto 400
- call OpenErrorfileAtLaunch('dmdw')
- call ff2x_read
- if(idwopt.ne.5) goto 402
- call wlog('Calculating Debye-Waller factors in the Dynamical Matrix approach ...')
+  call par_begin
+  if(worker) goto 400
+  call OpenErrorfileAtLaunch('dmdw')
+  call ff2x_read
+  if(idwopt.ne.5) goto 402
+! NOTE: FDV
+! This call to wlog is done before unit 11 (used by wlog) is open, so the
+! output of this goes to file fort.11 (as well as to standard IO, per the way
+! wlog works).
+! To avoid the fort.11 files and since dmdw does its own log handling,
+! here I open unit 11 and send it to nowhere..
+  open(11,status='scratch')
+  call wlog('Calculating Debye-Waller factors in the Dynamical Matrix approach ...')
 !KJ 11-2011 Added following section to mimic CONTROL card:
 #endif 
 
@@ -48,8 +55,6 @@
     stop
   end if
   
-! call wlog('Using dynamical matrix DW factors.') !KJ
-
   call DMDW_Open_O
   call DMDW_Open_E
 
@@ -176,14 +181,22 @@
   call DMDW_Close_I
   call DMDW_Close_O
   call DMDW_Close_E
+
 #ifdef FEFF
 401 continue   ! exit point for master if no need to do DMDW
-call wlog('Done with module: Debye-Waller factors (DMDW).'//char(13)//char(10))
+! Changed by FDV
+! Remomving the Ctrl-M char, we can deal with Windows systems later
+! call wlog('Done with module: Debye-Waller factors (DMDW).'//char(13)//char(10))
+
+  call wlog('Done with module: Debye-Waller factors (DMDW).'//char(10))
+  close(11)
+  call WipeErrorfileAtFinish
 402 continue   ! DMDW skipped
-call WipeErrorfileAtFinish
+  call WipeErrorfileAtFinish
 400 continue !exit point for worker
-call par_end
+  call par_end
 #endif
+
   stop
 
   end program dmdw

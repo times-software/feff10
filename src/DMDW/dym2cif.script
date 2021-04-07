@@ -43,7 +43,7 @@ Sym2AN = {
 Dym_Name = sys.argv[1]
 
 # Debug
-#print Dym_Name
+#print(Dym_Name)
 
 # Check it exists
 if not(os.path.isfile(Dym_Name)):
@@ -75,27 +75,27 @@ bet = acos(sum([ x*y/abc[0]/abc[2] for (x,y) in zip(Cell_Vec[0],Cell_Vec[2]) ]))
 gam = acos(sum([ x*y/abc[0]/abc[1] for (x,y) in zip(Cell_Vec[0],Cell_Vec[1]) ]))*180.0/pi
 
 # Now we print a very simple cif
-print '{:s}'.format('data_')
-print '{:s}'.format('loop_')
-print '{:s}'.format('_symmetry_equiv_pos_as_xyz')
-print '{:s}'.format('  x,y,z')
+print('{:s}'.format('data_'))
+print('{:s}'.format('loop_'))
+print('{:s}'.format('_symmetry_equiv_pos_as_xyz'))
+print('{:s}'.format('  x,y,z'))
 
-print '_cell_Length_a {:14.4f}'.format(abc[0])
-print '_cell_Length_b {:14.4f}'.format(abc[1])
-print '_cell_Length_c {:14.4f}'.format(abc[2])
+print('_cell_Length_a {:14.4f}'.format(abc[0]))
+print('_cell_Length_b {:14.4f}'.format(abc[1]))
+print('_cell_Length_c {:14.4f}'.format(abc[2]))
 
-print '_cell_angle_alpha {:14.4f}'.format(alp)
-print '_cell_angle_beta  {:14.4f}'.format(bet)
-print '_cell_angle_gamma {:14.4f}'.format(gam)
+print('_cell_angle_alpha {:14.4f}'.format(alp))
+print('_cell_angle_beta  {:14.4f}'.format(bet))
+print('_cell_angle_gamma {:14.4f}'.format(gam))
 
-print '{:s}'.format('loop_')
-print '{:s}'.format('_atom_site_label')
-print '{:s}'.format('_atom_site_type_symbol')
-print '{:s}'.format('_atom_site_fract_x')
-print '{:s}'.format('_atom_site_fract_y')
-print '{:s}'.format('_atom_site_fract_z')
+print('{:s}'.format('loop_'))
+print('{:s}'.format('_atom_site_label'))
+print('{:s}'.format('_atom_site_type_symbol'))
+print('{:s}'.format('_atom_site_fract_x'))
+print('{:s}'.format('_atom_site_fract_y'))
+print('{:s}'.format('_atom_site_fract_z'))
 
 for (iAt,iAN,iAt_Red) in zip(range(0,nAt),AN,At_Red):
-  print '{:>2s}{:<4d} {:2s} {:12.8f} {:12.8f} {:12.8f}'.format(AN2Sym[iAN],iAt+1,AN2Sym[iAN],*iAt_Red)
+  print('{:>2s}{:<4d} {:2s} {:12.8f} {:12.8f} {:12.8f}'.format(AN2Sym[iAN],iAt+1,AN2Sym[iAN],*iAt_Red))
 
 

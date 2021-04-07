@@ -1,0 +1,201 @@
+#!/usr/bin/env python
+
+import sys
+import os.path
+import shutil
+
+# Define the names of the files we will use, to make it a bit more generic
+Files_Inc = { 'INCAR'    : 'INCAR'}
+
+Files_Unm = { 'KPOINTS'  : 'KPOINTS',
+              'POTCAR'   : 'POTCAR'}
+
+Files_Pos = { 'POSCAR'   : 'POSCAR'}
+
+Files_Que = { 'queuescr' : 'vasp_hopper.pbs'}
+
+Files = dict(Files_Inc.items() + 
+             Files_Unm.items() + 
+             Files_Pos.items() + 
+             Files_Que.items())
+
+# Make sure we have all the files we need
+for File in Files:
+  if not(os.path.isfile(Files[File])):
+    sys.stderr.write('File not found: ' + Files[File] +'\n')
+    sys.exit()
+
+# NOTE: Here I should use pyparsing to get this information, but it will
+#       take me too long to learn. Will do a hack for now
+
+# Check in INCAR to see if IBRION = 5
+for lineraw in open(Files['INCAR'],'r'):
+# Remove front and trailing blanks and newline
+  line = lineraw.rstrip().lstrip()
+# Ignore the line if it is empty or starts with a hash (comment)
+  if len(line) == 0 or line[0] == '#':
+    continue
+# Eliminate any inline comments
+  try:
+    comm_pos = line.index('!')
+    line = line[0:comm_pos]
+  except:
+    pass
+  try:
+    comm_pos = line.index('#')
+    line = line[0:comm_pos]
+  except:
+    pass
+# Check if we have the required '='
+  try:
+    eq_pos = line.index('=')
+  except:
+    sys.stderr.write('There seems to be a syntax error in INCAR line:\n')
+    sys.stderr.write(lineraw)
+    sys.exit()
+  Tag   = line[0:eq_pos].rstrip().lstrip().upper()
+  Value = line[eq_pos+1:].rstrip().lstrip()
+  if Tag == 'IBRION':
+    IBRION = int(Value)
+    break
+else:
+  sys.stderr.write('Error: IBRION not found in INCAR file\n')
+  sys.exit()
+
+if not(IBRION==5):
+  sys.stderr.write('Error: IBRION must be = 5 (for now)\n')
+  sys.exit()
+
+# Read the POSCAR file
+POSCAR = [ line.rstrip() for line in open(Files['POSCAR'],'r') ]
+
+# Do some sanity checks to make sure it has the right format
+# 1) Check that line 7 has numbers
+try:
+  nAt_Typ = [ int(nAt) for nAt in POSCAR[6].split() ]
+except:
+  sys.stderr.write('Error: Wrong format in line 7 of '+Files['POSCAR']+':\n')
+  sys.stderr.write(POSCAR[6]+'\n')
+  sys.exit()
+
+# 2) Check that line 8 has "selective dynamics"
+if not(POSCAR[7].rstrip().lstrip().lower()=='selective dynamics'):
+  sys.stderr.write('Error: Line 8 of '+Files['POSCAR']+' should be ')
+  sys.stderr.write('\'Selective dynamics\', we found:\n')
+  sys.stderr.write(POSCAR[7]+'\n')
+  sys.exit()
+
+# 3) Check that line 9 has "direct"
+if not(POSCAR[8].rstrip().lstrip().lower()=='direct'):
+  sys.stderr.write('Error: Line 9 of '+Files['POSCAR']+' should be ')
+  sys.stderr.write('\'Direct\', we found:\n')
+  sys.stderr.write(POSCAR[8]+'\n')
+  sys.exit()
+
+# Calculate the total number of atoms
+nAt_Tot = sum(nAt_Typ)
+
+# Get the optimization flags from the POSCAR
+Buffer = [ line.split()[3:] for line in POSCAR[9:9+nAt_Tot]]
+At_Coord_Flags = [ [a in 'Tt',b in 'Tt',c in 'Tt'] for [a,b,c] in Buffer ]
+
+# Make sure that if an atom is 'free', all its coordinates are
+if not(all([ (sum(row)==0) or (sum(row)==3) for row in At_Coord_Flags ])):
+  sys.stderr.write('Error: '+Files['POSCAR']+' has partially frozen atoms\n')
+  sys.stderr.write('       Probably this is not what you want\n')
+  sys.exit()
+At_Flags = [ (sum(row)==3) for row in At_Coord_Flags ]
+nAt_Use = sum(At_Flags)
+
+# Get the number of block we want to use to partition the calculation
+nBlk = int(sys.argv[1])
+
+# Make sure that it isn't crazy. The 100 limit is a bit out of a hat for now.
+if nBlk > 100:
+  sys.stderr.write('Error: use 100 or less partition blocks\n')
+  sys.exit()
+
+if nBlk > nAt_Use:
+  sys.stderr.write('Error: More blocks than free atoms.\n')
+  sys.exit()
+
+# Generate a well balanced partition
+Blk_Size = nAt_Use/nBlk
+nAt_Part = [ a+b for (a,b) in \
+             zip([Blk_Size]*nBlk,[1]*(nAt_Use%nBlk) + [0]*(nBlk-nAt_Use%nBlk)) ]
+
+# Debug
+#print(nAt_Use*3*2)
+#print(max(nAt_Part))
+#sys.exit()
+
+# Generate the list of directory names
+DirNameList = [ "Blk.{0:03d}".format(idir) for idir in range(0,nBlk+1) ]
+
+# Make the different directories
+for Dir in DirNameList:
+  if os.path.exists(Dir):
+    sys.stderr.write('Error: Block directories exist, will not overwrite\n')
+    sys.exit()
+  else:
+    os.makedirs(Dir)
+
+# Copy the unchanged files
+for Dir in DirNameList:
+  for File in Files_Unm:
+   shutil.copyfile(Files[File],Dir+'/'+Files[File])
+for Dir in DirNameList[1:]:
+  for File in Files_Inc:
+   shutil.copyfile(Files[File],Dir+'/'+Files[File])
+
+# Copy special versions of INCAR and POSCAR into the first directory (Blk.000)
+# This block store the single point run that will be used as an initial guess
+# for all the other runs.
+Tag_Eliminate = ['IBRION', 'NSW', 'NFREE', 'POTIM', 'SMASS']
+INCAR_IG = open(DirNameList[0]+'/'+Files['INCAR'],'w')
+for lineraw in open(Files['INCAR'],'r'):
+  Flag = not any([ Tag in lineraw.upper() for Tag in Tag_Eliminate ])
+  if Flag:
+    INCAR_IG.write(lineraw)
+INCAR_IG.close()
+
+POSCAR_IG = open(DirNameList[0]+'/'+Files['POSCAR'],'w')
+for iline in range(0,9):
+  POSCAR_IG.write(POSCAR[iline]+'\n')
+for iAt in range(0,nAt_Tot):
+  Line = POSCAR[9+iAt].replace('T','F').replace('t','F')
+  POSCAR_IG.write(Line+'\n')
+POSCAR_IG.close()
+
+# Generate the partitioned flags and print out the partitioned POSCAR files
+Indices =  [ i for i in range(0,nAt_Tot) if At_Flags[i] ]
+iAt_Part = 0
+for (nAt,Dir) in zip(nAt_Part,DirNameList[1:]):
+  POSCAR_Blk = open(Dir+'/'+Files['POSCAR'],'w')
+  for iline in range(0,9):
+    POSCAR_Blk.write(POSCAR[iline]+'\n')
+  for iAt in range(0,nAt_Tot):
+    Line = POSCAR[9+iAt].replace('T','F').replace('t','F')
+    if iAt in Indices[iAt_Part:iAt_Part+nAt]:
+      Line = Line.replace('F','T')
+    POSCAR_Blk.write(Line+'\n')
+  POSCAR_Blk.close()
+  iAt_Part += nAt
+
+# Generate the queueing scripts
+# NOTE: Very simple scripts for now, rely a lot on manipulations from the user
+#       before submitting.
+JobName   = sys.argv[2].rstrip().lstrip()
+QueueName = sys.argv[3].rstrip().lstrip()
+NProc     = sys.argv[4].rstrip().lstrip()
+
+for Dir in DirNameList:
+  QUEUE_Scr = open(Dir+'/'+Files['queuescr'],'w')
+  for Line in open(Files['queuescr'],'r'):
+    Line = Line.replace('XXNAMEXX',JobName+'.'+Dir)
+    Line = Line.replace('XXQUEUEXX',QueueName)
+    Line = Line.replace('XXNPXX',NProc)
+    Line = Line.replace('XXGUESSXX',str(int(Dir=='Blk.000')))
+    QUEUE_Scr.write(Line)
+  QUEUE_Scr.close()
+

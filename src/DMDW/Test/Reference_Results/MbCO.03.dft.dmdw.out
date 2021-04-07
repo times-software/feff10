@@ -4,518 +4,1177 @@
 
 --------------------------------------------------------------
  Path Indices:    1   2
- pDOS Centroid (THz):   27.580
- pDOS Poles:     Freq. (THz)    Weight
-                  10.075       0.33565
-                  28.541       0.45085
-                  39.828       0.18253
-                  47.422       0.03094
-                  81.932       0.00000
-                  98.861       0.00002
- Path Length (Ang), s^2 (1e-3 Ang^2):  2.024   2.458
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.075       0.335654600
+       28.541       0.450855000
+       39.828       0.182533422
+       47.422       0.030938387
+       81.932       0.000000586
+       98.861       0.000018004
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  27.580      1323.58     558.4495
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00399      15.83356       759.87     184.0600
+ -1       0.05435      18.40044       883.05     248.5756
+  0       1.00000     ---------     --------
+  1      24.98878      24.98878      1199.23     458.4501
+  2     760.64475      27.57979      1323.58     558.4495
+
+ Path Red. Mass (AMU):   11.199362
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.0245   2.4581
 --------------------------------------------------------------
  Path Indices:    1   3
- pDOS Centroid (THz):   27.543
- pDOS Poles:     Freq. (THz)    Weight
-                   9.911       0.33912
-                  28.613       0.45123
-                  40.036       0.18009
-                  47.627       0.02954
-                  91.137       0.00000
-                  98.912       0.00002
- Path Length (Ang), s^2 (1e-3 Ang^2):  2.025   2.493
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.911       0.339121432
+       28.613       0.451228893
+       40.036       0.180093234
+       47.627       0.029538161
+       91.137       0.000000449
+       98.912       0.000017829
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  27.543      1321.79     556.9420
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00413      15.56261       746.86     177.8144
+ -1       0.05511      18.14710       870.90     241.7777
+  0       1.00000     ---------     --------
+  1      24.89101      24.89101      1194.54     454.8697
+  2     758.59137      27.54254      1321.79     556.9419
+
+ Path Red. Mass (AMU):   11.199362
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.0249   2.4931
 --------------------------------------------------------------
  Path Indices:    1   4
- pDOS Centroid (THz):   27.547
- pDOS Poles:     Freq. (THz)    Weight
-                  10.074       0.33721
-                  28.543       0.45033
-                  39.891       0.18286
-                  47.439       0.02959
-                  88.385       0.00000
-                  98.866       0.00002
- Path Length (Ang), s^2 (1e-3 Ang^2):  2.027   2.463
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.074       0.337209917
+       28.543       0.450325720
+       39.891       0.182856448
+       47.439       0.029589610
+       88.385       0.000000398
+       98.866       0.000017906
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  27.547      1322.02     557.1380
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00400      15.80446       758.47     183.3839
+ -1       0.05446      18.36280       881.25     247.5597
+  0       1.00000     ---------     --------
+  1      24.95068      24.95068      1197.40     457.0532
+  2     758.85835      27.54738      1322.02     557.1379
+
+ Path Red. Mass (AMU):   11.199362
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.0274   2.4632
 --------------------------------------------------------------
  Path Indices:    1   5
- pDOS Centroid (THz):   27.498
- pDOS Poles:     Freq. (THz)    Weight
-                   9.863       0.33943
-                  28.555       0.44822
-                  39.842       0.18182
-                  47.497       0.03051
-                  80.280       0.00000
-                  98.869       0.00002
- Path Length (Ang), s^2 (1e-3 Ang^2):  2.026   2.503
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.863       0.339432292
+       28.555       0.448218901
+       39.842       0.181816779
+       47.497       0.030513318
+       80.280       0.000000717
+       98.869       0.000017992
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  27.498      1319.65     555.1357
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00417      15.49142       743.45     176.1913
+ -1       0.05532      18.07768       867.56     239.9315
+  0       1.00000     ---------     --------
+  1      24.84198      24.84198      1192.19     453.0795
+  2     756.13119      27.49784      1319.65     555.1357
+
+ Path Red. Mass (AMU):   11.199362
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.0257   2.5029
 --------------------------------------------------------------
  Path Indices:    1   6
- pDOS Centroid (THz):   31.315
- pDOS Poles:     Freq. (THz)    Weight
-                  10.358       0.40001
-                  28.111       0.14864
-                  41.294       0.37640
-                  48.695       0.07486
-                  96.514       0.00001
-                  98.767       0.00009
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.050   2.797
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.358       0.400005385
+       28.111       0.148638745
+       41.294       0.376399716
+       48.695       0.074862836
+       96.514       0.000007488
+       98.767       0.000085830
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  31.315      1502.83     635.1610
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00417      15.48796       743.28     155.3705
+ -1       0.05456      18.32865       879.61     217.5911
+  0       1.00000     ---------     --------
+  1      27.51925      27.51925      1320.67     490.5159
+  2     980.62698      31.31496      1502.83     635.1610
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0504   2.7970
 --------------------------------------------------------------
  Path Indices:    1   7
- pDOS Centroid (THz):   27.818
- pDOS Poles:     Freq. (THz)    Weight
-                  10.211       0.41349
-                  26.938       0.16996
-                  37.474       0.38566
-                  45.943       0.03081
-                  95.303       0.00000
-                  98.626       0.00008
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.099   2.962
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.211       0.413486946
+       26.938       0.169962374
+       37.474       0.385661598
+       45.943       0.030809367
+       95.303       0.000004210
+       98.626       0.000075504
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  27.818      1335.00     501.2190
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00449      14.92485       716.26     144.2780
+ -1       0.05777      17.31090       830.77     194.0972
+  0       1.00000     ---------     --------
+  1      24.67611      24.67611      1184.23     394.3969
+  2     773.83353      27.81786      1335.00     501.2190
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0988   2.9620
 --------------------------------------------------------------
  Path Indices:    1   8
- pDOS Centroid (THz):   31.345
- pDOS Poles:     Freq. (THz)    Weight
-                  10.219       0.39980
-                  28.212       0.14958
-                  41.384       0.37648
-                  48.759       0.07405
-                  98.253       0.00007
-                  99.404       0.00003
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.051   2.822
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.219       0.399799274
+       28.212       0.149576100
+       41.384       0.376481560
+       48.759       0.074050369
+       98.253       0.000065123
+       99.404       0.000027574
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  31.345      1504.28     636.3839
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00427      15.30809       734.65     151.7827
+ -1       0.05504      18.16801       871.90     213.7937
+  0       1.00000     ---------     --------
+  1      27.50533      27.50533      1320.00     490.0199
+  2     982.51494      31.34509      1504.28     636.3838
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0511   2.8223
 --------------------------------------------------------------
  Path Indices:    1   9
- pDOS Centroid (THz):   27.709
- pDOS Poles:     Freq. (THz)    Weight
-                  10.115       0.41400
-                  27.081       0.17563
-                  37.422       0.38050
-                  45.979       0.02980
-                  95.640       0.00001
-                  98.665       0.00007
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.098   2.986
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.115       0.413996148
+       27.081       0.175625037
+       37.422       0.380496074
+       45.979       0.029803521
+       95.640       0.000005061
+       98.665       0.000074158
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  27.709      1329.77     497.2974
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00457      14.78953       709.76     141.6736
+ -1       0.05823      17.17275       824.14     191.0116
+  0       1.00000     ---------     --------
+  1      24.56064      24.56064      1178.69     390.7145
+  2     767.77897      27.70882      1329.77     497.2974
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0978   2.9863
 --------------------------------------------------------------
  Path Indices:    1  10
- pDOS Centroid (THz):   31.281
- pDOS Poles:     Freq. (THz)    Weight
-                  10.348       0.40109
-                  28.132       0.14856
-                  41.295       0.37656
-                  48.718       0.07370
-                  98.074       0.00005
-                  99.156       0.00004
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.053   2.803
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.348       0.401090503
+       28.132       0.148563392
+       41.295       0.376555141
+       48.718       0.073697835
+       98.074       0.000049342
+       99.156       0.000043788
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  31.281      1501.18     633.7680
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00419      15.45704       741.80     154.7507
+ -1       0.05467      18.29000       877.75     216.6744
+  0       1.00000     ---------     --------
+  1      27.47920      27.47920      1318.75     489.0892
+  2     978.47631      31.28061      1501.18     633.7680
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0525   2.8029
 --------------------------------------------------------------
  Path Indices:    1  11
- pDOS Centroid (THz):   27.866
- pDOS Poles:     Freq. (THz)    Weight
-                  10.191       0.41341
-                  26.905       0.16710
-                  37.495       0.38766
-                  45.885       0.03176
-                  95.656       0.00001
-                  98.629       0.00007
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.101   2.964
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.191       0.413405203
+       26.905       0.167100906
+       37.495       0.387656550
+       45.885       0.031757382
+       95.656       0.000005122
+       98.629       0.000074838
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  27.866      1337.33     502.9647
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00450      14.90342       715.23     143.8639
+ -1       0.05781      17.29851       830.17     193.8195
+  0       1.00000     ---------     --------
+  1      24.70906      24.70906      1185.81     395.4508
+  2     776.52869      27.86626      1337.33     502.9647
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.1009   2.9642
 --------------------------------------------------------------
  Path Indices:    1  12
- pDOS Centroid (THz):   31.329
- pDOS Poles:     Freq. (THz)    Weight
-                  10.168       0.39924
-                  28.041       0.14665
-                  41.284       0.37887
-                  48.712       0.07514
-                  94.605       0.00000
-                  98.688       0.00009
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.053   2.831
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.168       0.399243399
+       28.041       0.146651728
+       41.284       0.378873068
+       48.712       0.075138444
+       94.605       0.000002787
+       98.688       0.000090574
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  31.329      1503.52     635.7412
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00430      15.24600       731.67     150.5538
+ -1       0.05522      18.11076       869.15     212.4483
+  0       1.00000     ---------     --------
+  1      27.48242      27.48242      1318.91     489.2041
+  2     981.52271      31.32926      1503.52     635.7412
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0528   2.8315
 --------------------------------------------------------------
  Path Indices:    1  13
- pDOS Centroid (THz):   27.772
- pDOS Poles:     Freq. (THz)    Weight
-                  10.110       0.41420
-                  27.098       0.17246
-                  37.487       0.38413
-                  46.024       0.02914
-                  95.247       0.00000
-                  98.651       0.00008
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.098   2.985
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.110       0.414195901
+       27.098       0.172458504
+       37.487       0.384130357
+       46.024       0.029135623
+       95.247       0.000004146
+       98.651       0.000075469
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  27.772      1332.78     499.5526
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00457      14.78505       709.55     141.5876
+ -1       0.05822      17.17747       824.36     191.1166
+  0       1.00000     ---------     --------
+  1      24.60922      24.60922      1181.02     392.2616
+  2     771.26069      27.77158      1332.78     499.5525
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0981   2.9855
 --------------------------------------------------------------
  Path Indices:    1  14
- pDOS Centroid (THz):   34.302
- pDOS Poles:     Freq. (THz)    Weight
-                  10.368       0.37424
-                  24.443       0.42450
-                  39.256       0.09891
-                  49.983       0.03308
-                  96.700       0.06920
-                  98.288       0.00007
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.453   2.940
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.368       0.374243558
+       24.443       0.424499176
+       39.256       0.098908656
+       49.983       0.033081792
+       96.700       0.069201575
+       98.288       0.000065242
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.302      1646.20     762.1314
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00428      15.29165       733.86     151.4568
+ -1       0.05736      17.43404       836.67     196.8684
+  0       1.00000     ---------     --------
+  1      26.49094      26.49094      1271.32     454.5426
+  2    1176.65697      34.30243      1646.20     762.1314
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.4525   2.9397
 --------------------------------------------------------------
  Path Indices:    1  15
- pDOS Centroid (THz):   34.306
- pDOS Poles:     Freq. (THz)    Weight
-                  10.340       0.37191
-                  24.421       0.42647
-                  39.157       0.09890
-                  49.955       0.03347
-                  96.701       0.06916
-                  98.074       0.00009
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.454   2.939
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.340       0.371912843
+       24.421       0.426469473
+       39.157       0.098895944
+       49.955       0.033470827
+       96.701       0.069162824
+       98.074       0.000088087
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.306      1646.35     762.2677
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00428      15.28717       733.64     151.3680
+ -1       0.05734      17.43877       836.90     196.9753
+  0       1.00000     ---------     --------
+  1      26.50180      26.50180      1271.84     454.9154
+  2    1176.86737      34.30550      1646.35     762.2677
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.4537   2.9390
 --------------------------------------------------------------
  Path Indices:    1  16
- pDOS Centroid (THz):   34.304
- pDOS Poles:     Freq. (THz)    Weight
-                  10.347       0.37411
-                  24.440       0.42458
-                  39.272       0.09882
-                  50.034       0.03323
-                  96.693       0.06918
-                  98.219       0.00007
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.453   2.943
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.347       0.374111304
+       24.440       0.424580423
+       39.272       0.098824963
+       50.034       0.033227482
+       96.693       0.069184352
+       98.219       0.000071477
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.304      1646.30     762.2229
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00429      15.26818       732.73     150.9923
+ -1       0.05742      17.41432       835.73     196.4232
+  0       1.00000     ---------     --------
+  1      26.48816      26.48816      1271.19     454.4473
+  2    1176.79817      34.30449      1646.30     762.2228
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.4535   2.9432
 --------------------------------------------------------------
  Path Indices:    1  17
- pDOS Centroid (THz):   34.285
- pDOS Poles:     Freq. (THz)    Weight
-                  10.315       0.37156
-                  24.425       0.42727
-                  39.153       0.09861
-                  49.893       0.03336
-                  96.677       0.06915
-                  98.396       0.00005
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.455   2.943
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.315       0.371558381
+       24.425       0.427270385
+       39.153       0.098613852
+       49.893       0.033357859
+       96.677       0.069145291
+       98.396       0.000054232
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.285      1645.34     761.3356
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00429      15.26183       732.43     150.8667
+ -1       0.05742      17.41662       835.84     196.4753
+  0       1.00000     ---------     --------
+  1      26.48420      26.48420      1271.00     454.3115
+  2    1175.42831      34.28452      1645.34     761.3356
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.4551   2.9429
 --------------------------------------------------------------
  Path Indices:    1  18
- pDOS Centroid (THz):   34.104
- pDOS Poles:     Freq. (THz)    Weight
-                  10.050       0.38373
-                  27.198       0.35409
-                  38.462       0.16044
-                  44.582       0.04701
-                  98.216       0.02690
-                  98.879       0.02783
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.318   2.922
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.050       0.383732281
+       27.198       0.354088815
+       38.462       0.160437075
+       44.582       0.047009424
+       98.216       0.026898683
+       98.879       0.027833722
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.104      1636.67     753.3273
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00442      15.04860       722.20     146.6804
+ -1       0.05698      17.54907       842.20     199.4748
+  0       1.00000     ---------     --------
+  1      27.14747      27.14747      1302.83     477.3518
+  2    1163.06432      34.10373      1636.67     753.3273
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.3180   2.9222
 --------------------------------------------------------------
  Path Indices:    1  19
- pDOS Centroid (THz):   34.403
- pDOS Poles:     Freq. (THz)    Weight
-                   9.972       0.37964
-                  26.829       0.33582
-                  38.764       0.21508
-                  48.624       0.01279
-                  98.218       0.02608
-                  98.881       0.03059
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.338   2.922
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.972       0.379636285
+       26.829       0.335818748
+       38.764       0.215084024
+       48.624       0.012792338
+       98.218       0.026080235
+       98.881       0.030588369
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.403      1651.04     766.6120
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00444      15.00955       720.32     145.9202
+ -1       0.05697      17.55172       842.32     199.5352
+  0       1.00000     ---------     --------
+  1      27.34102      27.34102      1312.12     484.1830
+  2    1183.57451      34.40312      1651.04     766.6119
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.3384   2.9221
 --------------------------------------------------------------
  Path Indices:    1  20
- pDOS Centroid (THz):   34.056
- pDOS Poles:     Freq. (THz)    Weight
-                   9.905       0.38487
-                  27.259       0.35655
-                  38.629       0.16188
-                  44.761       0.04200
-                  98.233       0.02827
-                  98.900       0.02644
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.320   2.956
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.905       0.384865122
+       27.259       0.356545121
+       38.629       0.161883926
+       44.761       0.041995398
+       98.233       0.028271833
+       98.900       0.026438601
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.056      1634.38     751.2218
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00454      14.84523       712.44     142.7427
+ -1       0.05762      17.35546       832.90     195.0977
+  0       1.00000     ---------     --------
+  1      27.05648      27.05648      1298.46     474.1574
+  2    1159.81352      34.05603      1634.38     751.2217
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.3201   2.9556
 --------------------------------------------------------------
  Path Indices:    1  21
- pDOS Centroid (THz):   34.352
- pDOS Poles:     Freq. (THz)    Weight
-                   9.848       0.38118
-                  26.912       0.33703
-                  38.760       0.21310
-                  48.763       0.01212
-                  98.232       0.02466
-                  98.902       0.03191
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.339   2.952
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.848       0.381180767
+       26.912       0.337031604
+       38.760       0.213101807
+       48.763       0.012121046
+       98.232       0.024655666
+       98.902       0.031909109
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.352      1648.59     764.3409
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00455      14.82693       711.56     142.3911
+ -1       0.05755      17.37569       833.87     195.5529
+  0       1.00000     ---------     --------
+  1      27.25257      27.25257      1307.87     481.0551
+  2    1180.06815      34.35212      1648.59     764.3408
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.3395   2.9524
 --------------------------------------------------------------
  Path Indices:    1  22
- pDOS Centroid (THz):   34.108
- pDOS Poles:     Freq. (THz)    Weight
-                  10.027       0.38284
-                  27.187       0.35433
-                  38.395       0.15914
-                  44.492       0.04896
-                  98.204       0.02671
-                  98.867       0.02802
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.320   2.924
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.027       0.382841610
+       27.187       0.354325644
+       38.395       0.159143689
+       44.492       0.048959160
+       98.204       0.026712652
+       98.867       0.028017243
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.108      1636.89     753.5323
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00443      15.03150       721.37     146.3472
+ -1       0.05702      17.53885       841.70     199.2427
+  0       1.00000     ---------     --------
+  1      27.15351      27.15351      1303.12     477.5645
+  2    1163.38068      34.10837      1636.89     753.5322
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.3197   2.9240
 --------------------------------------------------------------
  Path Indices:    1  23
- pDOS Centroid (THz):   34.407
- pDOS Poles:     Freq. (THz)    Weight
-                   9.951       0.37876
-                  26.802       0.33608
-                  38.757       0.21535
-                  48.523       0.01313
-                  98.206       0.02622
-                  98.868       0.03045
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.340   2.924
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.951       0.378764778
+       26.802       0.336084074
+       38.757       0.215349996
+       48.523       0.013133416
+       98.206       0.026217818
+       98.868       0.030449918
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.407      1651.20     766.7666
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00445      14.99404       719.58     145.6188
+ -1       0.05701      17.54195       841.85     199.3130
+  0       1.00000     ---------     --------
+  1      27.34529      27.34529      1312.32     484.3342
+  2    1183.81326      34.40659      1651.20     766.7666
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.3401   2.9238
 --------------------------------------------------------------
  Path Indices:    1  24
- pDOS Centroid (THz):   34.085
- pDOS Poles:     Freq. (THz)    Weight
-                   9.862       0.38393
-                  27.250       0.35571
-                  38.542       0.16040
-                  44.658       0.04517
-                  98.227       0.02860
-                  98.893       0.02618
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.321   2.961
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.862       0.383933924
+       27.250       0.355714262
+       38.542       0.160402625
+       44.658       0.045168276
+       98.227       0.028599372
+       98.893       0.026181541
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.085      1635.79     752.5202
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00456      14.80417       710.47     141.9542
+ -1       0.05771      17.32699       831.54     194.4582
+  0       1.00000     ---------     --------
+  1      27.07713      27.07713      1299.46     474.8815
+  2    1161.81822      34.08545      1635.79     752.5202
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.3209   2.9606
 --------------------------------------------------------------
  Path Indices:    1  25
- pDOS Centroid (THz):   34.373
- pDOS Poles:     Freq. (THz)    Weight
-                   9.827       0.38104
-                  26.909       0.33603
-                  38.785       0.21393
-                  48.707       0.01242
-                  98.227       0.02426
-                  98.896       0.03231
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.340   2.955
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.827       0.381042548
+       26.909       0.336034166
+       38.785       0.213930024
+       48.707       0.012415775
+       98.227       0.024264205
+       98.896       0.032313281
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  34.373      1649.60     765.2783
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00456      14.80318       710.42     141.9351
+ -1       0.05761      17.35840       833.04     195.1638
+  0       1.00000     ---------     --------
+  1      27.26754      27.26754      1308.59     481.5837
+  2    1181.51542      34.37318      1649.60     765.2782
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.3396   2.9555
 --------------------------------------------------------------
  Path Indices:    1  26
- pDOS Centroid (THz):   92.022
- pDOS Poles:     Freq. (THz)    Weight
-                  10.610       0.03903
-                  24.883       0.04492
-                  39.684       0.01107
-                  50.565       0.00651
-                  96.700       0.89794
-                  98.492       0.00054
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.539   7.756
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.610       0.039029446
+       24.883       0.044918173
+       39.684       0.011068026
+       50.565       0.006510663
+       96.700       0.897936879
+       98.492       0.000536812
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  92.022      4416.22     549.5697
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00052      43.64845      2094.73     123.6449
+ -1       0.01518      65.86550      3160.94     281.5494
+  0       1.00000     ---------     --------
+  1      89.18398      89.18398      4280.02     516.1931
+  2    8468.06610      92.02210      4416.22     549.5697
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.5388   7.7557
 --------------------------------------------------------------
  Path Indices:    1  27
- pDOS Centroid (THz):   92.004
- pDOS Poles:     Freq. (THz)    Weight
-                  10.531       0.03859
-                  24.790       0.04548
-                  39.389       0.01121
-                  50.498       0.00664
-                  96.701       0.89753
-                  98.468       0.00054
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.540   7.766
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.531       0.038592543
+       24.790       0.045481266
+       39.389       0.011214586
+       50.498       0.006639796
+       96.701       0.897530645
+       98.468       0.000541159
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  92.004      4415.36     549.3562
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00053      43.52411      2088.76     122.9415
+ -1       0.01520      65.77824      3156.76     280.8038
+  0       1.00000     ---------     --------
+  1      89.15674      89.15674      4278.71     515.8778
+  2    8464.77590      92.00422      4415.36     549.3561
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.5398   7.7662
 --------------------------------------------------------------
  Path Indices:    1  28
- pDOS Centroid (THz):   92.019
- pDOS Poles:     Freq. (THz)    Weight
-                  10.537       0.03873
-                  24.786       0.04496
-                  39.534       0.01118
-                  50.567       0.00658
-                  96.693       0.89800
-                  98.468       0.00055
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.540   7.762
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.537       0.038725090
+       24.786       0.044964538
+       39.534       0.011182600
+       50.567       0.006579985
+       96.693       0.897996505
+       98.468       0.000551279
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  92.019      4416.07     549.5319
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00053      43.52837      2088.96     122.9655
+ -1       0.01519      65.81210      3158.38     281.0930
+  0       1.00000     ---------     --------
+  1      89.18195      89.18195      4279.92     516.1696
+  2    8467.48409      92.01893      4416.07     549.5319
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.5398   7.7622
 --------------------------------------------------------------
  Path Indices:    1  29
- pDOS Centroid (THz):   91.970
- pDOS Poles:     Freq. (THz)    Weight
-                  10.545       0.03880
-                  24.868       0.04570
-                  39.503       0.01109
-                  50.459       0.00655
-                  96.677       0.89733
-                  98.471       0.00052
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.541   7.772
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.545       0.038801136
+       24.868       0.045696793
+       39.503       0.011092681
+       50.459       0.006551340
+       96.677       0.897333602
+       98.471       0.000524451
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  91.970      4413.73     548.9504
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00053      43.49688      2087.45     122.7877
+ -1       0.01521      65.72577      3154.24     280.3560
+  0       1.00000     ---------     --------
+  1      89.11748      89.11748      4276.83     515.4236
+  2    8458.52392      91.97023      4413.73     548.9504
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.5411   7.7724
 --------------------------------------------------------------
  Path Indices:    1  30
- pDOS Centroid (THz):   86.514
- pDOS Poles:     Freq. (THz)    Weight
-                  10.953       0.04914
-                  30.126       0.10867
-                  38.542       0.06316
-                  47.629       0.03750
-                  98.221       0.37892
-                  98.883       0.36262
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.282   9.217
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.953       0.049137579
+       30.126       0.108673729
+       38.542       0.063158872
+       47.629       0.037495671
+       98.221       0.378918572
+       98.883       0.362615577
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  86.514      4151.86     485.7432
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00066      38.78556      1861.35      97.6290
+ -1       0.01804      55.41871      2659.59     199.3202
+  0       1.00000     ---------     --------
+  1      81.10667      81.10667      3892.38     426.9251
+  2    7484.59257      86.51354      4151.86     485.7431
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.2816   9.2166
 --------------------------------------------------------------
  Path Indices:    1  31
- pDOS Centroid (THz):   87.235
- pDOS Poles:     Freq. (THz)    Weight
-                  10.844       0.04874
-                  29.324       0.09162
-                  38.117       0.07062
-                  47.313       0.03248
-                  98.226       0.36611
-                  98.886       0.39042
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.315   9.110
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.844       0.048744206
+       29.324       0.091623084
+       38.117       0.070618477
+       47.313       0.032483753
+       98.226       0.366113070
+       98.886       0.390417413
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  87.235      4186.48     493.8768
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00066      38.86385      1865.11      98.0235
+ -1       0.01783      56.07170      2690.93     204.0450
+  0       1.00000     ---------     --------
+  1      82.01274      82.01274      3935.86     436.5170
+  2    7609.91989      87.23485      4186.48     493.8768
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.3145   9.1097
 --------------------------------------------------------------
  Path Indices:    1  32
- pDOS Centroid (THz):   86.519
- pDOS Poles:     Freq. (THz)    Weight
-                  10.821       0.04907
-                  30.138       0.10901
-                  38.557       0.06284
-                  47.728       0.03749
-                  98.237       0.39727
-                  98.903       0.34432
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.284   9.242
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.821       0.049070059
+       30.138       0.109006343
+       38.557       0.062841565
+       47.728       0.037488481
+       98.237       0.397274174
+       98.903       0.344319377
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  86.519      4152.13     485.8066
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00067      38.51304      1848.27      96.2619
+ -1       0.01809      55.27181      2652.54     198.2649
+  0       1.00000     ---------     --------
+  1      81.10988      81.10988      3892.53     426.9588
+  2    7485.57067      86.51919      4152.13     485.8066
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.2837   9.2416
 --------------------------------------------------------------
  Path Indices:    1  33
- pDOS Centroid (THz):   87.234
- pDOS Poles:     Freq. (THz)    Weight
-                  10.745       0.04883
-                  29.401       0.09268
-                  38.168       0.07011
-                  47.427       0.03251
-                  98.241       0.34719
-                  98.907       0.40867
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.315   9.136
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.745       0.048829052
+       29.401       0.092681861
+       38.168       0.070107601
+       47.427       0.032514653
+       98.241       0.347194141
+       98.907       0.408672695
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  87.234      4186.43     493.8667
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00067      38.61864      1853.34      96.7904
+ -1       0.01789      55.91196      2683.26     202.8840
+  0       1.00000     ---------     --------
+  1      81.99677      81.99677      3935.10     436.3470
+  2    7609.76384      87.23396      4186.43     493.8666
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.3150   9.1361
 --------------------------------------------------------------
  Path Indices:    1  34
- pDOS Centroid (THz):   86.501
- pDOS Poles:     Freq. (THz)    Weight
-                  10.931       0.04910
-                  30.114       0.10879
-                  38.547       0.06322
-                  47.593       0.03740
-                  98.210       0.37647
-                  98.870       0.36502
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.283   9.222
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.931       0.049095069
+       30.114       0.108786782
+       38.547       0.063222133
+       47.593       0.037404374
+       98.210       0.376474049
+       98.870       0.365017592
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  86.501      4151.28     485.6068
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00067      38.74187      1859.26      97.4091
+ -1       0.01806      55.38621      2658.03     199.0865
+  0       1.00000     ---------     --------
+  1      81.09263      81.09263      3891.71     426.7773
+  2    7482.49068      86.50139      4151.28     485.6067
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.2832   9.2221
 --------------------------------------------------------------
  Path Indices:    1  35
- pDOS Centroid (THz):   87.222
- pDOS Poles:     Freq. (THz)    Weight
-                  10.791       0.04848
-                  29.180       0.08999
-                  37.962       0.07215
-                  47.238       0.03283
-                  98.214       0.36814
-                  98.874       0.38841
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.316   9.117
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.791       0.048479563
+       29.180       0.089987331
+       37.962       0.072147864
+       47.238       0.032831264
+       98.214       0.368141959
+       98.874       0.388412019
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  87.222      4185.87     493.7336
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00066      38.78671      1861.41      97.6348
+ -1       0.01785      56.02594      2688.73     203.7121
+  0       1.00000     ---------     --------
+  1      81.99915      81.99915      3935.21     436.3723
+  2    7607.71311      87.22221      4185.87     493.7336
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.3163   9.1173
 --------------------------------------------------------------
  Path Indices:    1  36
- pDOS Centroid (THz):   86.537
- pDOS Poles:     Freq. (THz)    Weight
-                  10.782       0.04895
-                  30.138       0.10894
-                  38.570       0.06260
-                  47.670       0.03735
-                  98.232       0.40231
-                  98.897       0.33985
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.285   9.242
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.782       0.048949678
+       30.138       0.108941120
+       38.570       0.062604476
+       47.670       0.037346420
+       98.232       0.402308794
+       98.897       0.339849512
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  86.537      4153.00     486.0109
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00068      38.46326      1845.89      96.0132
+ -1       0.01809      55.27011      2652.46     198.2527
+  0       1.00000     ---------     --------
+  1      81.13600      81.13600      3893.79     427.2339
+  2    7488.71736      86.53738      4153.00     486.0108
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.2850   9.2420
 --------------------------------------------------------------
  Path Indices:    1  37
- pDOS Centroid (THz):   87.230
- pDOS Poles:     Freq. (THz)    Weight
-                  10.707       0.04869
-                  29.327       0.09136
-                  38.064       0.07135
-                  47.344       0.03278
-                  98.236       0.34208
-                  98.901       0.41374
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.315   9.141
+ PDOS Poles:
+     Freq. (THz)    Weight
+       10.707       0.048693695
+       29.327       0.091356405
+       38.064       0.071350538
+       47.344       0.032778150
+       98.236       0.342084034
+       98.901       0.413737181
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  87.230      4186.27     493.8272
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00067      38.55990      1850.52      96.4962
+ -1       0.01790      55.88086      2681.77     202.6584
+  0       1.00000     ---------     --------
+  1      81.99231      81.99231      3934.88     436.2995
+  2    7609.15510      87.23047      4186.27     493.8271
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.3151   9.1414
 --------------------------------------------------------------
  Path Indices:    1  38
- pDOS Centroid (THz):   28.951
- pDOS Poles:     Freq. (THz)    Weight
-                   8.622       0.28713
-                  28.227       0.33800
-                  35.244       0.28060
-                  45.868       0.09420
-                 100.464       0.00007
-                 109.641       0.00001
- Path Length (Ang), s^2 (1e-3 Ang^2):  2.049   2.509
+ PDOS Poles:
+     Freq. (THz)    Weight
+        8.622       0.287125127
+       28.227       0.337997084
+       35.244       0.280598287
+       45.868       0.094201462
+      100.464       0.000065408
+      109.641       0.000012630
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  28.951      1389.41     615.3810
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00456      14.81279       710.88     161.0927
+ -1       0.05529      18.08555       867.94     240.1405
+  0       1.00000     ---------     --------
+  1      26.23435      26.23435      1259.01     505.2924
+  2     838.18917      28.95150      1389.41     615.3810
+
+ Path Red. Mass (AMU):   11.199362
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.0485   2.5092
 --------------------------------------------------------------
  Path Indices:    1  39
- pDOS Centroid (THz):   32.548
- pDOS Poles:     Freq. (THz)    Weight
-                   8.184       0.41337
-                  26.555       0.07815
-                  39.176       0.14450
-                  45.419       0.36349
-                 100.238       0.00046
-                 109.633       0.00003
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.056   3.364
+ PDOS Poles:
+     Freq. (THz)    Weight
+        8.184       0.413366581
+       26.555       0.078149501
+       39.176       0.144504235
+       45.419       0.363492765
+      100.238       0.000457639
+      109.633       0.000029283
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  32.548      1562.01     686.1708
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00655      12.35356       592.86      98.8472
+ -1       0.06515      15.34983       736.65     152.6114
+  0       1.00000     ---------     --------
+  1      27.67812      27.67812      1328.30     496.1959
+  2    1059.38109      32.54813      1562.01     686.1707
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0565   3.3640
 --------------------------------------------------------------
  Path Indices:    1  40
- pDOS Centroid (THz):   30.785
- pDOS Poles:     Freq. (THz)    Weight
-                   8.314       0.43423
-                  28.673       0.12728
-                  39.739       0.24985
-                  46.976       0.18837
-                  99.982       0.00027
-                 109.560       0.00001
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.099   3.456
+ PDOS Poles:
+     Freq. (THz)    Weight
+        8.314       0.434225065
+       28.673       0.127275771
+       39.739       0.249850556
+       46.976       0.188365276
+       99.982       0.000273095
+      109.560       0.000010238
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  30.785      1477.41     613.8554
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00668      12.23516       587.18      96.9614
+ -1       0.06697      14.93300       716.65     144.4355
+  0       1.00000     ---------     --------
+  1      26.06539      26.06539      1250.90     440.0565
+  2     947.73322      30.78528      1477.41     613.8554
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.0988   3.4555
 --------------------------------------------------------------
  Path Indices:    1  41
- pDOS Centroid (THz):   35.714
- pDOS Poles:     Freq. (THz)    Weight
-                   8.503       0.39365
-                  28.172       0.30580
-                  38.514       0.15574
-                  46.097       0.09776
-                  99.875       0.00004
-                 109.650       0.04701
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.224   2.898
+ PDOS Poles:
+     Freq. (THz)    Weight
+        8.503       0.393647629
+       28.172       0.305802745
+       38.514       0.155741698
+       46.097       0.097758991
+       99.875       0.000042343
+      109.650       0.047006595
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  35.714      1713.95     936.4394
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00598      12.92627       620.34     122.6729
+ -1       0.06374      15.68776       752.87     180.6858
+  0       1.00000     ---------     --------
+  1      27.62528      27.62528      1325.76     560.2933
+  2    1275.49172      35.71403      1713.95     936.4393
+
+ Path Red. Mass (AMU):   11.199362
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.2244   2.8975
 --------------------------------------------------------------
  Path Indices:    1  42
- pDOS Centroid (THz):   38.964
- pDOS Poles:     Freq. (THz)    Weight
-                   9.156       0.37134
-                  30.254       0.32225
-                  46.547       0.23876
-                  86.663       0.00012
-                  99.875       0.06738
-                 107.609       0.00016
- Path Length (Ang), s^2 (1e-3 Ang^2):  4.267   2.930
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.156       0.371342476
+       30.254       0.322246126
+       46.547       0.238757398
+       86.663       0.000120001
+       99.875       0.067378385
+      107.609       0.000155615
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  38.964      1869.90     983.3336
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00490      14.28725       685.66     132.2139
+ -1       0.05702      17.53863       841.69     199.2376
+  0       1.00000     ---------     --------
+  1      31.01901      31.01901      1488.63     623.2119
+  2    1518.17175      38.96372      1869.90     983.3336
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  4.2670   2.9303
 --------------------------------------------------------------
  Path Indices:    1  43
- pDOS Centroid (THz):   43.898
- pDOS Poles:     Freq. (THz)    Weight
-                  11.532       0.19420
-                  14.349       0.31214
-                  35.091       0.00025
-                  61.011       0.49342
-                  97.101       0.00000
-                 109.619       0.00000
- Path Length (Ang), s^2 (1e-3 Ang^2):  1.828   2.390
+ PDOS Poles:
+     Freq. (THz)    Weight
+       11.532       0.194195919
+       14.349       0.312141898
+       35.091       0.000245171
+       61.011       0.493416724
+       97.101       0.000000144
+      109.619       0.000000136
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  43.898      2106.72    1248.1786
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00311      17.93449       860.69     208.3330
+ -1       0.04669      21.41910      1027.92     297.1546
+  0       1.00000     ---------     --------
+  1      36.83095      36.83095      1767.55     878.6297
+  2    1927.06672      43.89837      2106.72    1248.1786
+
+ Path Red. Mass (AMU):    9.880325
+ Path Length (Ang), s^2 (1e-3 Ang^2):  1.8284   2.3897
 --------------------------------------------------------------
  Path Indices:    1  44
- pDOS Centroid (THz):   35.807
- pDOS Poles:     Freq. (THz)    Weight
-                  11.053       0.19790
-                  14.111       0.49026
-                  35.915       0.00019
-                  61.011       0.31165
-                  98.226       0.00000
-                 109.591       0.00000
- Path Length (Ang), s^2 (1e-3 Ang^2):  2.993   2.349
+ PDOS Poles:
+     Freq. (THz)    Weight
+       11.053       0.197897960
+       14.111       0.490259150
+       35.915       0.000193438
+       61.011       0.311649256
+       98.226       0.000000079
+      109.591       0.000000099
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  35.807      1718.39    1045.4161
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00417      15.49316       743.53     195.7242
+ -1       0.05776      17.31243       830.84     244.3885
+  0       1.00000     ---------     --------
+  1      28.12620      28.12620      1349.80     645.0403
+  2    1282.10760      35.80653      1718.39    1045.4160
+
+ Path Red. Mass (AMU):   12.438154
+ Path Length (Ang), s^2 (1e-3 Ang^2):  2.9934   2.3489
 --------------------------------------------------------------
  Path Indices:    1  45
- pDOS Centroid (THz):   46.105
- pDOS Poles:     Freq. (THz)    Weight
-                   9.134       0.07951
-                  34.489       0.59418
-                  44.031       0.23033
-                  61.588       0.00046
-                 100.163       0.05741
-                 100.900       0.03812
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.293  16.428
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.134       0.079513123
+       34.489       0.594178468
+       44.031       0.230328983
+       61.588       0.000455781
+      100.163       0.057406515
+      100.900       0.038117129
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  46.105      2212.62     137.9540
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00158      25.15066      1207.00      41.0523
+ -1       0.03212      31.13096      1494.00      62.8961
+  0       1.00000     ---------     --------
+  1      40.98447      40.98447      1966.88     109.0127
+  2    2125.66988      46.10499      2212.62     137.9540
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.2933  16.4285
 --------------------------------------------------------------
  Path Indices:    1  46
- pDOS Centroid (THz):   49.822
- pDOS Poles:     Freq. (THz)    Weight
-                   9.370       0.08086
-                  35.071       0.53811
-                  43.937       0.24827
-                  71.335       0.00008
-                 100.252       0.13262
-                 108.799       0.00006
- Path Length (Ang), s^2 (1e-3 Ang^2):  3.315  15.825
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.370       0.080856438
+       35.071       0.538111287
+       43.937       0.248274919
+       71.335       0.000079635
+      100.252       0.132619628
+      108.799       0.000058091
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  49.822      2390.99     161.0925
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00150      25.81688      1238.97      43.2560
+ -1       0.03095      32.31173      1550.67      67.7577
+  0       1.00000     ---------     --------
+  1      43.84522      43.84522      2104.17     124.7622
+  2    2482.19935      49.82168      2390.99     161.0924
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  3.3148  15.8249
 --------------------------------------------------------------
  Path Indices:    1  47
- pDOS Centroid (THz):   97.741
- pDOS Poles:     Freq. (THz)    Weight
-                   9.332       0.04174
-                  32.837       0.09783
-                  43.300       0.08566
-                  51.151       0.00316
-                 100.220       0.00089
-                 109.650       0.77072
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.140   8.452
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.332       0.041738408
+       32.837       0.097831278
+       43.300       0.085661221
+       51.151       0.003163557
+      100.220       0.000888284
+      109.650       0.770717252
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  97.741      4690.67     619.9984
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00068      38.31662      1838.85      95.2824
+ -1       0.01653      60.49601      2903.26     237.5155
+  0       1.00000     ---------     --------
+  1      92.07067      92.07067      4418.55     550.1500
+  2    9553.26961      97.74083      4690.67     619.9984
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.1404   8.4522
 --------------------------------------------------------------
  Path Indices:    1  48
- pDOS Centroid (THz):   90.851
- pDOS Poles:     Freq. (THz)    Weight
-                   9.792       0.04330
-                  32.394       0.10623
-                  42.538       0.04146
-                  99.608       0.58595
-                 100.410       0.22273
-                 109.404       0.00032
- Path Length (Ang), s^2 (1e-3 Ang^2):  5.282   8.576
+ PDOS Poles:
+     Freq. (THz)    Weight
+        9.792       0.043297447
+       32.394       0.106229508
+       42.538       0.041464323
+       99.608       0.585953880
+      100.410       0.222730360
+      109.404       0.000324474
+
+ PDOS Einstein freq (single pole), associated temp and eff. force constant: 
+ Freq (THz)   Temp (K)   Eff. FC (N/m)
+  90.851      4360.00     535.6650
+
+ pDOS n Moments, associated Einstein freqs, temps and eff. force constants:
+  n     Mom (THz^n)   Freq (THz)     Temp (K)    Eff. FC (N/m)
+ -2       0.00066      39.01804      1872.51      98.8028
+ -1       0.01678      59.59698      2860.11     230.5085
+  0       1.00000     ---------     --------
+  1      86.39447      86.39447      4146.15     484.4069
+  2    8253.81419      90.85050      4360.00     535.6649
+
+ Path Red. Mass (AMU):    0.989988
+ Path Length (Ang), s^2 (1e-3 Ang^2):  5.2823   8.5760
+--------------------------------------------------------------

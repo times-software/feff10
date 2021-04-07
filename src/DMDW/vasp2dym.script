@@ -43,7 +43,7 @@ Sym2AN = {
 vasp_xml = sys.argv[1]
 
 # Debug
-#print vasp_xml
+#print(vasp_xml)
 
 # Here we should check that the file exist and is an xml
 
@@ -51,7 +51,7 @@ vasp_xml = sys.argv[1]
 xmldoc = minidom.parse(vasp_xml)
 
 # Debug
-#print xmldoc
+#print(xmldoc)
 
 # Debug: Trying to get the IBRION card
 incarinfolist = xmldoc.getElementsByTagName('incar')
@@ -68,7 +68,7 @@ if incarinfolist.length > 1:
 incarinfo = incarinfolist[0]
 
 # Debug
-#print incarinfo.toxml()
+#print(incarinfo.toxml())
 
 for info in incarinfo.getElementsByTagName('i'):
   if info.hasAttribute('name') & (info.getAttribute('name') == 'IBRION'):
@@ -77,7 +77,7 @@ for info in incarinfo.getElementsByTagName('i'):
 IBRION = int(info.firstChild.data)
 
 # Debug
-#print IBRION
+#print(IBRION)
 
 # Get the atomic info
 atominfolist = xmldoc.getElementsByTagName('atominfo')
@@ -94,7 +94,7 @@ if atominfolist.length > 1:
 atominfo = atominfolist[0]
 
 # Debug
-#print atominfo.toxml()
+#print(atominfo.toxml())
 
 # Now we parse the atomic info to get the important stuff
 
@@ -113,7 +113,7 @@ if atomslist.length > 1:
 nAt_Tot = int(atomslist[0].firstChild.data)
 
 # Debug
-#print nAt_Tot
+#print(nAt_Tot)
 
 # Get the number of atom types
 typeslist = atominfo.getElementsByTagName('types')
@@ -130,14 +130,14 @@ if typeslist.length > 1:
 nTyp = int(typeslist[0].firstChild.data)
 
 # Debug
-#print nTyp
+#print(nTyp)
 
 # Now we get the information from each of the arrays in atomicinfo
 for array in atominfo.getElementsByTagName('array'):
   if   array.getAttribute('name') == 'atoms':
 # Get a list of the atoms in the cell, and their types
 # Debug
-#   print 'atoms proc'
+#   print('atoms proc')
     At_Sym = []
     At_Typ = []
     for arrayelem in array.getElementsByTagName('rc'):
@@ -149,7 +149,7 @@ for array in atominfo.getElementsByTagName('array'):
 # This part is a bit hacky since to simplify I need to assume that the
 # order of the info won't change. This is probably good enough for now.
 # Debug
-#   print 'atomtypes proc'
+#   print('atomtypes proc')
     typeelemlist = array.getElementsByTagName('rc')
     if typeelemlist.length > nTyp:
       sys.stderr.write('Inconsistent number of types\n')
@@ -179,17 +179,17 @@ for array in atominfo.getElementsByTagName('array'):
 At_AN = [ Sym2AN[sym.strip()] for sym in At_Sym ]
 
 # Debug
-#print At_Sym
-#print At_Typ
-#print At_AN
+#print(At_Sym)
+#print(At_Typ)
+#print(At_AN)
 
 #exit()
 
 # Debug
-#print Typ_nAt
-#print Typ_Sym
-#print Typ_Mass
-#print Typ_nValEl
+#print(Typ_nAt)
+#print(Typ_Sym)
+#print(Typ_Mass)
+#print(Typ_nValEl)
 
 #exit()
 
@@ -214,20 +214,20 @@ for vec in array.getElementsByTagName('v'):
   Cell_Vec.append([float(str) for str in vec.firstChild.data.split()])
 
 # Debug
-#print Cell_Vec
+#print(Cell_Vec)
 
 # Collect the atomic coordinates from the initial positions
 for array in struc.getElementsByTagName('varray'):
   if array.hasAttribute('name') & (array.getAttribute('name') == 'positions'):
     break
-#print array.childNodes
+#print(array.childNodes)
 
 At_Red = []
 for vec in array.getElementsByTagName('v'):
   At_Red.append([float(str) for str in vec.firstChild.data.split()])
 
 # Debug
-#print At_Red
+#print(At_Red)
 
 # Collect the optimization/dynamical matrix flags
 for array in struc.getElementsByTagName('varray'):
@@ -239,7 +239,7 @@ for vec in array.getElementsByTagName('v'):
   At_Coord_Flags.append([ (str=='T') for str in vec.firstChild.data.split()])
 
 # Debug
-#print At_Flag_F
+#print(At_Flag_F)
 
 # Here we generate the flags to control if the atom is active or not. We also
 # make sure that:
@@ -272,7 +272,7 @@ for At in At_Red:
   At_XYZ.append(XYZ)
 
 # Debug
-#print At_XYZ
+#print(At_XYZ)
 #exit()
 
 # Here we should do some sanity checks of the data we read
@@ -295,12 +295,12 @@ for vec in array.getElementsByTagName('v'):
   Buffer.append([float(str) for str in vec.firstChild.data.split()])
 
 # Debug
-#print len(Buffer[0])
-#print Buffer[1]
-#print (Buffer[29][29:107])
+#print(len(Buffer[0]))
+#print(Buffer[1])
+#print((Buffer[29][29:107]))
 #for vec in Buffer:
 #  for elem in vec:
-#    print '{:14.8f}'.format(elem)
+#    print('{:14.8f}'.format(elem))
 #sys.exit()
 
 # Convert the buffer into the blocked format we use in the output
@@ -320,10 +320,10 @@ for iAt in [ x for (x,y) in zip(range(0,nAt_Tot),At_Flags) if y ]:
   iAt_Use += 1
 
 # Debug
-#print Buffer[0][0:3]
+#print(Buffer[0][0:3])
 
 # Debug
-#print len(Dyn_Mat[0][0])
+#print(len(Dyn_Mat[0][0]))
 #exit()
 
 # Here we should do some sanity checks of the data we read
@@ -335,49 +335,49 @@ for iAt in [ x for (x,y) in zip(range(0,nAt_Tot),At_Flags) if y ]:
 Dym_Type = 4
 
 # dym format label
-print '{:4d}'.format(Dym_Type)
+print('{:4d}'.format(Dym_Type))
 
 # Used number of atoms
-print '{:4d}'.format(nAt_Use)
+print('{:4d}'.format(nAt_Use))
 
 # Atomic numbers
 for AN in [ x for (x,y) in zip(At_AN,At_Flags) if y ]:
-  print '{:4d}'.format(AN)
+  print('{:4d}'.format(AN))
 
 # Atomic masses
 for At in [ x for (x,y) in zip(At_Typ,At_Flags) if y ]:
-  print '{:14.7f}'.format(Typ_Mass[At])
+  print('{:14.7f}'.format(Typ_Mass[At]))
 
 if   Dym_Type == 1:
 
 # Cartesian coordinates, in au
   for At in [ x for (x,y) in zip(At_XYZ,At_Flags) if y ]:
-    print '{:14.8f}{:14.8f}{:14.8f}'.format(*At)
+    print('{:14.8f}{:14.8f}{:14.8f}'.format(*At))
 
 elif Dym_Type == 4:
 
 # Reduced coordinates
   for At in [ x for (x,y) in zip(At_Red,At_Flags) if y ]:
-    print '{:11.8f}{:11.8f}{:11.8f}'.format(*At)
+    print('{:11.8f}{:11.8f}{:11.8f}'.format(*At))
 
 # Debug
-#print Dyn_Mat[0][0][0][0]*Typ_Mass[At_Typ[0]]*0.0102908487617
-#print Dyn_Mat[0][0][0][0]
+#print(Dyn_Mat[0][0][0][0]*Typ_Mass[At_Typ[0]]*0.0102908487617)
+#print(Dyn_Mat[0][0][0][0])
 #exit()
 
 # Print the dynamical matrix blocks
 for iAt in range(0,nAt_Use):
   for jAt in range(0,nAt_Use):
-    print ' {:4d} {:4d}'.format(iAt+1,jAt+1)
+    print(' {:4d} {:4d}'.format(iAt+1,jAt+1))
     for Row in Dyn_Mat[iAt][jAt]:
-      print ' {:13.6e} {:13.6e} {:13.6e}'.format(*Row)
+      print(' {:13.6e} {:13.6e} {:13.6e}'.format(*Row))
 
 # Print the cell vectors if this dym file type includes them
 if   Dym_Type == 4:
 
 # Print a separator line
-  print ''
+  print('')
 
   for Vec in Cell_Vec:
-    print '{:14.8f}{:14.8f}{:14.8f}'.format(*[ang2au*x for x in Vec])
+    print('{:14.8f}{:14.8f}{:14.8f}'.format(*[ang2au*x for x in Vec]))
 

@@ -33,8 +33,13 @@ end subroutine OpenErrorfileAtLaunch
 
 subroutine WipeErrorfileAtFinish
   !Overwrite the error file with an empty, 0-byte file.  Call at the regular termination of a module.
+! Changed by FDV:
+! I hate that this routine doesn't really delete the file at the end. It makes
+! it look like an error actually occurred since the .feff.error file is left
+! behind. Here I'm actually deleting the file.
   open(lun,file=ErrorFileName,status='replace',err=1000)
-  close(lun)
+! close(lun)
+  close(lun,status='delete')
   return
   1000 stop 'Unable to wipe errorfile in SetErrorfileMessage.  How ironic.'
 end subroutine WipeErrorfileAtFinish

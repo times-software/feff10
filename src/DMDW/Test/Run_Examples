@@ -1,10 +1,35 @@
 #!/bin/csh
 
+# After the modularization of DMDW by KJ, the examples didn't run properly
+# with the compiled feff module, since he forced the reading of the ff2x.inp
+# file. To be able to run with the module again, I embbed the that files data
+# here and create a dummy file that makes the examples run properly.
+# Otherwise the examples can be run with an independently compiled dmdw.
+
+cat > ff2x.inp << EOF
+mchi, ispec, idwopt, ipr6, mbconv, absolu, iGammaCH
+   1   0   5   0   0   0   0
+vrcorr, vicorr, s02, critcw
+      0.00000      0.00000      1.00000      4.00000
+tk, thetad, alphat, thetae, sig2g, sig_gk
+    300.00000    315.00000      0.00000      0.00000      0.00000      0.00000
+momentum transfer
+      0.00000      0.00000      0.00000
+ the number of decomposi
+   -1
+electronic temperature
+      0.00000
+EOF
+
 # Set up executable
 setenv EXE dmdw
 if ( `uname -o` == "Cygwin" ) then
   setenv EXE dmdw.exe
 endif
+
+# Debug
+#echo $EXE
+#exit
 
 if ( "$#" > 0 ) then
   setenv INST_DIR $1
@@ -15,12 +40,16 @@ endif
 setenv FILES_ALL `ls *.dmdw.inp`
 setenv FILES_TEST FeCN_6.g03.dmdw.inp
 
+# Debug
+#echo $FILES_ALL
+#exit
+
 foreach i ( ${FILES_ALL} )
 #foreach i ( ${FILES_TEST} )
 
   echo "Running example: " $i
   ln -s $i dmdw.inp
-  ${INST_DIR}/${EXE} > $i:r.log
+  ${INST_DIR}/${EXE} >& $i:r.log
   mv dmdw.out $i:r.out 
   rm dmdw.inp
 
@@ -28,3 +57,6 @@ foreach i ( ${FILES_ALL} )
   diff $i:r.out Reference_Results/$i:r.out
 
 end
+
+# Do some clean up
+rm ff2x.inp
