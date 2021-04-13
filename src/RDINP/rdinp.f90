@@ -1161,6 +1161,8 @@
             elseif (itok .eq. 81) then
             !SETEDGE - set excitation energies based on elam/mcmasters table
                lopt=.true.
+               !if(nwords.GE.2) read(words(2),*) edge_energy
+               !edge_energy = edge_energy/hart
             elseif (itok .eq. 82) then
 !           EPS0 - set dielectric constant for MPSE calculation.
                read(words(2),30,err=900) Eps0
@@ -1722,7 +1724,7 @@
 
          !List atoms up to at least rmax + 33%
          magnifier=1.33d0
-         ratomslist=max(20.d0,magnifier*rmax)
+         ratomslist=max(40.d0,magnifier*rmax)
          i1=int(ratomslist/dsqrt(a1(1)**2+a1(2)**2+a1(3)**2))+1
          i2=int(ratomslist/dsqrt(a2(1)**2+a2(2)**2+a2(3)**2))+1
          i3=int(ratomslist/dsqrt(a3(1)**2+a3(2)**2+a3(3)**2))+1
@@ -1856,7 +1858,7 @@
      ! FEFF doesn't give a damn (since we have made sure we have all atoms up to rmax by design),
      ! but it confuses users to give incomplete shells at large distance.
      ! The radius of that sphere is the minimum of the 3 supercell lattice parameters
-     mindist = min(dsqrt(a1(1)**2+a1(2)**2+a1(3)**2)*i1, dsqrt(a2(1)**2+a2(2)**2+a2(3)**2)*i1, dsqrt(a3(1)**2+a3(2)**2+a3(3)**2)*i1)
+     mindist = min(dsqrt(a1(1)**2+a1(2)**2+a1(3)**2)*DBLE(2*i1+1)/2.d0, dsqrt(a2(1)**2+a2(2)**2+a2(3)**2)*DBLE(2*i2+1)/2.d0, dsqrt(a3(1)**2+a3(2)**2+a3(3)**2)*DBLE(2*i3+1)/2.d0)
      do i=1,natt
          if (distance(i).gt.mindist) then
             j=i
