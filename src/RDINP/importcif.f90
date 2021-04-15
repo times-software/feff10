@@ -18,7 +18,7 @@ use par
 use constants, only:pi
 implicit none
 include 'ciftbx.cmn' !to use the ciftbx library
-character*120,intent(in) :: cifname  ! cif-file that will be opened to read the crystal structure
+character*1024,intent(in) :: cifname  ! cif-file that will be opened to read the crystal structure
 integer,intent(inout) :: cif_equivalence ! Different schemes for choosing unique potentials
 ! local variables:
 logical f1,f2,f3,inside

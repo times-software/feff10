@@ -61,7 +61,11 @@
       integer,parameter :: big = 1.0e5
       character*512 slog
       character*150  line
-      character*120 words(nwordx)
+! Changed by FDV:
+! Increasing the sise of words so we can read very broad lines (like some file
+! names with very long paths)
+!     character*120 words(nwordx)
+      character*1024 words(nwordx)
       character*20 symfil !KJ file that contains symmetry for k-mesh 11-06
       character*12 tmpstr
       character*6 str6 ! dummy
@@ -82,11 +86,13 @@
       integer nclusxuserlimit,lxuserlimit !KJ 7-09
       logical cards_set(150) !KJ needs be big enough to have a field for each programmed card 7-09 for consistency checker
       logical cifread !KJ 10-2011 Take crystal structure from .cif file
-      character*120 cifname !KJ 10-2011 Name of .cif file
+      character*1024 cifname !KJ 10-2011 Name of .cif file
       integer cif_equivalence !KJ 1-2012 for making potential types from .cif file
 !     integer nq !KJ now in global_inp
       logical,parameter :: enforce_alexis_exchange_policy = .false. !KJ 11-2010 - I don't know why Aleksi had it in the first place, just keeping this as precaution
-      logical,parameter :: debug_cif = .false.
+! DEBUG: FDV
+!     logical,parameter :: debug_cif = .false.
+      logical,parameter :: debug_cif = .true.
       integer, allocatable :: iatph(:)
 
 ! Added by Fer
@@ -1387,6 +1393,8 @@
                goto 210
             endif
             natt = natt+1
+! DEBUG: FDV
+!           print *, 'natt+ :', natt
             if (natt.gt. nattx)  then
                write(slog,'(a,i8)') 'Too many atoms, maximum is ', nattx
                call wlog(slog)
@@ -1721,6 +1729,9 @@
 !  Now we replace atoms-list from feff.inp by one generated from the atoms in pos by periodic repetition.
 
          !List atoms up to at least rmax + 33%
+! DEBUG: FDV
+!        magnifier=3.00d0
+!        ratomslist=max(30.d0,magnifier*rmax)
          magnifier=1.33d0
          ratomslist=max(20.d0,magnifier*rmax)
          i1=int(ratomslist/dsqrt(a1(1)**2+a1(2)**2+a1(3)**2))+1
@@ -1744,7 +1755,7 @@
           if(i1+i2+i3.eq.0) then
                  call par_stop ('WARNING - current value of nattx does not allow to calculate up to rmax as specified in feff.inp')
         else
-           i1=i1-1
+         i1=i1-1
          i2=i2-1
          i3=i3-1
          goto 4245
@@ -1781,6 +1792,8 @@
         endif  !If P or H, no need to make extra atoms
 
          natt=0
+! DEBUG: FDV
+!        print *, 'natt0:', natt
          if(debug_cif) then
             write(*,*) 'Now making real-space atoms list from cif input.'
             write(*,*) 'nats= ',nats,' lattice=',lattice,' nshift= ',nshift
@@ -1796,6 +1809,8 @@
          do j3=-(i3),i3
          do i=1,nats
             natt=natt+1  ! create one more atom
+! DEBUG: FDV
+!           print *, 'natt+1:', natt
             ratx(:,natt)=ppos(:,i)*alatt+dble(j1)*a1+dble(j2)*a2+dble(j3)*a3
             iphatx(natt)=ppot(i)
               if((j1.eq.0.and.j2.eq.0.and.j3.eq.0).and.i.eq.absorber) then
@@ -1806,6 +1821,8 @@
         if(nshift.gt.0) then
            do j=1,nshift
               natt=natt+1
+! DEBUG: FDV
+!             print *, 'natt+1(2):', natt
             ratx(:,natt)=ratx(:,natt-j)+shift(1,j)*a1+shift(2,j)*a2+shift(3,j)*a3
             iphatx(natt)=ppot(i)
 !          write(*,*) j1,j2,j3,i,j,ratx(:,natt),ratx(:,natt-1)
@@ -1868,6 +1885,8 @@
      distance(j:natt)=0.d0
      iphatx(j:natt)=-1
      natt=j-1
+! DEBUG: FDV
+!    print *, 'natt<=j-1:', natt
      !There really should be way more checks here ...
 
       endif
@@ -2232,7 +2251,12 @@
 !   1/ :
       rdims=max(rfms1,rfms2,rmax)
       nclusx=0
+! DEBUG: FDV
+!     print *, 'natt: ', natt
       do iat = 1, natt
+! DEBUG: FDV
+!        print *, 'iat,    ratx:', iat,    ratx(:,iat)
+!        print *, 'iatabs, ratx:', iatabs, ratx(:,iatabs)
          if (dist(ratx(:,iat),ratx(:,iatabs)).le.rdims) then
             nclusx=nclusx+1
          endif

@@ -84,6 +84,12 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
      allocate(lnear(0:nphx))
      lnear = .FALSE. ! JJK - added initialization of lnear since some compilers initialize it to true.
   END IF
+
+! Debug: FDV
+  do inat = 1, nat
+    write(6,fmt='(a,3f16.10)') 'rat: inat ', rat(:,inat)
+  end do
+
   if (rmt(0).le.0.0) then
     do 10 iph=0,nph
       10  lnear(iph)=.false.
@@ -123,11 +129,15 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
           iat = iatph(iph)
           rnear = big
           rmt(iph) = big
-          ! Debug: FDV
-          !           write(6,fmt='(a,i4,2f16.10)') 'iat: ', iat, rnear, rmt(iph)
+! Debug: FDV
+!         write(6,fmt='(a,i4,2f16.10)') 'iat: ', iat, rnear, rmt(iph)
           do 130  inat = 1, nat
             if (inat .eq. iat)  goto 130
             rnn = dist (rat(1,inat), rat(1,iat))
+! Debug: FDV
+!           write(6,fmt='(a,3f16.10)') 'rat: iat ', rat(:,iat)
+!           write(6,fmt='(a,3f16.10)') 'rat: inat', rat(:,inat)
+!           write(6,fmt='(a,3i4,f16.10)') 'inat: ', iph, iat, inat, rnn
             inph = iphat(inat)
             if (rnn .le. rnear) then
               rnear = rnn
@@ -183,6 +193,11 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
       if (rnrm(iph) .ge. rnear) then
         imax = ii(rnear) - 1
         !             begin until loop
+! DEBUG: FDV
+!       print *, 'FDV rnrm:  ', rnrm(iph)
+!       print *, 'FDV rnear: ', rnear
+!       print *, 'FDV ii:    ', ii(rnear)
+!       print *, 'FDV imax:  ', imax
         133            if (vclap(imax,iph).lt.vclap(imax+1,iph)) goto 134
         imax = imax-1
         goto 133
