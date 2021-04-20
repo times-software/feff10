@@ -86,9 +86,9 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
   END IF
 
 ! Debug: FDV
-  do inat = 1, nat
-    write(6,fmt='(a,3f16.10)') 'rat: inat ', rat(:,inat)
-  end do
+! do inat = 1, nat
+!   write(6,fmt='(a,3f16.10)') 'rat: inat ', rat(:,inat)
+! end do
 
   if (rmt(0).le.0.0) then
     do 10 iph=0,nph
