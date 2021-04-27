@@ -164,8 +164,7 @@ Rehr, J.J.\ Kas, K.\ Jorissen, A.\ Ankudinov, and B.\ Ravel.
   document in any form so long as the copyright notice and this
   statement of permission are preserved on all copies.
   
-\noindent This document can also be found on the \htmlref{feff project website}
- {http://www.feffproject.org}.
+\noindent This document can also be found on the \htmladdnormallink{{\feff} website}{http://feff.phys.washington.edu/feffproject-feff.html}.
  
 \end{abstract}
 
@@ -189,7 +188,11 @@ Rehr, J.J.\ Kas, K.\ Jorissen, A.\ Ankudinov, and B.\ Ravel.
 \chapter{Synopsis}
 \label{sec:Synopsis}
 
-{\feffcurrent} calculates spectroscopic properties, including
+{\feffcurrent} is the most recent version of the real-space multiple scattering code {\feff} for calculating a wide variety of spectroscopies, including XAS, XES, EELS, and Compton scattering. The {\feff} code has been extensively used, especially for calculation and analysis of XAS (both EXAFS and XANES) and XES. There are a variety of new features available in {\feffcurrent}, including finite temperature calculations of XAS, extension to superheavy elements up to Z=138, and calculations of resonant inelastic x-ray scattering.
+
+In addition, {\feffcurrent} can be coupled with our scientific workflow framework Corvus, which allows users to run advanced calculations using multiple scientific software starting from a single simple input file. In some cases, Corvus is used with several different software packages, for example to relax the structure of a system before calculating the XAS. In other cases, it augments a single code by combining different input structures, for example looping over unique sites in a crystal, or creating a RIXS calculation from mulitple {\feff} calculations of XAS and XES.
+
+{\feff} calculates spectroscopic properties, including
 extended x-ray-absorption fine structure (EXAFS), 
 x-ray-absorption near-edge structure (XANES), x-ray
 natural circular dichroism (XNCD), spin-dependent calculations 
@@ -235,8 +238,7 @@ references in Appendix~\ref{sec:Append-C-Refer} and the {\feff} website.
 
 Please contact the authors concerning any problems with the code. See
 Appendix~\ref{sec:Append-H-Trouble} for trouble-shooting hints and
-problem/bug reports or the FAQ on the \htmlref{{\feff} website}
-  {http://www.feffproject.org}.
+problem/bug reports or the FAQ on the \htmladdnormallink{{\feff} website}{http://feff.phys.washington.edu/feffproject-feff.html}.
 
 
 
@@ -250,22 +252,20 @@ The Principal Investigator of the {\feff} project is:
 Department of Physics, BOX 351560 University of Washington, Seattle, WA 98195\\
 email: \htmladdnormallink{jjr@uw.edu}
 {mailto:jjr@phys.washington.edu}\\
-telephone: (206) 543-8593,\  FAX: (206) 685-0635
 \end{description}
 
 
 The full {\feffcurrent} code is copyright protected software.
-%and users must
-%obtain a license from the University of Washington, CoMotion for its use. 
+
 See Appendix~\ref{sec:Append-A-Copyr} for
 complete copyright notice and other details. Documentation and
 information on how to obtain the code can be found at the {\feff}
 Project website:
 
-\centerline{\htmladdnormallink{http://www.feffproject.org}
-  {http://www.feffproject.org}}
+\centerline{\htmladdnormallink{http://feff.phys.washington.edu/feffproject-feff.html}
+  {http://feff.phys.washington.edu/feffproject-feff.html}}
 
-\noindent or by e-mail to the {\feff} Project Coordinator at
+\noindent or by e-mail to the {\feff} Project Coordinator, Siri Vimolchalao, at
 \htmladdnormallink{feff@uw.edu}{mailto:feff@uw.edu}.
 
 Please cite an appropriate {\feff} reference if the code
@@ -298,60 +298,17 @@ See Appendix~\ref{sec:Append-C-Refer}  or the feffproject website for a list of 
 
 {\bf FEFF Project Developers}
 
- The core developers team for {\feffcurrent} consists of the following people:
-\begin{itemize}
-\label{developers} 
-\item {\bf Joshua Kas} led the development of {\feffcurrent} with addition
-of the finite-temperature extension and other features.
-\item {\bf Tun S. Tan} contributed to the finite-temperature extension
-\item {\bf Brian Mattern} implemented COMPTON calculations;
-\item {\bf Towfiq Ahmed} developed of the Hubbard U module;
-\item {\bf Micah Prange} developed the {\feff}/optical constant extension; 
-\item {\bf Yoshinari Takimoto} implemented the RPA core hole;
-\item {\bf Adam Sorini} investigated inelastic mean free paths;
-\item {\bf Aleksi Soininen} implemented q-dependent NRIXS calculations.
-\end{itemize}
+The core developer team for the {\feffcurrent} update consists of the following:
 
+ Joshua Kas and Fernando D. Vila led the development with many updates to the code.  Both Joshua Kas and Tun Tan contributed the finite-temperature extension.
 
-{\bf Kevin Jorissen and Joshua Kas} were the principle developers
-of the {\feff}9 series.
-{\bf David Bitseff, Lukas Svec and Kevin Jorissen} developed the JFEFF
-GUI for {\feff}9, which is no longer supported for {\feffcurrent}.
-{\bf Kevin Jorissen} implemented relativistic EELS calculations,
-k-space algorithms, cloud computing, and others.
-{\bf Fernando D.\ Vila} implemented improved Debye-Waller factors.
+Kevin Jorissen and Joshua Kas were the principal developers of the {\feff}9 series. Micah Prange developed the {\feff}/optical constant extension; Yoshinari Takimoto implemented the RPA core hole; Adam Sorini investigated inelastic mean free paths; Brian Mattern implemented  COMPTON calculations; Aleksi Soininen implemented q-dependent NRIXS calculations. David Bitseff, Lukas Svec and Kevin Jorissen developed the JFEFF GUI for {\feff}9, which is no longer supported for {\feffcurrent}. Kevin Jorissen implemented the relativistic EELS module, k-space algorithms, cloud computing, and others. Fernando D. Vila implemented improved Debye--Waller factors. Towfiq Ahmed and Christian Vorwerk developed the Hubbard U module.
 
-{\bf Alexei Ankudinov} was the principal developer for
-the {\feff}8 series which included automated self-consistent potential
-s, calculations of the $\ell$DOS, the Fermi level, and charge transfer.
-He also added calculations of elastic scattering
-amplitude, x-ray natural circular dichroism and nonresonant x-ray
-emission, and quadrupolar transitions.  {\bf Bruce Ravel} developed the full
-multiple scattering (FMS) algorithm in {\feff}8. 
-{\bf A.\ Nesvizhskii} added new routines for TDLDA and sum-rules
-applications. Anna Poiarkova and Patrick Konrad
-contributed algorithms for calculating multiple-scattering Debye--Waller
-factors and anharmonic contributions. {\bf Jim Sims} (NIST) extended
-the code for
-MPI based parallel execution, in collaboration with {\bf C.\ Bouldin} and
-{\bf J.J.\ Rehr}.  The high-order multiple-scattering routines, pathfinder and
-correlated Debye-Waller routines were developed by {\bf Steven Zabinsky} and
-{\bf J.J. Rehr} for {\feff}5.
-The Hedin--Lundqvist self-energy and phase shift routines were developed
-by {\bf Jose Mustre de Leon, Dan Lu, J. Rehr, and R.C.~Albers}.
+Alexei Ankudinov was the principal developer for the {\feff}8 series which included automated self-consistent potential s, calculations of the $\ell$DOS, the Fermi level, and charge transfer. He also added calculations of elastic scattering amplitude, x-ray natural circular dichroism and nonresonant x-ray emission, and quadrupolar transitions. Bruce Ravel developed the full multiple scattering (FMS) algorithm in {\feff}8. A. Nesvizhskii added new routines for TDLDA and sum-rules applications. Anna Poiarkova and Patrick Konrad contributed algorithms for calculating multiple-scattering Debye--Waller factors and anharmonic contributions. Jim Sims (NIST) extended the code for MPI based parallel execution, in collaboration with C. Bouldin and J.J. Rehr. The high-order multiple-scattering routines, pathfinder and correlated Debye--Waller routines were developed by Steven Zabinsky and J.J. Rehr for {\feff}5. The Hedin--Lundqvist self-energy and phase shift routines were developed by Jose Mustre de Leon, Dan Lu, J. Rehr, and R.C. Albers.
 
-We gratefully acknowledge invaluable feedback from
-many users and in particular Drs. Matthew Newville, Bruce Ravel, Anatoly
-Frenkel, Simon Bare, Shelly Kelly, F. Farges, G.\ Hug, H. Wende
-and S.D.\ Conradson.  We also thank Siri Vimolchalao for help testing
-the current version {\feffcur}. 
-%We also thank R.C.\
-%Albers, K.\ Baberschke, C.\ Bouldin, C.\ Brouder, G.\ Brown,
-%S.D.\ Conradson, F.\ Farges, G.\ Hug, M.\ Jaouen, J. Sims, H.\ Ebert and
-%E.\ Stern for useful comments and suggestions.}
+We gratefully acknowledge invaluable feedback from many users and in particular Drs. Matthew Newville, Bruce Ravel, Anatoly Frenkel, Simon Bare, Shelly Kelly, F. Farges, G. Hug, H. Wende and S.D. Conradson. We also thank Siri Vimolchalao for help testing the current version {\feffcurrent}.
 
-References for previous {\feff} versions and implementations mentioned above can be found in the appendix.
-
+References for previous  {\feff} versions and implementations mentioned above can be found in the appendix.
 
 \newpage
 \section{The FEFF Users Guide}
@@ -2947,7 +2904,7 @@ seldom necessary, but may be helpful in some cases.
     \htmlref{LJMAX}{card:ljm},
     \htmlref{LDEC}{card:lde},
     \htmlref{MPSE}{card:mps},
-    \htmlref{PLASMON}{card:mps},
+%%\htmlref{PLASMON}{card:mps},%%
     \htmlref{PMBSE}{card:pmb},
     \htmlref{RPHASES}{card:rph},
     \htmlref{RSIGMA}{card:rsi},
@@ -3022,6 +2979,9 @@ seldom necessary, but may be helpful in some cases.
   \item[\textbf{Purpose of Module:}] Calculate EELS spectra. 
   \item[\textbf{Useful Cards:}] \htmlref{MAGIC}{card:mag}
   \end{description}
+
+
+
 
   \end{description}
 
@@ -4688,7 +4648,7 @@ POTENTIALS card for spin-dependent calculations:
   constant (at the interstitial radius) as a function of photoelectron
   energy relative to the Fermi Energy in eV.
 
-  PLASMON can be used as an alias to the MPSE card. 
+%%\htmlref{PLASMON} can be used as an alias to the MPSE card.%%
 
 \begin{verbatim}
 * make regular FEFF calculations, print out the self-energy
@@ -5430,6 +5390,93 @@ MAGIC 20
 \end{Card}
 
 
+\subsection{TEMP: Finite-Temperature Extension} 
+\label{sec:Temp-modul}
+
+\begin{Card}{TEMP}{[etemp iscfxc]}{Advanced}{tem}
+The TEMP card sets the electronic temperature and the exchange-correlation potential. \texttt{etemp} = 0 (default). \texttt{etemp} is in eV. There are 4 different options for the exchange-correlation potential.
+
+\begin{description}
+\item[\texttt{iscfxc}]\hfill\\
+
+No temperature dependent exchange correlations\hfill\\
+\texttt{11}\quad von-Barth Hedin 1971 (default)\hfill\\ 
+\texttt{12}\quad  Perdew-Zunger\hfill\\
+
+Explicitly temperature dependent exchange correlations\hfill\\
+\texttt{21}\quad  Perrot Dharma-Wardana 1984\hfill\\
+\texttt{22}\quad  KSDT (recommended) 
+
+\end{description}
+
+\begin{verbatim}
+TEMP 0 11 
+\end{verbatim}
+\end{Card}
+
+
+\begin{Card}{SCFTH}{[iscfth emaxscf negrid nmu xntol]}{Advanced}{scf}
+ The SCFTH card sets the parameters for thermal SCF calculation. 
+
+\begin{description}
+\item[\texttt{iscfth}]\hfill\\
+\texttt{1}\quad Use sum of expansions. \hfill\\ 
+\texttt{2}\quad Use exact integral. (default)
+ 
+\item[\texttt{emaxscf}]\hfill\\Set upper bound of energy grid if 15kT is smaller than \texttt{emaxscf}. (default \texttt{emaxscf} = 68.0275 eV, approximately 5 Rydberg).
+\item[\texttt{negrid}]\hfill\\Number of energy points. (default \texttt{negrid} = 320)
+\item[\texttt{nmu}]\hfill\\Number of iterations for chemical potential. (default \texttt{nmu} = 100)
+\item[\texttt{xntol}]\hfill\\Tolerance for electron counts. (default \texttt{xntol} = 1e-4)
+\end{description}
+
+\begin{verbatim}
+SCFTH 2 68.0275 320 100 1e-4
+\end{verbatim}
+\end{Card}
+
+\subsection{RIXS: RIXS Calculation} 
+\label{sec:RIXS-modul}
+
+\begin{Card}{RIXS}{[gam$\_$Ei gam$\_$El xmu]}{Advanced}{rix}
+ The RIXS card sets the parameters for the RIXS calculation. It must be used with a workflow or script to produce RIXS.
+\begin{description}
+\item[\texttt{gam$\_$Ei}]\hfill\\Broadening to use in the incident energy direction.
+\item[\texttt{gam$\_$El}]\hfill\\Broadening to use in the energy loss direction.
+\item[\texttt{xmu}]\hfill\\Fermi energy to use for the RIXS calculation, if not present, the fermi level calculated in the SCF step will be used.
+\end{description}
+
+\begin{verbatim}
+
+\end{verbatim}
+\end{Card}
+
+\begin{Card}{RLPRINT}{}{Advanced}{rlp}
+The RLPRINT card prints the regular solution to the radial Dirac-Fock equation at each energy that would be used in the matrix elements. This option facilitates RIXS calculations.
+
+\begin{verbatim}
+RLPRINT
+\end{verbatim}
+\end{Card}
+
+\begin{Card}{ICORE}{[edge$\_$number]}{Advanced}{ico}
+The ICORE card sets the core-state to use in the matrix elements separately from the core-hole used in the calculation of the potentials. This was added to allow RIXS calculations. Edge number is the number of the edge, i.e., 1=K, 2=L1, 3=L2, ...
+
+\begin{verbatim}
+ICORE 1
+\end{verbatim}
+\end{Card}
+
+\subsection{HIGHZ: HIGHZ Calculation} 
+\label{sec:HIGHZ-modul}
+
+\begin{Card}{HIGHZ}{}{Advanced}{hig}
+Necessary for calculations of superheavy elements Z $>$ 100. If HIGHZ is present, the finite size of the nucleus will be taken into account.
+This is important for calculations of orbital energies and atomic properties to high precision.
+
+\begin{verbatim}
+HIGHZ
+\end{verbatim}
+\end{Card}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FILES %%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FILES %%%%%%%%%%%%
@@ -6109,34 +6156,6 @@ symmetries. %See the NOGEOM card. %%currently disabled
 
 The FEFF10 distribution is copyrighted software according to the terms in the FEFF10 License and Government copyrights in Appendices A.2 and A.3 below.  
 
-%The full {\feff} distribution is copyrighted software and a
-%license from the University of
-%Washington Office of Technology Transfer must be obtained for its use.
-%This is necessary to protect the interests both of users and the
-%University of Washington. Both academic/non-profit and commercial
-%licenses are available --- see Section~\ref{sec:Governm-Copyr}
-%of this document for details. New users should request the latest
-%version of this code. The license form may be
-%obtained from the {\feff} WWW pages,
-%
-%\centerline{\htmladdnormallink{http://www.feffproject.org}
-%  {http://www.feffproject.org}}
-%
-%\noindent or by writing or sending a fax to
-%\begin{quotation}
-%\noindent The {\feff} Project\\
-%c/o {\feff} Project Assistant\\
-%Department of Physics\\
-%BOX 351560\\
-%University of Washington\\
-%Seattle, WA 98195\\[2ex]
-%E-mail: \htmladdnormallink{feff@phys.washington.edu}
-%{mailto:feff@phys.washington.edu}\\
-%Telephone: (206) 543-4615
-%Fax: (206) 685-0635 
-%\end{quotation}
-
-
 \section{Government Copyrights}
 \label{sec:Governm-Copyr}
 
@@ -6173,90 +6192,6 @@ Contracting Officer for the inclusion of such copyright material.
 \section{FEFF10 LICENSE}
 \label{sec:F10license}
 
-% FEFF PROGRAMS (referred to below as "the System")
-% Copyright (c) 1986-2020, University of Washington.
-%
-% END-USER LICENSE
-%
-% A signed End-user License Agreement from the University of Washington
-% Office of Technology Transfer is required to use these programs and
-% subroutines.}
-%
-% See the URL: http://leonardo.phys.washington.edu/feff/
-%
-% USE RESTRICTIONS:
-%
-% 1. The End-user agrees that neither the System, nor any of its
-% components shall be used as the basis of a commercial product, and
-% that the System shall not be rewritten or otherwise adapted to
-% circumvent the need for obtaining additional license rights.
-% Components of the System subject to other license agreements are
-% excluded from this restriction.
-%
-% 2. Modification of the System is permitted, e.g., to facilitate
-% its performance by the End-user. Use of the System or any of its
-% components for any purpose other than that specified in this Agreement
-% requires prior approval in writing from the University of Washington.
-%
-% 3. The license granted hereunder and the licensed System may not be
-% assigned, sublicensed, or otherwise transferred by the End-user.
-%
-% 4. The End-user shall take reasonable precautions to ensure that
-% neither the System nor its components are copied, or transferred out
-% side of his/her current academic or government affiliated laboratory
-% or disclosed to parties other than the End-user.
-%
-% 5. In no event shall the End-user install or provide this System
-% on any computer system on which the End-user purchases or sells
-% computer-related services.
-%
-% 6. Nothing in this agreement shall be construed as conferring rights
-% to use in advertising, publicity, or otherwise any trademark or the
-% names of the System or the UW. In published accounts of the use or
-% application of FEFF the System should be referred to  by this name,
-% with an appropriate literature reference:
-%
-% FEFF9: \emph{ Parameter-free calculations of X-ray spectra with FEFF9},
-%John J. Rehr, Joshua J. Kas, Fernando D. Vila, Micah P. Prange and K. Jorissen,
-%Phys. Chem. Chem. Phys. 12, 5503-5513 (2010).
-%
-% LIMITATION OF LIABILITY:
-%
-% 1. THE UW MAKES NO WARRANTIES , EITHER EXPRESSED OR IMPLIED, AS TO
-% THE CONDITION OF THE SYSTEM, ITS MERCHANTABILITY, OR ITS FITNESS FOR
-% ANY PARTICULAR PURPOSE. THE END-USER AGREES TO ACCEPT THE SYSTEM
-% 'AS IS' AND IT IS UNDERSTOOD THAT THE UW IS NOT OBLIGATED TO PROVIDE
-% MAINTENANCE, IMPROVEMENTS, DEBUGGING OR SUPPORT OF ANY KIND.
-%
-% 2. THE UW SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL,
-% INCIDENTAL OR CONSEQUENTIAL DAMAGES SUFFERED BY THE END-USER OR ANY
-% OTHER PARTIES FROM THE USE OF THE SYSTEM.
-%
-% 3. The End-user agrees to indemnify the UW for liability resulting
-% from the use of the System by End-user. The End-user and the UW each
-% agree to hold the other harmless for their own negligence.
-%
-% TITLE:
-%
-% 1. Title patent, copyright and trademark rights to the System are
-% retained by the UW. The End-user shall take all reasonable precautions
-% to preserve these rights.
-%
-% 2. The UW reserves the right to license or grant any other rights to
-% the System to other persons or entities.
-%
-%
-%Note: According to the terms of the above End-user license, 
-%no part of the standard distributions of {\feff} can be included in other
-%codes without a license or permission from the authors. However, some subroutines
-%in {\feff} explicitly contain such a license, and all components subject to
-%other license agreements are excluded from the restrictions of the
-%End-user license. Moreover, we are willing to collaborate with other code
-%developers, and our development version with all the
-%comments (and subroutines in individual files!) can be made available,
-%although it makes use of some features that are not standard FORTRAN.
-%Also we cannot guarantee that any new version of {\feff} will be compatible 
-%with these subroutines or with any changes you make in the codes.
 
 Distribution:  FEFF10.0
 Copyright (c) 2020 FEFF Project, University of Washington and
@@ -6695,9 +6630,11 @@ make
 make install
 make examples
 \end{verbatim}
-If everything worked correctly the reference results located in
-\file{dmdw\_standalone/examples/Reference\_Results} should agree with those generated
-in \file{dmdw\_standalone/examples} using the newly compiled executable.
+
+If everything worked correctly the reference results located in \hfill\\
+\file{dmdw\_standalone/examples/Reference\_Results}
+ should agree with those generated in \hfill\\
+\file{dmdw\_standalone/examples} using the newly compiled executable.
 
 \section{Using DMDW to calculate Debye-Waller factors}
 \label{sec:Append-G-DMDW-Use}
