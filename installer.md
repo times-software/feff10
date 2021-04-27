@@ -6,3 +6,6 @@
 <p><a href="https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=f614df76-71dc-45aa-adb3-acb60166e7a6" target="_blank"><b>Installation instruction video</b></a></p>
 
 **FEFF10 User Manual can be found [here](/assets/doc/feff10_users_guide.pdf).**
+
+<em>If you are a developer and would like access to the source code, please visit the <a href="https://github.com/times-software/feff10" target="_blank"><b>github page</b></a>.</em>
+
