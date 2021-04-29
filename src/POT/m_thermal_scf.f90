@@ -41,7 +41,8 @@ module m_thermal_scf
 
   use atoms_inp, only: nat, nph, iatph, iphat, rat
   use potential_inp, only: ixc, xnatph, xion, iunf, iz, ihole, lmaxsc, &
-    nohole, nscmt, icoul, ca1, rfms1, lfms1, jumprm, scf_temperature, xntol, nmu
+    nohole, nscmt, icoul, ca1, rfms1, lfms1, jumprm, scf_temperature, &
+    xntol, nmu, emaxscf, negrid
 
   implicit none
 
@@ -91,7 +92,8 @@ CONTAINS
     ! for high temperatures, the fermi distribution and the DOS (at i*2*pi*kT)
     ! are both quite smooth, and only a smal number of points are needed
 
-    ne = 320 ! Default: 200
+    ! ne = 320 ! Default: 200
+    ne = negrid
     ! if (scf_temperature <= 1.0) then
     !   ne = ne*2
     ! end if
@@ -126,7 +128,8 @@ CONTAINS
     !           2. emax: 2.5 Hartree should be large enough for Mu to oscillate
 
     window_size_terp = 12
-    emax = mu +2.5 !+ 1.5
+    ! emax = mu +2.5 !+ 1.5
+    emax = MAX(mu+temp*(window_size_terp+2), mu+emaxscf/hart)
 
     e1 = 2 * pi * temp
     np = 1
@@ -246,6 +249,16 @@ CONTAINS
     do imu = 1,nmu
       call par_barrier
 
+      ! Check if xmu + kT is in grid; xmu not in grid is included in this
+      if (.NOT.is_in_grid(xmunew+window_size_terp*temp)) then
+        write(slog, *) "xmunew + w*kT is not in grid. Reconstructing grid."
+        call wlog(slog)
+        call thscf_energies_init(xmunew)
+        call calculate_contour(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint, &
+                             & vint, xnval, x0, ri, dx, adgc, adpc, dgc, dpc, &
+                             & xrhole, yrhole, ph, gtr, nr05, iscmt)
+      endif
+
       ! A. Calculate contributions from Matsubara poles
       !    Note that these are stored at the end of the rhoe,rhore arrays
       do ip = 1, np
@@ -282,8 +295,9 @@ CONTAINS
         history_xntot(imu) = xntot
         history_xmu(imu) = xmunew
 
-        write(slog,*) imu, xntot, xnferm, xmunew*hart
-        call wlog(slog)
+        ! For debugging
+        ! write(slog,*) imu, xntot, xnferm, xmunew*hart
+        ! call wlog(slog)
 
         ! C. Check for convergence. (TODO make tolerance configurable) xntol = 1e-4 default
         if (abs(xntot - xnferm) .lt. xntol) then
@@ -293,12 +307,10 @@ CONTAINS
           ! When secant method failed to converge, we will use
           ! bisection method.
           if (imu.LE.30) then
-              ! If not converged, adjust mu appropriately and repeat
-              call update_mu(imu, xntot-xnferm, xntotprev-xnferm, xmunew, xmuprev, iscmt) ! updates xmu and xmuprev
+            ! If not converged, adjust mu appropriately and repeat
+            call update_mu(imu, xntot-xnferm, xntotprev-xnferm, xmunew, xmuprev, iscmt) ! updates xmu and xmuprev
           else
-            ! call set_bounds(imu, xnferm)
-            ! xmuprev = xmunew
-            ! xmunew = 0.5d0*(lower_bound+upper_bound)
+            ! Solution always in grid
             call bracketing_method(imu, xnferm, xmunew, xmuprev)
           endif
           xntotprev = xntot
@@ -635,14 +647,16 @@ CONTAINS
     ! Find where does xmu +/- window_terp lies on the contour
     ind_m3 = binarysearch(DBLE(xmu_m3), DBLE(energies(1:ne)), ne)-1
     ind_p3 = binarysearch(DBLE(xmu_p3), DBLE(energies(1:ne)), ne)
+
     ! IF (ind_m3.EQ.0) out_of_bound=.TRUE.
     IF (.NOT.is_in_grid(DBLE(xmu_p3))) THEN
-        call thscf_energies_init(xmu)
-        ind_m3 = binarysearch(DBLE(xmu_m3), DBLE(energies(1:ne)), ne)-1
-        ind_p3 = binarysearch(DBLE(xmu_p3), DBLE(energies(1:ne)), ne)
+      call wlog('Upper bound not in grid. Recreate grid.')
+      call thscf_energies_init(DBLE(xmu_p3))
+      ind_m3 = binarysearch(DBLE(xmu_m3), DBLE(energies(1:ne)), ne)-1
+      ind_p3 = binarysearch(DBLE(xmu_p3), DBLE(energies(1:ne)), ne)
     ENDIF
     IF (ind_m3.EQ.0) THEN
-        xmu_m3 = DBLE(energies(11))
+        xmu_m3 = energies(11)
         dxmu = DBLE(xmu_p3-xmu_m3)/nxmu
         ind_m3 = 11
         ! out_of_bound=.TRUE.
@@ -695,9 +709,9 @@ CONTAINS
       ENDDO
 
       ! Insert xmu_p3 into the thing
-      energies_terp(ind_m3+nxmu+1) = DBLE(xmu_p3) + coni*DIMAG(energies_terp(ind_m3+nxmu))
+      ! energies_terp(ind_m3+nxmu+1) = DBLE(xmu_p3) + coni*DIMAG(energies_terp(ind_m3+nxmu))
 
-      DO ie=1, (ne-ind_p3)+np
+      DO ie=0, (ne-ind_p3)+np
         !  Going back to original grid at ind_p3
         energies_terp(ind_m3+nxmu+1+ie) = energies(ie+ind_p3)
         rhoe_terp(:,:,ind_m3+nxmu+1+ie) = rhoe(:,:,ie+ind_p3)
@@ -782,6 +796,7 @@ CONTAINS
       END DO
     END DO
     IF (print_flag) PRINT*, "    xntot = ", xntot
+    IF (isnan(xntot)) PRINT*, " xntot is NaN. Try using smaller RGRID."
 
     DEALLOCATE(rhoe_terp, rhore_terp)
     DEALLOCATE(energies_terp)

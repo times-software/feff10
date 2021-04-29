@@ -679,8 +679,6 @@
                if (nwords.gt.5) read(words(6),20,err=900)  nmix
                if (nwords.gt.6) read(words(7),30,err=900)  ecv
                if (nwords.gt.7) read(words(8),20,err=900)  icoul
-               if (nwords.gt.8) read(words(9),20,err=900)  xntol
-               if (nwords.gt.9) read(words(10),20,err=900) nmu
                if (nscmt.le.0 .or. nscmt.gt.nbr) then  !KJ 12-2011 I added the diagnostic message - the user may want to know, y'know?
             call wlog('Invalid number of SCF iterations specified.  Reset to hardwired limit.')
           nscmt = nbr
@@ -1361,19 +1359,22 @@
                 11 for vBH, 12 for PZ, 21 for PDW, or 22 for KSDT ... stopping')
                 stop
                endif
-      elseif (itok .eq. 108) then
-                xntol = 1e-4
-                nmu = 100
-                read(words(2),20,err=900) iscfth
-                if (nwords.gt.2) read(words(3),30,err=900) xntol
-                if (nwords.gt.3) read(words(4),20,err=900) nmu
-
       elseif (itok .eq. 108) then ! JK
               ! HIGHZ: Use finite nucleus to calculate atomic wavefunctions
-              ! No real change for low z elements, but high z needs this for 
+              ! No real change for low z elements, but high z needs this for
               ! atomic energies and wavefunctions.
               FiniteNucleus = .TRUE.
               CALL wlog('Using finite nucleus.')
+      elseif (itok .eq. 109) then
+              emaxscf = 5 !eV
+              negrid = 400
+              xntol = 1e-4
+              nmu = 100
+              read(words(2),20,err=900) iscfth
+              if (nwords.gt.2) read(words(3),30,err=900) emaxscf
+              if (nwords.gt.3) read(words(4),20,err=900) negrid
+              if (nwords.gt.4) read(words(5),20,err=900) nmu
+              if (nwords.gt.5) read(words(6),30,err=900) xntol
       elseif (itok .eq. -1)  then
 !              END
                goto 220
@@ -2258,16 +2259,16 @@
                ELSE
                   spinph(iph) = getspin(iz(iph),0,xion(iph),iph)
                END IF
-               call wlog('No spin set in POTENTIALS card. Using default spins:') 
+               call wlog('No spin set in POTENTIALS card. Using default spins:')
                call wlog('iph   spinph')
                WRITE(slog,'(I3,X,f3.1)') iph, spinph(iph)
                call wlog(slog)
             END IF
          END DO
-              
+
       elseif(i_hubbard .ge. 2) then  !HUBBARD-U calculation:
          nspu=2
-         spinph = 0.d0 
+         spinph = 0.d0
       else    ! regular spin-averaged calculation:
          nspu=1
          spinph = 0.d0

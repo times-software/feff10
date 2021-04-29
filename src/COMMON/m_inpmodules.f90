@@ -552,17 +552,19 @@
 
 
 !       criteria for self-consistency
-        real*8,parameter :: tolmu = 1.D-3  ! Fermi level (Ha)
-        real*8,parameter :: tolq = 1.D-3   ! net charge on atom iph (e)
-	    real*8,parameter :: tolqp = 2.D-4  ! partial charge (e.g. l=1) on atom iph (e)
-	    real*8,parameter :: tolsum = 0.05  ! total valence charge in Norman sphere compared to formal valence charge
+    real*8,parameter :: tolmu = 1.D-3  ! Fermi level (Ha)
+    real*8,parameter :: tolq = 1.D-3   ! net charge on atom iph (e)
+    real*8,parameter :: tolqp = 2.D-4  ! partial charge (e.g. l=1) on atom iph (e)
+    real*8,parameter :: tolsum = 0.05  ! total valence charge in Norman sphere compared to formal valence charge
 
-	    real*8 scf_temperature ! Electronic temperature in eV
-	    integer scf_thermal_vxc
-
-        real*8 xntol
-        INTEGER iscfth ! TS 07/2020
-	integer nmu ! cja 10/15/20
+    ! criteria for thermal-scf
+    real*8 scf_temperature ! Electronic temperature in eV
+    integer scf_thermal_vxc
+    real*8 xntol
+    real*8 emaxscf
+    integer negrid
+    INTEGER iscfth ! TS 07/2020
+    integer nmu ! cja 10/15/20
 		contains
 
         subroutine potential_allocate
@@ -610,13 +612,15 @@
 			  write(3,10) 'ConfigType:'
 			  write(3,20) configtype
         ! Electronic temperature for thermal scf routine
-              write(3,10) 'Temperature (in eV):'
-              write(3,*) scf_temperature, scf_thermal_vxc
-              write(3,10) 'Scf_th,  xntol,  nmu'
-              write(3,*) iscfth, xntol, nmu ! TS 07/2020
-              write(3,10) 'FiniteNucleus'
-              write(3,*) FiniteNucleus
-              close(3)
+        write(3,10) 'Temperature (in eV):'
+        write(3,*) scf_temperature, scf_thermal_vxc
+        write(3,10) 'scf_th,  xntol,  nmu'
+        write(3,*) iscfth, xntol, nmu ! TS 07/2020
+        write(3,10) 'negrid,  emaxscf'
+        write(3,*) negrid, emaxscf
+        write(3,10) 'FiniteNucleus'
+        write(3,*) FiniteNucleus
+        close(3)
 		! standard formats for string, integers and real numbers
 	  10  format(a)
 	  20  format (21i4)
@@ -649,15 +653,16 @@
 			  read(3,*) ; read(3,*) ChSh_Type
 			  read(3,*,end=55) ; read(3,*,end=55) configtype
 			  read(3,*) ; read(3,*) scf_temperature, scf_thermal_vxc
-              read(3,*) ; read(3,*) iscfth, xntol, nmu
-                          read(3,*) ; read(3,*) FiniteNucleus
+        read(3,*) ; read(3,*) iscfth, xntol, nmu
+        read(3,*) ; read(3,*) negrid, emaxscf
+        read(3,*) ; read(3,*) FiniteNucleus
 			  55 continue
 			close(3)
 		end subroutine potential_read
 
 		subroutine potential_init
-        !call wlog('in potential_init')
-            call potential_allocate
+      !call wlog('in potential_init')
+      call potential_allocate
 			title(:) = ' '
 			mpot = 1
 			nph = 0
@@ -673,7 +678,7 @@
 			nscmt = 0
 			icoul = 0
 			ixc = 0
-                        iscfxc = 11 !-LC- default for SCF cycle XC functional
+      iscfxc = 11 !-LC- default for SCF cycle XC functional
 			lfms1 = 0
 			iz(:) = -1
 			lmaxsc(:) = 0
@@ -698,10 +703,12 @@
 			corval_emin=-70.d0 ! eV
 			scf_temperature = 0.0 ! eV
 			scf_thermal_vxc = 1
-            xntol = 1.D-4
-            nmu = 100
-            iscfth = 1
-                        FiniteNucleus = .FALSE.
+      xntol = 1.D-4
+      nmu = 100
+      iscfth = 2
+      emaxscf = 5.0 ! eV
+      negrid = 400
+      FiniteNucleus = .FALSE.
 		end subroutine potential_init
 
 	end module
