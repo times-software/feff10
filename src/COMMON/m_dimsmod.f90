@@ -23,7 +23,10 @@ module DimsMod
 
   integer,parameter :: nclxtd = 100     ! Maximum number of atoms for tdlda module.
   integer,parameter :: nspx   = 2      ! Max number of spins: 1 for spin average; 2 for spin-dep
-  integer,parameter :: natx   = 4000    ! Max number of atoms in problem for the pathfinder and ffsort
+! FDV: Increasing to avoid issues with converting CIFs to real space for
+! certain materials
+! integer,parameter :: natx   = 4000    ! Max number of atoms in problem for the pathfinder and ffsort
+  integer,parameter :: natx   = 20000    ! Max number of atoms in problem for the pathfinder and ffsort
   integer,parameter :: nattx  = 10000    ! Max number of atoms in problem for the rdinp
 !  integer,parameter :: nphx   = 14      ! Max number of unique potentials (potph)
   integer,parameter :: ltot   = 24      ! Max number of ang mom (arrays 1:ltot+1)
