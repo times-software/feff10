@@ -2,7 +2,7 @@
       CHARACTER(300) revision
 !                       123456789012  
 !      PARAMETER(vfeff='FEFF 9.7.1 ')
-      PARAMETER (vfeff='FEFF 10.0 ')
+      PARAMETER (vfeff='FEFF 10.0.0 ')
       PARAMETER (revision='Revision 1')
 
       ! 9.00 prepared by Yoshi and Josh from feff86
