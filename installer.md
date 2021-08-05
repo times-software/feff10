@@ -1,9 +1,12 @@
 ---
 # FEFF10
+<br>
+<b>Password:</b> muffintin10 
+<p>If you have already downloaded the installer, just follow the <a href="https://github.com/times-software/feff10/releases/latest/download/install_instructions.txt">instructions</a> and enter your above password when prompted.</p>
+<br>
+<p>Otherwise please download a <a href="https://github.com/times-software/feff10/releases/latest" target="_blank"><b>FEFF10 Installer</b></a> now.</p>
 
-<p><a href="http://leonardo.phys.washington.edu/feff/Secure-area/feff10-beta/" target="_blank"><b>FEFF10 Installer</b></a></p>
-
-<p><a href="https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=f614df76-71dc-45aa-adb3-acb60166e7a6" target="_blank"><b>Installation instruction video</b></a></p>
+<--<p><a href="https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=f614df76-71dc-45aa-adb3-acb60166e7a6" target="_blank"><b>Installation instruction video</b></a></p>
 
 **FEFF10 User Manual can be found [here](/assets/doc/feff10_users_guide.pdf).**
 
