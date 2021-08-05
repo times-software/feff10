@@ -1,8 +1,8 @@
 ---
 # FEFF10
 <br>
-<b>Password:</b> muffintin10 
-<p>If you have already downloaded the installer, just follow the <a href="https://github.com/times-software/feff10/releases/latest/download/install_instructions.txt">instructions</a> and enter your above password when prompted.</p>
+
+<p>If you have already downloaded the installer, just follow the <a href="https://github.com/times-software/feff10/releases/latest/download/install_instructions.txt">instructions</a> and enter your password when prompted.</p>
 <br>
 <p>Otherwise please download a <a href="https://github.com/times-software/feff10/releases/latest" target="_blank"><b>FEFF10 Installer</b></a> now.</p>
 
