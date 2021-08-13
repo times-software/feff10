@@ -8,7 +8,7 @@ This software was prepared with support in part from the U.S. DOE, Office of Bas
 
 Distribution:  FEFF10.0 Copyright (c) [2020] FEFF Project, University of Washington and SLAC National Accelerator Laboratory.  All rights reserved.  
 
-**In order to obtain access to the code and installer it is necessary to register on the <a href="https://forms.gle/czofhndvhhWDxefm6" target="_blank"><b>FEFF10 Registration Page</b></a>.
+**In order to obtain a password to access to the code and installer it is necessary to register on the <a href="https://forms.gle/czofhndvhhWDxefm6" target="_blank"><b>FEFF10 Registration Page</b></a>. 
 This will also enable you to receive updates, news and information on workshops.**
 
 If you've already registered, you can access the <a href="https://github.com/times-software/feff10/releases/latest">download area here</a>. 
