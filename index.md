@@ -8,7 +8,7 @@ This software was prepared with support in part from the U.S. DOE, Office of Bas
 
 Distribution:  FEFF10.0 Copyright (c) [2020] FEFF Project, University of Washington and SLAC National Accelerator Laboratory.  All rights reserved.  
 
-**In order to obtain access to the code and installer it is necessary to register on the <a href="https://docs.google.com/forms/d/1AHeer_ApfFkzJkIHJShcynl72Z61V2ouuv0BMbXRgfg" target="_blank"><b>FEFF10 Registration Page</b></a>.
+**In order to obtain access to the code and installer it is necessary to register on the <a href="https://forms.gle/czofhndvhhWDxefm6" target="_blank"><b>FEFF10 Registration Page</b></a>.
 This will also enable you to receive updates, news and information on workshops.**
 
 If you've already registered, please access the installer page [here](/installer.md). 
@@ -23,6 +23,6 @@ Recipient acknowledges the rights of the University of Washington and SLAC to pr
 
 Please cite an appropriate feff reference if the code or its results are used in published work. The main reference for calculations using the current version feff10 is:
 
-*Calculations of x-ray spectroscopies using FEFF10 and Corvus*, J.J. Kas, F.D. Vila, D. Pemmaraju, Tun S. Tan, S. Vimolchalao, and J.J. Rehr, Unpublished, 2020.
+*Calculations of x-ray spectroscopies using FEFF10 and Corvus*, J.J. Kas, F.D. Vila, D. Pemmaraju, Tun S. Tan, S. Vimolchalao, and J.J. Rehr, arXiv:2106.13334 [cond-mat.mtrl-sci], 2021.
 
 *Parameter-free calculations of x-ray spectra with FEFF9*, J.J. Rehr, J.J. Kas, F.D. Vila, M.P. Prange, K. Jorissen, Phys. Chem. Chem. Phys., 12, 5503-5513 (2010).
