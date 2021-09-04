@@ -21,13 +21,6 @@ jobs:
         ./configure --prefix=""
         make -j16
         sudo make install
-    - name: cache-intel-compilers
-      id: cache-intel-compilers
-      if: contains(matrix.fortran-compiler, 'ifort')
-      uses: actions/cache@v2
-      with:
-        path: /opt/intel
-        key: intel-${{ runner.os }}-compilers-b
     # https://software.intel.com/content/www/us/en/develop/articles/installing-intel-oneapi-toolkits-via-apt.html
     # Packages from Docker file at
     #    https://github.com/intel/oneapi-containers/blob/master/images/docker/hpckit-devel-ubuntu18.04/Dockerfile
@@ -46,7 +39,7 @@ jobs:
         echo "CC=icx" > $GITHUB_ENV
         echo "FC=ifort" > $GITHUB_ENV
         echo "F90FLAGS=-O3 -heap-arrays" > $GITHUB_ENV
-    - name: Build and Test
+    - name: Build
       run: |
         source /opt/intel/oneapi/setvars.sh || true
         cd src && make
