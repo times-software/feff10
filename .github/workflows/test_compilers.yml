@@ -50,8 +50,13 @@ jobs:
       run: |
         source /opt/intel/oneapi/setvars.sh || true
         cd src && make
-        cd examples
-        ./runtests.csh
+    # TODO: Patch binary location
+    # - name: Test
+    #   run: |
+    #     echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+    #     source /opt/intel/oneapi/setvars.sh || true
+    #     cd src/examples
+    #     ./runtests.csh
   # TODO: Modify Makefiles and enable
   # test_gfortran:
   #   runs-on: ubuntu-20.04
