@@ -470,13 +470,13 @@
 !     nk is number of points in k grid
       nk = nemax - n1
 
-!     Fill k grid
+!     Fill k grid below edge
       xkmin = -dk*(n2+nk)
       xkmax2 = -dk*(n2+1)
       ne = 1
       CALL MkKMesh(em, ne, xkmin, xkmax2, dk, nk, nex)  
       
-!     Fill e grid
+!     Fill e grid near edge
       ne = ne + nk + 1
        
       emin = -estep*n1
@@ -486,7 +486,7 @@
       ik0 = ne - 1
 !     Fill grid above the fermi level.
 !     Same grid as before except that k spacing is xkstep, and 90 points
-      nemax = 90 - ne
+      nemax = nex - ne
 !     Not sure why to pick this number of steps regular in e?
       n1 = INT(estep/2/xkstep**2)
 !     n2 is starting point of k grid minus 1
