@@ -546,7 +546,7 @@
 !		rovr(novrx,0:nphx)  -   r for overlap shell
 		! Added by Fer
 		! Used to correct the excitation energy for chemical shifts
-		integer  ChSh_Type
+		integer ChSh_Type
 		integer configtype !KJ 12-2010 : which method for choosing atomic configuration?
 		double precision corval_emin  !KJ 12-2012 defines energy window for search for core-valence separation energy.
 
@@ -565,6 +565,7 @@
     integer negrid
     INTEGER iscfth ! TS 07/2020
     integer nmu ! cja 10/15/20
+    real*8 custom_chsh
 		contains
 
         subroutine potential_allocate
@@ -611,6 +612,8 @@
 			  write(3,20) ChSh_Type
 			  write(3,10) 'ConfigType:'
 			  write(3,20) configtype
+        WRITE(3,10) 'ChSh (in eV):'
+        WRITE(3,*)  custom_chsh
         ! Electronic temperature for thermal scf routine
         write(3,10) 'Temperature (in eV):'
         write(3,*) scf_temperature, scf_thermal_vxc
@@ -629,8 +632,8 @@
 
 		subroutine potential_read
 			integer ititle,ip,iph,iovr
-            call potential_allocate
-            call potential_init
+      call potential_allocate
+      call potential_init
 			open (file=filename, unit=3, status='old')
 			  read(3,*) ; read(3,*) mpot, nph, ntitle, ihole, ipr1, iafolp, ixc, ispec, iscfxc
 			  read(3,*) ; read(3,*)  nmix, nohole, jumprm, inters, nscmt, icoul, lfms1, iunf
@@ -646,12 +649,13 @@
 			  read(3,*) ; read(3,*) (novr(iph), iph=0,nph)
 			  read(3,*)
 			  do iph = 0, nph
-			  do iovr = 1, novr(iph)
-		         read(3,*) iphovr(iovr, iph), nnovr(iovr,iph), rovr(iovr,iph)
-			  enddo
-	          enddo
+          do iovr = 1, novr(iph)
+            read(3,*) iphovr(iovr, iph), nnovr(iovr,iph), rovr(iovr,iph)
+          enddo
+        enddo
 			  read(3,*) ; read(3,*) ChSh_Type
 			  read(3,*,end=55) ; read(3,*,end=55) configtype
+        read(3,*) ; read(3,*) custom_chsh
 			  read(3,*) ; read(3,*) scf_temperature, scf_thermal_vxc
         read(3,*) ; read(3,*) iscfth, xntol, nmu
         read(3,*) ; read(3,*) negrid, emaxscf

@@ -113,7 +113,7 @@ subroutine xsph
 
 ! NRIXS variables
 !KJ      integer indmax
-  integer iri
+  integer iri, ixctmp
 !
   real*8, allocatable :: xnmues(:,:)
 
@@ -207,8 +207,14 @@ endif
     e_chsh = -sh_eng(1,1)
     write(6,fmt='(a,f20.10)') 'e_chsh: ', e_chsh
     emu = e_chsh + erelax
-
   end if
+
+  IF (ChSh_Type == 4) THEN
+    ! Use core level shift from user
+    e_chsh = custom_chsh/hart
+    write(6,fmt='(a,f20.10)') 'e_chsh: ', e_chsh
+    emu = e_chsh + erelax
+  ENDIF
 
   ! Write potentials for feffFP
   IF(.FALSE.) THEN
@@ -543,7 +549,8 @@ endif
        call fixvar (rmt(0), edens(1,0), vtot(1,0), dmag(1,0), vint, rhoint, dx, dxnew, jumprm, vjump, ri, vtotph, rhoph, dmagx)
     END IF
     call fixdsx (iph, dx, dxnew, dgc, dpc, dgcn, dpcn)
-    if (mod(ixc,10) .ge. 5) then
+    ! if (mod(ixc,10) .ge. 5) then
+    IF ((ixc.EQ.5).OR.(ixc.EQ.9).OR.(ixc.EQ.15)) THEN ! Replace mod(ixc,10).ge.5
        if (jumprm .gt. 0) jumprm = 2
        call fixvar (rmt(0), edenvl(1,0), vvalgs(1,0), dmag(1,0), vint, rhoint, dx, dxnew, jumprm, vjump, ri, vvalph, rhphvl, dmagx)
        if (jumprm .gt. 0) jumprm = 1
@@ -573,9 +580,16 @@ endif
 ! Josh - added argument iPl to control many pole self energy
       NPolesTmp = NPoles
 !      write(*,*) 'Breakdown at xsect'
+      ! JJK - Quick fix for finite temperature calculations. If using ground state, 
+      ! still need to add finite temperature part at the fermi level since there is an imaginary part.
+      IF((electronic_temperature.GT.0.d0).AND.(ixc0.EQ.2)) THEN
+        ixctmp = -2
+      ELSE
+          ixctmp = ixc0
+      END IF
       call xsect (ipr2, dxnew, x0, ri, ne, ne1, ik0, em, edge,      &
          ihole, emu, corr, dgcx, dpcx, jnew,                        &
-         ixc0, lreal, rmt(0), rnrm(0), xmu, vi0, iPl, NPolesTmp, Eps0, EGap, & !iPl new JK, NPoles and Eps0 new JJK 3/9/2010
+         ixctmp, lreal, rmt(0), rnrm(0), xmu, vi0, iPl, NPolesTmp, Eps0, EGap, & !iPl new JK, NPoles and Eps0 new JJK 3/9/2010
          gamach, vtotph, vvalph, rhoph, dmagx, rhphvl,              &
          dgcn, dpcn, adgc(1,1,iph), adpc(1,1,iph), xsec(1,isp),     &
          xsnorm(1,isp), rkk(1:nex,1:nq,1:kfinmax,isp), iz(0), xion(0), iunf,         &  !KJ 12/10
@@ -658,7 +672,8 @@ endif
 !  write(*,*)
 !  write(*,*)
 
-      if (mod(ixc,10) .ge.5) then
+      ! if (mod(ixc,10) .ge.5) then
+      IF ((ixc.EQ.5).OR.(ixc.EQ.9).OR.(ixc.EQ.15)) THEN ! Replace mod(ixc,10).ge.5
          if (jumprm .gt. 0) jumprm = 2
          call fixvar (rmt(iph), edenvl(1,iph), vvalgs(1,iph), dmag(1,iph), &
            vint, rhoint, dx, dxnew, jumprm, vjump, ri, vvalph, rhphvl, dmagx)
@@ -693,7 +708,9 @@ endif
 
  300  continue  ! end of big loop over spins
 
-! write main output to xsect.dat
+  ! JK - Shift imaginary part of self-energy by MIN(eref) since we want the fermi function broadened as well in XAS.
+  em(ne1+1:2*ne1) = em(ne1+1:2*ne1) - coni*DIMAG(eref(ne1+1,1))
+  ! write main output to xsect.dat
   340 format (e17.9, 4e13.5)
   if (abs(ispin).ne.1 .or. nspx.eq.1) then
     do ie = 1, ne

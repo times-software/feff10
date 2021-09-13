@@ -22,7 +22,7 @@ subroutine pot !KJ put everything in modules 7-09
   !     for unique potentials specifed by atoms and overlap cards.
 
   implicit none !double precision (a-h, o-z)
-!Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
+  !Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   !     Notes:
   !        nat    number of atoms in problem
   !        nph    number of unique potentials
@@ -158,10 +158,10 @@ subroutine pot !KJ put everything in modules 7-09
   enddo
 
   CALL ReadAtomicPots(nph, iz(0:nph), ihole, rho, dmag(:,0:nph+1), rhoval, vcoul, dgc0,  &
-  & dpc0, dgc(:,:,0:nph+1), dpc(:,:,0:nph+1), adgc(:,:,0:nph+1), adpc(:,:,0:nph+1), &
-  & erelax, emu, xnvmu, xnval(:,0:nph+1), norb, eorb, drho, dvcoul, iphat,    &
-  & ratTmp, iatph(0:nph), novr(0:nph), iphovr, nnovr, rovr, nat, edens, &
-  & edenvl, vclap,  rnrm(0:nph), kappa(:,0:nph+1), iorb(:,0:nph+1), s02)
+                    & dpc0, dgc(:,:,0:nph+1), dpc(:,:,0:nph+1), adgc(:,:,0:nph+1), adpc(:,:,0:nph+1), &
+                    & erelax, emu, xnvmu, xnval(:,0:nph+1), norb, eorb, drho, dvcoul, iphat,    &
+                    & ratTmp, iatph(0:nph), novr(0:nph), iphovr, nnovr, rovr, nat, edens, &
+                    & edenvl, vclap,  rnrm(0:nph), kappa(:,0:nph+1), iorb(:,0:nph+1), s02)
 
   edensTrack(:,0)=edens(:,0) !atomic overlap for ipot=0 goes into iteration 0 of density tracker
 
@@ -344,7 +344,8 @@ subroutine pot !KJ put everything in modules 7-09
 
   !     need to update vxcval in case the core-valence separation was
   !     made in subroutine corval. Need vxcval only for nonlocal exchange.
-  if (mod(ixc,10).ge.5) then
+  ! if (mod(ixc,10).ge.5) then
+  IF ((ixc.EQ.5).OR.(ixc.EQ.9).OR.(ixc.EQ.15)) THEN ! Replace mod(ixc,10).ge.5
     call  istprm (nph, nat, iphat, rat, iatph, xnatph,             &
     &               novr, iphovr, nnovr, rovr, folp, folpx, iafolp,    &
     &               edens, edenvl, idmag,                              &
@@ -353,7 +354,7 @@ subroutine pot !KJ put everything in modules 7-09
     &               rnrmav, qtotel, inters, totvol)
     xmunew = xmu
   endif
-  if(master) then
+  if (master) then
     write(slog,131) ecv*hart
     call wlog(slog)
     write(slog,130) xmu*hart
@@ -364,6 +365,7 @@ subroutine pot !KJ put everything in modules 7-09
     131    format('Core-valence separation energy:  ecv= ',f9.3,' eV')
     132    format(' ca1= ',f9.3)
   endif
+
   dosTrack=0.d0
 
   !     do first nmix iterations with mixing scheme. Need for f-elements.
@@ -565,104 +567,102 @@ subroutine pot !KJ put everything in modules 7-09
 
     if (nohole.gt.0) then
       !        testing new final state potential
-      do 220 j = 1,251
-        220    edens(j,0) = edens(j,0) - drho(j)
+      do j = 1,251
+        edens(j,0) = edens(j,0) - drho(j)
+      enddo
 
-        !        notice that vclap is actually for the next iteration
-        !        in SCMT loop, thus vclap may be wrong if self-consistency has not been reached
-        do 230 j = 1,251
-          230    vclap(j,0) = vclap(j,0) - dvcoul(j)
+      !        notice that vclap is actually for the next iteration
+      !        in SCMT loop, thus vclap may be wrong if self-consistency has not been reached
+      do j = 1,251
+        vclap(j,0) = vclap(j,0) - dvcoul(j)
+      enddo
 
-          call  istprm (nph, nat, iphat, rat, iatph, xnatph,             &
-          &      novr, iphovr, nnovr, rovr, folp, folpx, iafolp,             &
-          &      edens, edenvl, idmag,                                       &
-          &      dmag, vclap, vtot, vvalgs, imt, inrm, rmt, rnrm,            &
-          &      ixc, rhoint,vint, rs, xf, xmu, xmunew,                      &
-          &      rnrmav, qtotel, inters, totvol)
-        endif
+      call  istprm (nph, nat, iphat, rat, iatph, xnatph,             &
+        &      novr, iphovr, nnovr, rovr, folp, folpx, iafolp,             &
+        &      edens, edenvl, idmag,                                       &
+        &      dmag, vclap, vtot, vvalgs, imt, inrm, rmt, rnrm,            &
+        &      ixc, rhoint,vint, rs, xf, xmu, xmunew,                      &
+        &      rnrmav, qtotel, inters, totvol)
+    endif
 
-        !     correct the excitation energy
-        !     emu = emu -vclap(1,0) + vcoul(1,0) done also above
-        !     emu = emu+xmu  should be done in principle but leads
-        !     to worse estimate of edge position. fix later. ala
+    !     correct the excitation energy
+    !     emu = emu -vclap(1,0) + vcoul(1,0) done also above
+    !     emu = emu+xmu  should be done in principle but leads
+    !     to worse estimate of edge position. fix later. ala
 
-        if (ipr1 .ge. 2 .and. master)  call wpot (nph, edens, imt, inrm, rho, vclap, vcoul, vtot, ntitle, title)
+    if (ipr1 .ge. 2 .and. master)  call wpot (nph, edens, imt, inrm, rho, vclap, vcoul, vtot, ntitle, title)
 
 
-        ! Debug: Fer
-        ! Changing eorb by hand for now
-        !     eorb(1,0) = -14.0050405749
-        !     eorb(1,0) = -14.1374268761
+    ! Debug: Fer
+    ! Changing eorb by hand for now
+    !     eorb(1,0) = -14.0050405749
+    !     eorb(1,0) = -14.1374268761
 
-        ! Debug: Fer
-        !     write(6,fmt='(a,f16.10)') ' eorb in pot: ', eorb(1,0)
+    ! Debug: Fer
+    !     write(6,fmt='(a,f16.10)') ' eorb in pot: ', eorb(1,0)
 
-        ! Debug: Fer
-        ! Write out some of the stuff that goes into pot.bin
-        !     print *, 'xmu:    ', xmu
-        !     print *, 'vint:   ', vint
-        !     print *, 'eorb:   ', eorb(1,0)
-        !     print *, 'emu:    ', emu
-        !     print *, 'erelax: ', erelax
-        !     print *, 'iorb:   ', iorb
+    ! Debug: Fer
+    ! Write out some of the stuff that goes into pot.bin
+    !     print *, 'xmu:    ', xmu
+    !     print *, 'vint:   ', vint
+    !     print *, 'eorb:   ', eorb(1,0)
+    !     print *, 'emu:    ', emu
+    !     print *, 'erelax: ', erelax
+    !     print *, 'iorb:   ', iorb
 
-        if ( (ChSh_Type == 1) .or. (ChSh_Type == 3) ) then
+    if ( (ChSh_Type == 1) .or. (ChSh_Type == 3) ) then
 
-          !       Set the target center
-          iCenter = 0
-          sh_iz            = iz(iCenter)
-          sh_ihole         = ihole
-          sh_rmt           = rmt(iCenter)
-          sh_jri           = imt(iCenter)+1
-          sh_dx            = dx
-          sh_ri            = ri
-          sh_p2f           = xmu-vint
-          sh_edge          = xmu
-          sh_vxc(1:251)    = vtot(1:251,iCenter) - vint
-          sh_dgcn(1:251,:) = dgc(:,:,iCenter)
-          sh_dpcn(1:251,:) = dpc(:,:,iCenter)
-          !       sh_adgc          = adgc(:,:,iCenter)
-          !       sh_adpc          = adpc(:,:,iCenter)
-          sh_adgc          =  0.0d0
-          sh_adpc          =  0.0d0
-          sh_eorb          = eorb(:,iCenter)
-          sh_kappa         = kappa(:,iCenter)
+      !       Set the target center
+      iCenter = 0
+      sh_iz            = iz(iCenter)
+      sh_ihole         = ihole
+      sh_rmt           = rmt(iCenter)
+      sh_jri           = imt(iCenter)+1
+      sh_dx            = dx
+      sh_ri            = ri
+      sh_p2f           = xmu-vint
+      sh_edge          = xmu
+      sh_vxc(1:251)    = vtot(1:251,iCenter) - vint
+      sh_dgcn(1:251,:) = dgc(:,:,iCenter)
+      sh_dpcn(1:251,:) = dpc(:,:,iCenter)
+      !       sh_adgc          = adgc(:,:,iCenter)
+      !       sh_adpc          = adpc(:,:,iCenter)
+      sh_adgc          =  0.0d0
+      sh_adpc          =  0.0d0
+      sh_eorb          = eorb(:,iCenter)
+      sh_kappa         = kappa(:,iCenter)
 
-          call correorb(sh_iz, sh_ihole, sh_rmt, sh_jri, &
-          sh_dx,sh_ri, sh_p2f, sh_edge, sh_vxc, &
-          sh_dgcn, sh_dpcn, sh_adgc, sh_adpc, &
-          sh_eorb, &
-          sh_neg, sh_eng, sh_rhoj, sh_kappa, sh_norbp, 0) !KJ iph=0
-          e_chsh = -sh_eng(1,1)
-          write(6,fmt='(a,f12.8)') 'e_chsh: ', e_chsh
-          emu = e_chsh + erelax
-        end if
+      call correorb(sh_iz, sh_ihole, sh_rmt, sh_jri, &
+      sh_dx,sh_ri, sh_p2f, sh_edge, sh_vxc, &
+      sh_dgcn, sh_dpcn, sh_adgc, sh_adpc, &
+      sh_eorb, &
+      sh_neg, sh_eng, sh_rhoj, sh_kappa, sh_norbp, 0) !KJ iph=0
+      e_chsh = -sh_eng(1,1)
+      write(6,fmt='(a,f12.8)') 'e_chsh: ', e_chsh
+      emu = e_chsh + erelax
+    end if
 
-        !     write stuff into pot.bin
-        if (master) call wrpot (nph, ntitle, title, rnrmav, xmu, vint, rhoint,        &
-        &            emu, s02, erelax, wp, ecv,rs,xf, qtotel,              &
-        &            imt, rmt, inrm, rnrm, folp, folpx, xnatph,            &
-        &            dgc0, dpc0, dgc, dpc, adgc, adpc,                     &
-        &            edens, vclap, vtot, edenvl, vvalgs, dmag, xnval,      &
-        &            eorb(1,0), kappa(1,0), iorb, qnrm, xnmues, nhtmp,     &
-        &            ihole, inters, totvol, iafolp, xion, iunf, iz, jumprm,ipr1) !KJ added ipr1 3-2012
+    !     write stuff into pot.bin
+    if (master) call wrpot (nph, ntitle, title, rnrmav, xmu, vint, rhoint,        &
+    &            emu, s02, erelax, wp, ecv,rs,xf, qtotel,              &
+    &            imt, rmt, inrm, rnrm, folp, folpx, xnatph,            &
+    &            dgc0, dpc0, dgc, dpc, adgc, adpc,                     &
+    &            edens, vclap, vtot, edenvl, vvalgs, dmag, xnval,      &
+    &            eorb(1,0), kappa(1,0), iorb, qnrm, xnmues, nhtmp,     &
+    &            ihole, inters, totvol, iafolp, xion, iunf, iz, jumprm,ipr1) !KJ added ipr1 3-2012
 
-        !     write misc.dat
-        if (ipr1 .ge. 1 .and. master)  then
-          open (unit=1, file='misc.dat', status='unknown', iostat=ios)
-          call chopen (ios, 'misc.dat', 'potph')
-          call wthead(1, ntitle, title)
-          close (unit=1)
-        endif
+    !     write misc.dat
+    if (ipr1 .ge. 1 .and. master)  then
+      open (unit=1, file='misc.dat', status='unknown', iostat=ios)
+      call chopen (ios, 'misc.dat', 'potph')
+      call wthead(1, ntitle, title)
+      close (unit=1)
+    endif
 
-        400 call par_barrier
+    400 call par_barrier
 
-        OPEN(UNIT=1993, FILE='chemical.dat',STATUS='REPLACE', POSITION="APPEND")
-        WRITE(1993,*) scf_temperature, scf_temperature/0.000086173423, xmu*hart
-        CLOSE(1993)
+    !     Deallocate local variables
+    deallocate(xnmues,xnvmu,gtr,xrhoce,xrhole,yrhoce,yrhole)
 
-        !     Deallocate local variables
-        deallocate(xnmues,xnvmu,gtr,xrhoce,xrhole,yrhoce,yrhole)
-
-        return
-      end
+    return
+end

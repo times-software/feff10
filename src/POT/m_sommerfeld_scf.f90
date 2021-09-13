@@ -51,7 +51,7 @@ MODULE m_sommerfeld_scf
   use constants
   use atoms_inp, only: nat, nph, iatph, iphat, rat
   use potential_inp, only: ixc, xnatph, xion, iunf, iz, ihole, lmaxsc, &
-    nohole, nscmt, icoul, ca1, rfms1, lfms1, jumprm, scf_temperature, xntol, nmu
+    nohole, nscmt, icoul, ca1, rfms1, lfms1, jumprm, scf_temperature, xntol, nmu, emaxscf, negrid
 
   implicit none
   private
@@ -73,7 +73,8 @@ MODULE m_sommerfeld_scf
   DOUBLE PRECISION, ALLOCATABLE :: history_xntot(:), history_xmu(:)
   COMPLEX*16, ALLOCATABLE :: rhoe1(:,:,:), rhore1(:,:,:) ! points for d/dx
   DOUBLE PRECISION:: lower_bound, upper_bound
-  COMPLEX*16 :: dstep ! for d/dx
+  ! COMPLEX*16 :: dstep ! for d/dx
+  REAL*8 :: dstep
 CONTAINS
 
   subroutine sommerfeld_scf_init(ecv0, mu, iscmt)
@@ -94,7 +95,8 @@ CONTAINS
     end do
 
     ! ne = 80
-    ne = 220
+    ! ne = 220
+    ne = negrid
     call sommerfeld_scf_energies_init()
   end subroutine
 
@@ -120,6 +122,7 @@ CONTAINS
     eimmax = 0.15d0 ! 4.05 eV same as grids.f90
     ! eimmax = 0.30d0
     emax = mu0 + 0.5
+    emax = emaxscf
 
     e1 = 2*pi*kT
     np = 1
@@ -277,7 +280,7 @@ CONTAINS
         dstep = 0.001d0/hart ! step size of 0.02 V
         ! dstep = 1e-6
       endif
-      call par_bcast_double(dstep, 1, 0)
+      call par_bcast_double_scalar(dstep, 1, 0)
       call par_barrier
 
       !    Compute points needed for derivatives
@@ -343,7 +346,7 @@ CONTAINS
       call par_barrier
       call par_bcast_int(converged, 1, 0)
       call par_bcast_int(imu, 1, 0)
-      call par_bcast_double(xmunew, 1, 0)
+      call par_bcast_double_scalar(xmunew, 1, 0)
 
       if (converged.eq.1) then
         ok = .true.
@@ -360,7 +363,7 @@ CONTAINS
 
     ! the rest of this routine is quick and is performed by all nodes
 
-    call par_bcast_double(xntot, 1, 0)
+    call par_bcast_double_scalar(xntot, 1, 0)
     call par_bcast_double(xnmues, (lx+1)*(nphx+1), 0)
     call par_bcast_double(rhoval, 251*(nphx+1), 0)
 

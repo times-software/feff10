@@ -192,247 +192,262 @@ subroutine ff2xmu (ispec, ipr4, idwopt, critcw, s02, sig2g,       &
 
       !     make combined title
       ntitle=ntitle-nheadold
-      do 120 ihead = 1, nhead
-        120  title(ntitle+ihead) = head(ihead)
-        ntitle = ntitle + nhead
-        nheadold=nhead
+      do ihead = 1, nhead
+        title(ntitle+ihead) = head(ihead)
+      enddo
 
-        !     write feffnnnn.dat
-        if (ipr4.ge.3) then
-          call feffdt(ntotal,ip,nptot,ntitle,title,ne,npot,              &
-          &        ihole, iorder, ilinit, rnrmav, xmu, edge, potlbl,         &
-          &        iz,phc,ck,xk,index,                                       &
-          &        nleg,deg,nepts,reff,crit,ipot,rat,achi,phchi)
-        end if
+      ntitle = ntitle + nhead
+      nheadold=nhead
 
-        !     If there is a vicorr, will need a mean free path factor xlam0.
-        !     Use it as  chi(ie) * exp (2 * reff * xlam0)
-        !     ckp is ck' = ck prime.
-        if (abs(vicorr) .ge. eps4) then
-          do 180  ie = 1, ne
-            ckp = sqrt (ck(ie)**2 + coni*2*vicorr)
-            xlam0 = aimag(ck(ie)) - dimag(ckp)
-            do 170  ipath = 1, nptot
-              achi(ie,ipath) = achi(ie,ipath) * exp (2 * reff(ipath) * xlam0)
-              170       continue
-              180    continue
-            endif
+      !     write feffnnnn.dat
+      if (ipr4.ge.3) then
+        call feffdt(ntotal,ip,nptot,ntitle,title,ne,npot,              &
+        &        ihole, iorder, ilinit, rnrmav, xmu, edge, potlbl,         &
+        &        iz,phc,ck,xk,index,                                       &
+        &        nleg,deg,nepts,reff,crit,ipot,rat,achi,phchi)
+      end if
 
-            !     k'**2 = k**2 + vr. If there is no real correction
-            !     (vrcorr = 0), these two grids will be the same.
-            !           k' is value for output,  k is  value used for
-            !           interpolations with original grid.
-            ! edge = -17.918/hart ! 1000K
-            ! edge = -17.937/hart ! 300K
-            !     vrcorr shifts the edge and the k grid
-            if (abs(vrcorr) .gt. eps4)  edge = edge - vrcorr
+      !     If there is a vicorr, will need a mean free path factor xlam0.
+      !     Use it as  chi(ie) * exp (2 * reff * xlam0)
+      !     ckp is ck' = ck prime.
+      if (abs(vicorr) .ge. eps4) then
+        do ie = 1, ne
+          ckp = sqrt (ck(ie)**2 + coni*2*vicorr)
+          xlam0 = aimag(ck(ie)) - dimag(ckp)
+          do ipath = 1, nptot
+            achi(ie,ipath) = achi(ie,ipath) * exp (2 * reff(ipath) * xlam0)
+          enddo
+        enddo
+      endif
 
-
-            !     ik0 is index at fermi level
-            do i = 1, ne
-              temp = xk(i)*abs(xk(i)) + 2*vrcorr
-              if (temp.ge. 0) then
-                xkp(i) = sqrt(temp)
-              else
-                xkp(i) = - sqrt(-temp)
-              endif
-            enddo
+      !     k'**2 = k**2 + vr. If there is no real correction
+      !     (vrcorr = 0), these two grids will be the same.
+      !           k' is value for output,  k is  value used for
+      !           interpolations with original grid.
+      ! edge = -17.918/hart ! 1000K
+      ! edge = -17.937/hart ! 300K
+      !     vrcorr shifts the edge and the k grid
+      if (abs(vrcorr) .gt. eps4)  edge = edge - vrcorr
 
 
-            dwcorr = .false.
-            if (tk .gt. 1.0e-3)  dwcorr = .true.
-
-            !     Open chi.dat and xmu.dat (output) and start headers
-            if (iabs.eq.nabs) then
-              open (unit=3, file=f1, status='unknown', iostat=ios) !KJ changed chi.dat to f1
-              call chopen (ios, f1, 'ff2chi') !KJ id.  1-06
-              open (unit=8, file=f2, status='unknown', iostat=ios) !KJ changed xmu.dat to f2
-              call chopen (ios, f2, 'ff2chi') !KJ id.
-
-              !        write miscellaneous staff into headers  !KJ corrected typo
-              call wrhead (8, ntitle, title, dwcorr, s02,                    &
-              &     tk, thetad, sig2g, alphat, vrcorr, vicorr, critcw)
-
-              !        also write information on the screen
-              if (alphat .gt. zero)  then
-                write(slog,322) alphat
-                322       format ('    1st and 3rd cumulants, alphat = ', 1pe20.4)
-                if(write_to_screen) call wlog(slog)
-              endif
-              if (abs(vrcorr).ge.eps4 .or. abs(vicorr).ge.eps4)  then
-                write(slog,343) vrcorr*hart, vicorr*hart
-                343       format ('    Energy zero shift, vr, vi ', 1p, 2e14.5)
-                if(write_to_screen) call wlog(slog)
-              endif
-
-              write(slog,370) critcw
-              if(write_to_screen) call wlog(slog)
-              370    format ('    Use all paths with cw amplitude ratio', f7.2, '%')
-              if (dwcorr)  then
-                write(slog,380) s02, tk, thetad, sig2g
-                if(write_to_screen) call wlog(slog)
-              else
-                write(slog,381) s02, sig2g
-                if(write_to_screen) call wlog(slog)
-              endif
-              380    format('    S02', f7.3, '  Temp', f8.2, '  Debye temp', f8.2,  &
-              &           '  Global sig2', f9.5)
-              381    format('    S02', f7.3, '  Global sig2', f9.5)
-            endif
+      !     ik0 is index at fermi level
+      do i = 1, ne
+        temp = xk(i)*abs(xk(i)) + 2*vrcorr
+        if (temp.ge. 0) then
+          xkp(i) = sqrt(temp)
+        else
+          xkp(i) = - sqrt(-temp)
+        endif
+      enddo
 
 
-            !     make chi and sum it
-            cchi(:) = 0
-            do ik = 1, ne
-              cchi(ik)= s02 * gtr(ik)
-            enddo
+      dwcorr = .false.
+      if (tk .gt. 1.0e-3)  dwcorr = .true.
+
+      !     Open chi.dat and xmu.dat (output) and start headers
+      if (iabs.eq.nabs) then
+        open (unit=3, file=f1, status='unknown', iostat=ios) !KJ changed chi.dat to f1
+        call chopen (ios, f1, 'ff2chi') !KJ id.  1-06
+        open (unit=8, file=f2, status='unknown', iostat=ios) !KJ changed xmu.dat to f2
+        call chopen (ios, f2, 'ff2chi') !KJ id.
+
+        !        write miscellaneous staff into headers  !KJ corrected typo
+        call wrhead (8, ntitle, title, dwcorr, s02,                    &
+        &     tk, thetad, sig2g, alphat, vrcorr, vicorr, critcw)
+
+        !        also write information on the screen
+        if (alphat .gt. zero)  then
+          write(slog,322) alphat
+          322       format ('    1st and 3rd cumulants, alphat = ', 1pe20.4)
+          if(write_to_screen) call wlog(slog)
+        endif
+        if (abs(vrcorr).ge.eps4 .or. abs(vicorr).ge.eps4)  then
+          write(slog,343) vrcorr*hart, vicorr*hart
+          343       format ('    Energy zero shift, vr, vi ', 1p, 2e14.5)
+          if(write_to_screen) call wlog(slog)
+        endif
+
+        write(slog,370) critcw
+        if (write_to_screen) call wlog(slog)
+        370    format ('    Use all paths with cw amplitude ratio', f7.2, '%')
+        if (dwcorr)  then
+          write(slog,380) s02, tk, thetad, sig2g
+          if(write_to_screen) call wlog(slog)
+        else
+          write(slog,381) s02, sig2g
+          if(write_to_screen) call wlog(slog)
+        endif
+        380    format('    S02', f7.3, '  Temp', f8.2, '  Debye temp', f8.2,  &
+        &           '  Global sig2', f9.5)
+        381    format('    S02', f7.3, '  Global sig2', f9.5)
+      endif
 
 
-            !     add Debye-Waller factors
-            call dwadd (ntotal, nptot, idwopt, ip, index, crit, critcw, sig2g,&
-            &  sig2u, dwcorr, rnrmav, nleg, deg, reff, iz, ipot, rat,tk,thetad,&
-            &  alphat, thetae, mbconv, s02, ne1, ck, achi, phchi, ne, xk, xkp, &
-            &  xkp, cchi, iabs, nabs, ispec, ipr4, ntitle,                     &
-            &  title, vrcorr, vicorr,  nused)
-
-            !     read or initialize chia - result of configuration average
-            if (iabs.eq.1) then
-              chia(:) = 0
-            else
-              open (unit=1, file='chia.bin', status='old', access='sequential', form='unformatted', iostat=ios)
-              do ie = 1,ne ; read(1) chia(ie) ; enddo
-                close (unit=1, status='delete')
-              endif
-
-              if(iabs.eq.1) then
-                !        compare grids in xsect.bin and feff.bin
-                do i = 1, nxsec
-                  del = xk(i)**2 - xkxs(i)**2
-                  ! JK - added extra test below because very large k fails the first test even if points are relatively very close
-                  if (abs(del) .gt.  eps4 .and. (abs(del)/xk(i)**2) .gt.eps4)  then 
-                    call wlog(' Emesh in feff.bin and xsect.bin different.')
-                    call par_stop('FF2XMU-1')
-                  endif
-                enddo
-              endif
-
-              !     add contribution from an absorber iabs
-              !     present scheme assumes that xsec is the same for all iabs.
-              do ik = 1, ne
-                chia(ik)   = chia(ik)   + cchi(ik)/ nabs
-              enddo
-              if (iabs.lt.nabs) then
-                !        save chia in chia.bin for averaging
-                open (unit=1, file='chia.bin', status='unknown', access='sequential', form='unformatted', iostat=ios)
-                do ie=1,ne ; write(1) chia(ie) ; enddo
-                  close(unit=1)
-                endif
-
-                if (iabs.eq.nabs) then
-                  !        The loop over absorbers is finished. Write out the results.
-                  write(8,600)  coment, nused, ntotal
-                  600    format ( a2, 1x, i4, '/', i4, ' paths used')
-                  610    format ( a2, 1x, 71('-'))
+      !     make chi and sum it
+      cchi(:) = 0
+      do ik = 1, ne
+        cchi(ik)= s02 * gtr(ik)
+      enddo
 
 
-                  rchtot(:) = dimag (chia(:))     ! = Im gtr
-                  !        prepare the output grid omega
-                  efermi = edge + omega(1) - dble(emxs(1))
+      !     add Debye-Waller factors
+      call dwadd (ntotal, nptot, idwopt, ip, index, crit, critcw, sig2g,&
+      &  sig2u, dwcorr, rnrmav, nleg, deg, reff, iz, ipot, rat,tk,thetad,&
+      &  alphat, thetae, mbconv, s02, ne1, ck, achi, phchi, ne, xk, xkp, &
+      &  xkp, cchi, iabs, nabs, ispec, ipr4, ntitle,                     &
+      &  title, vrcorr, vicorr,  nused)
 
-                  !        do convolution with excitation spectrum
-                  if (mbconv .gt. 0) then
-                    wp = wp / 2.
-                    call  exconv (omega, ne1, efermi, s02p, erelax, wp, xsnorm)  ! from xsect.bin
-                    call  exconv (omega, ne1, efermi, s02p, erelax, wp, rchtot)  ! Im gtr
-                  endif
+      !     read or initialize chia - result of configuration average
+      if (iabs.eq.1) then
+        chia(:) = 0
+      else
+        open (unit=1, file='chia.bin', status='old', access='sequential', form='unformatted', iostat=ios)
+        do ie = 1,ne
+          read(1) chia(ie)
+        enddo
+        close (unit=1, status='delete')
+      endif
 
-                  !        normalize to xsec at 50 eV above edge
-                  !        and prepare the output energy grid omega
-                  ! Tun: modify normalization at 100+kT eV above edge
-                  ! edg50 = efermi + 50/hart
-                  edg50 = efermi + 50/hart
-                  if (ispec.eq.2) edg50 = efermi
-                  call terp (omega, xsnorm,  ne1, 1, edg50, xsedge)
-                  ! IF (electronic_temperature.GT.0.d0) CALL terp (omega, xsnorm,  ne1/2, 1, edg50, xsedge)
-                  if (absolu.eq.1) xsedge=dble(1)  !KJ 3-06 don't normalize
-                  write(8,660)  coment, xsedge
-                  660    format (a2, ' xsedge+ 50, used to normalize mu ', 1pe20.4)
-                  write(8,610) coment
-                  write(8,670) coment
-                  670    format (a2,' omega    e    k    mu    mu0     chi     @#')
+      if(iabs.eq.1) then
+        !        compare grids in xsect.bin and feff.bin
+        do i = 1, nxsec
+          del = xk(i)**2 - xkxs(i)**2
+          ! JK - added extra test below because very large k fails the first test even if points are relatively very close
+          if (abs(del) .gt.  eps4 .and. (abs(del)/xk(i)**2) .gt.eps4)  then 
+            call wlog(' Emesh in feff.bin and xsect.bin different.')
+            call par_stop('FF2XMU-1')
+          endif
+        enddo
+      endif
 
-                  if (.not.cross) then !KJ I added this block 1-06
-                    kxsec(:)=xsec(:)  ! from xsect.bin
-                  else
-                    kxsec(:)=dcmplx(0,0)
-                  endif !KJ end
+      !     add contribution from an absorber iabs
+      !     present scheme assumes that xsec is the same for all iabs.
+      do ik = 1, ne
+        chia(ik)   = chia(ik)   + cchi(ik)/ nabs
+      enddo
+      if (iabs.lt.nabs) then
+        !        save chia in chia.bin for averaging
+        open (unit=1, file='chia.bin', status='unknown', access='sequential', form='unformatted', iostat=ios)
+        do ie=1,ne
+          write(1) chia(ie)
+        enddo
+        close(unit=1)
+      endif
 
-                  ! So, at this point, all we have is kxsec and xsnorm (from xsect.bin) and  rchtot = Im gtr
+      if (iabs.eq.nabs) then
+        !        The loop over absorbers is finished. Write out the results.
+        write(8,600)  coment, nused, ntotal
+        600    format ( a2, 1x, i4, '/', i4, ' paths used')
+        610    format ( a2, 1x, 71('-'))
 
-                  !        do correction using brouder method
-                  vi0 = 0
+        rchtot(:) = dimag (chia(:))     ! = Im gtr
+        !        prepare the output grid omega
+        efermi = edge + omega(1) - dble(emxs(1))
 
-                  write(slog,'(a,f10.5,a)') "electronic_temperature = ", electronic_temperature, " (eV)"
-                  call wlog(slog)
-                  IF (electronic_temperature.GT.0) THEN
-                    call thermal_xscorr(ispec,emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi, electronic_temperature) !KJ changed xsec to kxsec  1-06
-                  ELSE
-                    call xscorr(ispec,emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi)
-                  ENDIF
+        write(8, 680) coment, efermi*hart
+        write(8, 690) coment, electronic_temperature
+        680 FORMAT(a2,' Chemical potential = ', 1pe20.8, ' eV')
+        690 FORMAT(a2,' Electronic temperature =  ', 1pe20.8, ' eV')
+        
+        !        do convolution with excitation spectrum
+        if (mbconv .gt. 0) then
+          wp = wp / 2.
+          call  exconv (omega, ne1, efermi, s02p, erelax, wp, xsnorm)  ! from xsect.bin
+          call  exconv (omega, ne1, efermi, s02p, erelax, wp, rchtot)  ! Im gtr
+        endif
 
-                  do ie=1,ne1
-                    rchtot(ie)=dimag(kxsec(ie)+xsnorm(ie)*chia(ie)+cchi(ie)) !KJ id.
-                  enddo
+        !        normalize to xsec at 50 eV above edge
+        !        and prepare the output energy grid omega
+        ! Tun: modify normalization at 100+kT eV above edge
+        ! edg50 = efermi + 50/hart
+        edg50 = efermi + 50/hart
+        if (ispec.eq.2) edg50 = efermi
+        call terp (omega, xsnorm,  ne1, 1, edg50, xsedge)
+        ! IF (electronic_temperature.GT.0.d0) CALL terp (omega, xsnorm,  ne1/2, 1, edg50, xsedge)
+        if (absolu.eq.1) xsedge=dble(1)  !KJ 3-06 don't normalize
+        write(8,660)  coment, xsedge
+        660    format (a2, ' xsedge+ 50, used to normalize mu ', 1pe20.4)
+        write(8,610) coment
+        write(8,670) coment
+        670    format (a2,' omega    e    k    mu    mu0     chi     @#')
 
-                  chia(:) = 0
+        if (.not.cross) then !KJ I added this block 1-06
+          kxsec(:)=xsec(:)  ! from xsect.bin
+        else
+          kxsec(:)=dcmplx(0,0)
+        endif !KJ end
 
-                  if (cross) then !KJ bugfix 05/2010 to avoid NaN for crossterms (kxsec=chia=0)
-                    cchi(:)=(0.d0,0.d0)
-                  else
-                    IF (electronic_temperature.GT.0) THEN ! Atomic part
-                      call thermal_xscorr(ispec,emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi, electronic_temperature) !KJ changed xsec to kxsec  1-06
-                    ELSE
-                      call xscorr(ispec, emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi)
-                    ENDIF
-                  endif
+        ! So, at this point, all we have is kxsec and xsnorm (from xsect.bin) and  rchtot = Im gtr
 
-                  do ie = 1, ne1
-                    cchi(ie) = dimag(kxsec(ie)+cchi(ie)) * coni+rchtot(ie) !KJ id.
-                  enddo
+        !        do correction using brouder method
+        vi0 = 0
 
-                  if (vicorr.gt.eps4 .and. ntotal.eq.0) then
-                    !           add correction due to vicorr
-                    call conv(omega,cchi,ne1,vicorr)
-                    !           call conv(omega,xsec,ne1,vicorr)
-                  endif
+        write(slog,'(a,f10.5,a)') "electronic_temperature = ", electronic_temperature, " (eV)"
+        call wlog(slog)
+        IF (electronic_temperature.GT.0) THEN
+          call thermal_xscorr(ispec,emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi, electronic_temperature) !KJ changed xsec to kxsec  1-06
+        ELSE
+          call xscorr(ispec,emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi)
+        ENDIF
 
-                  do ie = 1, ne1
-                    em0 = dble(emxs(ie))
-                    xsec0 = dimag(cchi(ie))
-                    rchtot(ie) = dble (cchi(ie))
-                    chi0  = (rchtot(ie) - xsec0)
-                    if (siggk) then
-                      dwcoeff = exp(-(sig_gk*xkp(ie)/bohr)**2)  !KJ energy dependent global DW factor for SIGGK card
-                      chi0 = chi0 * dwcoeff
-                      rchtot(ie) =  xsec0 + chi0
-                    endif
-                    write(8,700)  omega(ie)*hart, em0*hart, xkp(ie)/bohr, rchtot(ie)/xsedge, xsec0/xsedge, chi0/xsedge
+        OPEN(UNIT=1149, file="chia.dat", status='REPLACE')
+        do ie = 1, ne
+          WRITE(1149, '(20E20.10E3)') DBLE(chia(ie)), DIMAG(chia(ie))
+        enddo
+        close(1149)
+
+        OPEN(UNIT=1149, file="rchtot1.dat", status='REPLACE')
+        do ie=1,ne1
+          rchtot(ie)=dimag(kxsec(ie)+xsnorm(ie)*chia(ie)+cchi(ie)) !KJ id.
+          WRITE(1149, '(20E20.10E3)') DBLE(omega(ie))*hart, dimag(kxsec(ie)), dimag(xsnorm(ie)*chia(ie)), dimag(cchi(ie)), rchtot(ie)
+        enddo
+        close(1149)
+        chia(:) = 0
+
+        if (cross) then !KJ bugfix 05/2010 to avoid NaN for crossterms (kxsec=chia=0)
+          cchi(:)=(0.d0,0.d0)
+        else
+          IF (electronic_temperature.GT.0) THEN ! Atomic part
+            call thermal_xscorr(ispec,emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi, electronic_temperature) !KJ changed xsec to kxsec  1-06
+          ELSE
+            call xscorr(ispec, emxs, ne1, ne, ik0, kxsec,xsnorm,chia,vrcorr, vi0, cchi)
+          ENDIF
+        endif
+
+        do ie = 1, ne1
+          cchi(ie) = dimag(kxsec(ie)+cchi(ie)) * coni+rchtot(ie) !KJ id.
+        enddo
+
+        if (vicorr.gt.eps4 .and. ntotal.eq.0) then
+          !           add correction due to vicorr
+          call conv(omega,cchi,ne1,vicorr)
+          !           call conv(omega,xsec,ne1,vicorr)
+        endif
+
+        do ie = 1, ne1
+          em0 = dble(emxs(ie))
+          xsec0 = dimag(cchi(ie))
+          rchtot(ie) = dble (cchi(ie))
+          chi0  = (rchtot(ie) - xsec0)
+          if (siggk) then
+            dwcoeff = exp(-(sig_gk*xkp(ie)/bohr)**2)  !KJ energy dependent global DW factor for SIGGK card
+            chi0 = chi0 * dwcoeff
+            rchtot(ie) =  xsec0 + chi0
+          endif
+          write(8,700)  omega(ie)*hart, em0*hart, xkp(ie)/bohr, rchtot(ie)/xsedge, xsec0/xsedge, chi0/xsedge
 
                     !           if you want f'' at the output in el. units use next line
                     !           rchtot(ie)*omega(ie)*prefac, xsec0*omega(ie)*prefac, chi0
                     !           with        prefac = alpinv / 4 / pi /bohr**2
 
-  700               format (1x, 3f20.10, 1p, 3e20.10)
+          700 format (1x, 3f20.10, 1p, 3e20.10)
 
-                  enddo
+        enddo
 
-                  close (unit=8)
-                  close (unit=3, status='delete')
-                endif
+        close (unit=8)
+        close (unit=3, status='delete')
+      endif
                 !     for if (iabs=abs); or the last absorber
-
-              enddo !KJ of my iip=ipmin,ipmax,ipstep loop  1-06
-
-
-              return
-            end
+  enddo !KJ of my iip=ipmin,ipmax,ipstep loop  1-06
+  return
+end

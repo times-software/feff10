@@ -117,7 +117,8 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
         call fixvar (rmt(iph),edens(1,iph),vtot(1,iph),dmag(1,iph),  &
              &       vint, rhoint, dx, rgrd, jumprm,                 &
              &       vjump, ri, vtotph, dum, dmagx)
-        if (mod(ixc,10) .ge.5) then
+        !if (mod(ixc,10) .ge.5) then
+        if ((mod(ixc,10).ge.5).and.(ixc.ne.6).and.(ixc.ne.7)) then ! TTS
            if (jumprm .gt. 0) jumprm = 2
            call fixvar (rmt(iph), edenvl(1,iph), vvalgs(1,iph),        &
                 &       dmag(1,iph), vint, rhoint, dx, rgrd , jumprm,  &
@@ -132,7 +133,8 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
         do i = 1, jri1
            vtotph(i) = vtotph(i) - eref(1)
         enddo
-        if (ixc.ge.5) then
+        ! if (ixc.ge.5) then
+        if ((ixc.ge.5).and.(ixc.ne.6).and.(ixc.ne.7)) then ! TTS
            do i = 1, jri1
               vvalph(i) = vvalph(i) - eref(1)
            enddo

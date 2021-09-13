@@ -68,7 +68,6 @@ module m_thermal_scf
   DOUBLE PRECISION, ALLOCATABLE :: history_xntot(:), history_xmu(:)
   real*8, parameter :: eimmax = 0.15d0
   REAL*8 :: lower_bound, upper_bound
-
 CONTAINS
 
   subroutine thscf_init(ecv0, mu, iscmt)
@@ -326,7 +325,7 @@ CONTAINS
 
       call par_bcast_int(converged, 1, 0)
       call par_bcast_int(imu, 1, 0)
-      call par_bcast_double(xmunew, 1, 0)
+      call par_bcast_double_scalar(xmunew, 1, 0)
 
       if (converged.eq.1) then
         ok = .true.
@@ -342,7 +341,7 @@ CONTAINS
     end do
 
     ! the rest of this routine is quick and is performed by all nodes
-    call par_bcast_double(xntot, 1, 0)
+    call par_bcast_double_scalar(xntot, 1, 0)
     call par_bcast_double(xnmues, (lx+1)*(nphx+1), 0)
     call par_bcast_double(rhoval, 251*(nphx+1), 0)
 
@@ -360,28 +359,31 @@ CONTAINS
         if (diff.gt.13.1 .or. (il.eq.2 .and. diff.gt. 9.1) .or.        &
           &   (il.eq.1 .and. diff.gt.5.1) .or. (il.eq.0 .and. diff.gt.1.95)) then
           ! the difference in number of atoms is too large
+          ! print*, "Difference = ", diff, " computed = ", xnmues(il,ip), " ref = ", xnvmu(il,ip)
           call wlog (' Found bad counts.')
           write (slog,311) xnvmu(il,ip)
           311       format('  Occupation number in getorb is ', f9.3)
           call wlog(slog)
           call wlog ('  Will repeat this iteration. ')
           if (iscmt.gt.1) ok = .false.
+          ! call par_stop
         endif
       end do
     end do
 
     ! III. if ok, then update output values using Broyden algorithm. otherwise, scf loop will restart
     if (ok) then
+
       xmu = xmunew
       ! find rhoval via Broyden algorithm
       call broydn( iscmt, ca1, nph, xnvmu, nr05 , xnatph, rnrm, qnrm, edenvl, rhoval, dq) ! xnatph,qrnm,edenvl,rhoval => rhoval,dq
 
       ! calculate new vclap - overlap coulomb potential
       call coulom (icoul, nph, nr05 , rhoval, edenvl, edens, nat, rat, iatph, iphat, rnrm, dq, iz, vclap) ! everything => vclap
-
+      
       ! update array edens
       do iph=0,nph
-        do ir=1,nr05 (iph)
+        do ir=1, nr05 (iph)
           edens(ir,iph)=edens(ir,iph)-edenvl(ir,iph)+rhoval(ir,iph)
         end do
         do ir=nr05 (iph)+1,251
@@ -408,7 +410,9 @@ CONTAINS
       integer :: iOrder(current_step), i_left, i_right, imu, ip
       double precision :: sorted_xmu(current_step), sorted_xntot(current_step)
       character(512) :: slog
-
+      write(slog,*) "Calling Bracketing "
+      call wlog(slog)
+      ! call par_stop
       sorted_xmu(:) = -100.d0
       sorted_xntot(:) = -1.d0
       CALL qsortd(iOrder, current_step, history_xmu(1:current_step))
@@ -640,7 +644,7 @@ CONTAINS
     xnmues = 0
     rhoval = 0
     dx = window_size_terp*temp
-    dxmu = (2*dx)/nxmu
+    dxmu = (2.d0*dx)/nxmu
     xmu_m3 = xmu - dx + coni*DIMAG(energies(11))
     xmu_p3 = xmu + dx + coni*DIMAG(energies(11))
 
@@ -719,30 +723,6 @@ CONTAINS
       ENDDO
     ENDIF
 
-    ! OPEN(unit=99, file='RHOE_TH.dat')
-    ! OPEN(unit=1233, file="rhoe_th.dat")
-    ! OPEN(unit=899, file='FERMI_TH.dat')
-    ! DO ie = 1, ne_terp
-    !   f = fermiF(energies_terp(ie), temp, xmu)
-    !   IF (ie > ne_terp) f = -2*pi*coni
-    !   WRITE(899,'(20E20.10E3)') DBLE(energies_terp(ie)*hart), DBLE(f)
-    !   WRITE(99,'(20E20.10E3)') DBLE(energies_terp(ie)*hart), DIMAG(energies_terp(ie)),  DBLE(rhoe_terp(0,0,ie)*f), DIMAG(rhoe_terp(0,0,ie)*f), &
-    !     & DBLE(rhoe_terp(1,0,ie)*f), DIMAG(rhoe_terp(1,0,ie)*f), DBLE(rhoe_terp(2,0,ie)*f), DIMAG(rhoe_terp(2,0,ie)*f)
-    !
-    ! ENDDO
-    ! DO ie=1,ne
-    !   f = fermiF(energies(ie), temp, xmu)
-    !   f = 1.d0
-    !   WRITE(1233,'(20E20.10E3)') DBLE(energies(ie)*hart), DIMAG(energies(ie)),  DBLE(rhoe(0,0,ie)*f), DIMAG(rhoe(0,0,ie)*f), &
-    !         & DBLE(rhoe(1,0,ie)*f), DIMAG(rhoe(1,0,ie)*f), DBLE(rhoe(2,0,ie)*f), DIMAG(rhoe(2,0,ie)*f)
-    ! ENDDO
-    ! WRITE(99,*)
-    ! WRITE(899,*)
-    ! CLOSE(99)
-    ! CLOSE(899)
-    ! CLOSE(1233)
-
-
     ! I. Integrate density over energy, fermi distribution
     !    The first calculated point has finite imaginary part. So, include contribution from
     !    leg between real axis and this point by approximating the integrand as constant
@@ -756,7 +736,13 @@ CONTAINS
 
       f = fermiF(ee, temp, xmu)
       fp = fermiF(ep, temp, xmu)
-
+      IF (ie.GT.10) THEN
+        ! No imaginary part for contour between two poles
+        f = fermiF(DBLE(ee)+coni*0.d0, temp, xmu)
+        fp = fermiF(DBLE(ep)+coni*0.d0, temp, xmu)
+        de = DBLE(de)
+      ENDIF
+      
       DO iph = 0, nph
         DO il = 0, lx
           if (iunf.EQ.0 .AND. il.GT.2) CYCLE
@@ -964,13 +950,9 @@ CONTAINS
     IMPLICIT none
     COMPLEX*16, INTENT(IN) :: x
     REAL(8), INTENT(IN) :: t, mu
-    REAL(8) :: b
-    COMPLEX*16 :: a
     IF (t.GT.0.d0) THEN
-        a = (x-mu)/t
-        b = DIMAG((x-mu)/t)
-        if (DBLE(x-mu)/t.le.5e2) then
-            fermiF =  1/(1+EXP((x-mu)/t))
+        if (DBLE(x-mu)/t.LE.MAXEXPONENT(DBLE(x))) THEN
+            fermiF = 1.d0/(1.d0+EXP((x-mu)/t))
         else
           fermiF = 0.d0
         endif

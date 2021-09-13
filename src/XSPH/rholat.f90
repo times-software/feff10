@@ -144,7 +144,8 @@
 !     p2 is 0.5*(complex momentum)**2 referenced to energy dep xc
 !     need hartree units for dfovrg
       p2 = em - eref
-      if (mod(ixc,10) .lt. 5) then
+      ! if (mod(ixc,10) .lt. 5) then
+      IF ((ixc.EQ.0).OR.(ixc.EQ.1).OR.(ixc.EQ.2).OR.(ixc.EQ.3).OR.(ixc.EQ.6).OR.(ixc.EQ.7)) THEN ! Replace mod(ixc,10) .lt. 5
         ncycle = 0
       else
         ncycle = 3

@@ -25,6 +25,8 @@ subroutine rhol ( dx, x0, ri, ne, em,                             &
   !                   3  Dirac-Hara + HL imag part + const real & imag part
   !                   5  Dirac-Fock exchange with core electrons +
   !                     ixc=0 for valence electron density
+  !                   6  Finite temperature RPA
+  !                   7  Zero-temperature RPA
   !   rmt             r muffin tin
   !   rnrm            r norman
   !   vtot(nr)        total potential, including gsxc, final state
@@ -93,7 +95,8 @@ subroutine rhol ( dx, x0, ri, ne, em,                             &
   IE_LOOP: do ie = 1, ne
      !       p2 is (complex momentum)**2 referenced to energy dep xc
      p2 = em(ie) - eref
-     if (mod(ixc,10) .lt. 5) then
+     ! if (mod(ixc,10) .lt. 5) then 
+     if ((mod(ixc,10).lt.5).OR.(ixc.EQ.6).OR.(ixc.EQ.7)) then ! TTS
         ncycle = 0
      else
         ncycle = 3
