@@ -8,7 +8,14 @@ set report = $topdir/test-report
 unset analyzeonly
 #set analyzeonly
 
-set list = `ls */*/$inputfile */*/*/$inputfile | sed -e "s/$inputfile//g" |grep -v REFERENCE`
+if (! $?CI) then
+   echo "We are not in a CI, running all tests"
+   set list = `ls */*/$inputfile */*/*/$inputfile | sed -e "s/$inputfile//g" |grep -v REFERENCE`
+else
+   echo "In CI, skip COMPTON, XNCD XMCD" # These are the first and last
+   set list = `ls */*/$inputfile */*/*/$inputfile | sed -e "s/$inputfile//g" | tail -n +2 | head -n -2`
+   echo $list
+endif
 #set list = `ls EXAFS/*/$inputfile | sed -e "s/$inputfile//g" |grep -v REFERENCE`
 #set list = "EXELFS/Cu/ "
 
@@ -24,7 +31,8 @@ echo "========================" >> $report
 echo "" >> $report
 echo "Test                        Started            Finished  Crash   Avg.Deviation   Max.Deviation" >> $report
 echo "----------------------------------------------------------------------------------------------" >> $report
-foreach testcase ($list )
+
+foreach testcase ($list)
 
    # Run FEFF for the testcase
    echo "Starting test $testcase     `date`" 
@@ -50,6 +58,7 @@ foreach testcase ($list )
       printf "%5s   "  'No' >> $report
    endif
 
+if (! $?CI) then
    # Try to quantify the difference in the spectrum compared to the standard.
    # Calculate   1/ N_energy  SUM (energy points)  [ |( mu(E) - mu_reference(e)) / mu_reference(E)|  ]
    # And x 100 to express as %
@@ -75,7 +84,7 @@ foreach testcase ($list )
    #echo $npointsold $npointsnew $npoints
    set rdiff = 0.0
    set rdifftermmax = 0.0
-   set i = 1 
+   set i = 1
    while (  $i <= $npoints )
       #Notice the extreme scale=30 below - it's pretty normal for regular eels to be 10^-15
       set munew=`echo $newspectrum[$i] | sed 's/E/\\*10\\^/' | sed 's/+//'` #because bc is fucking retarded
@@ -83,7 +92,7 @@ foreach testcase ($list )
       if (! ("$munew" == "$muold") )  then
          # ( ) around muold in denominator are necessary because bc doesn't understand scientific notation - it's seeing literal products
          set rdiffterm = `echo "scale=30;(( $munew - $muold) / ( $muold ) )" | bc`
-         if ( `echo " $rdiffterm < 0 " | bc ` ) set rdiffterm = `echo "scale=10; - $rdiffterm "|bc` 
+         if ( `echo " $rdiffterm < 0 " | bc ` ) set rdiffterm = `echo "scale=10; - $rdiffterm "|bc`
          #set rdiff = `echo "scale=30;$rdiff + (( $munew - $muold) / ( $muold ) )" | bc`
          set rdiff = `echo "scale=30;$rdiff + $rdiffterm " | bc`
          #echo "  " rdiffterm $rdiffterm rdiff $rdiff
@@ -100,7 +109,10 @@ foreach testcase ($list )
    echo "   Test is $rdiffprint % inaccurate in the spectrum.  (Max  $rdifftermmaxprint % off.)"
    #echo "   $rdiffprint % average deviation (max.  $rdifftermmaxprint % )" >> $report
    printf "%8.3f%%      %8.2f%%\n" $rdiff $rdifftermmax >> $report
-end
+else
+# No report
+endif # End CI test
+end # End foreach
 
 echo
 echo
