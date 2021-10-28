@@ -169,7 +169,7 @@ all:
 	cp PAR/sequential.src PAR/parallel.f90
 	mkdir -p ../bin/Seq
 	make $(EXECUTABLES) "F90=$(F90)" "FLAGS=$(FLAGS)" "EXECDIR=../bin/Seq/"
-	. Utility/MkFeffScript seq
+	bash Utility/MkFeffScript seq
 	cp `find ./ -name *.script` ../bin/Seq/
 	echo -e $(smessg1) $(smessg2) $(smessg3)
 
@@ -177,7 +177,7 @@ mpi:
 	cp PAR/parallel.src PAR/parallel.f90
 	mkdir -p ../bin/MPI
 	make $(EXECUTABLES) "F90=$(MPIF90)" "FLAGS=$(MPIFLAGS)" "EXECDIR=../bin/MPI/"
-	. Utility/MkFeffScript mpi
+	bash Utility/MkFeffScript mpi
 	cp `find ./ -name *.script` ../bin/MPI/
 	echo -e $(parmessg1) $(parmessg2) $(parmessg3)
 
