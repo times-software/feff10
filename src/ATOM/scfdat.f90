@@ -271,8 +271,10 @@ integer nq2(41) !KJ
 !           stop
          endif
 !        tabulation of the results
-         if (ipr1 .ge. 5 .and. iph.le.nph)  call tabrat
+!        JJK - Add total energy to top of file.
          call etotal (16, kap, xnel, xnvalp, en, eatom)
+	 WRITE(16,*) 'Total energy: ', eatom
+         if (ipr1 .ge. 5 .and. iph.le.nph)  call tabrat
          do 504 ix = 1,251 
  504       dmag(ix)=0.0d0 
          ilast = 1
