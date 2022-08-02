@@ -15,7 +15,7 @@ jobs:
     - name: Install C-Shell
       run: |
         sudo apt-get install csh xutils-dev libncurses-dev
-        wget https://astron.com/pub/tcsh/tcsh-6.22.04.tar.gz
+        wget https://astron.com/pub/tcsh/old/tcsh-6.22.04.tar.gz
         gunzip < tcsh-6.22.04.tar.gz | tar xof -
         cd tcsh-6.22.04
         ./configure --prefix=""
