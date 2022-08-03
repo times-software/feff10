@@ -87,5 +87,8 @@ endif
 # FLAGS = -ffree-line-length-none -mcmodel=medium -march=native -O2
 # FDV, cygwin
 #  F90 = gfortran
+# gfortran v >= 10.0
+#  FLAGS = -ffree-line-length-none -cpp -O3 -fallow-argument-mismatch
+# gfortran version < 10.0
 #  FLAGS = -ffree-line-length-none -cpp -O3
 
