@@ -1,0 +1,25 @@
+Reorganize screening calculations:
+
+Calculate all frequency independent quantities:
+
+Set frequency independent grids and calculate gtrl(E) on those grids. 
+	Grid 1: E_min -> E_Min + i*Gam ->  mu + i*Gam -> mu
+	Grid 2: mu - omega_max + i*delta -> mu + omega_max + i*delta 
+                with odd number of points and point int(ne/2)+1 at mu.
+
+Calculate v_ch, K(r,r')
+Loop over frequency:
+	Calculate frequency dependent quantities:
+		Grid 3 = Grid 1 - omega
+		
+                Loop over grids 1/3:
+			Calculate chi0_1
+                Loop over grid 2:
+			Calculate chi0_2
+		
+		Sum chi0 = chi01 + chi02
+               
+		Calculate W_ch
+		Calculate beta
+
+

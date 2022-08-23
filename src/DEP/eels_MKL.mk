@@ -1,5 +1,5 @@
 eelsSRC = \
-./EELS/eels.f90 ./EELS/wavelength.f90 ./PAR/parallel.f90 \
+./EELS/eels.f90 ./EELS/wavelength.f90 ./PAR/par.f90 \
 ./COMMON/wlog.f90 ./COMMON/str.f90 ./COMMON/chopen.f90 \
 ./EELS/readsp.f90 ./EELS/concat.f90 ./COMMON/rdhead.f90 \
 ./EELS/calculateweights.f90 ./EELS/angularmesh.f90 ./EELS/qmesh.f90 \

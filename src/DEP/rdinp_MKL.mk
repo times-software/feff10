@@ -1,7 +1,7 @@
 rdinpSRC = \
 ./RDINP/rdinp.f90 ./RDINP/consistency.f90 ./COMMON/itoken.f90 \
 ./COMMON/str.f90 ./MATH/dist.f90 ./COMMON/getorb.f90 \
-./COMMON/wlog.f90 ./PAR/parallel.f90 ./RDINP/rdline.f90 \
+./COMMON/wlog.f90 ./PAR/par.f90 ./RDINP/rdline.f90 \
 ./COMMON/nxtunt.f90 ./COMMON/rdhead.f90 ./COMMON/chopen.f90 \
 ./RDINP/iniall.f90 ./RDINP/setedg.f90 ./RDINP/fixlinenow.f90 \
 ./RDINP/importcif.f90 ./RDINP/spgroup3.f90 ./RDINP/spgroup2.f90 \

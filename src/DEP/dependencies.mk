@@ -103,6 +103,19 @@
 ./DMDW/m_const_and_conv.o: ./COMMON/m_kinds.o Compiler.mk
 ./DMDW/m_dmdw.o: ./COMMON/m_kinds.o ./DMDW/m_const_and_conv.o ./INPGEN/m_ptable.o ./DMDW/m_math.o ./INPGEN/m_strings.o Compiler.mk
 ./DMDW/m_math.o: ./COMMON/m_kinds.o Compiler.mk
+./DYNSCREEN3/prepw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
+./DYNSCREEN/prepw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
+./DYNSCREEN3/prepw2.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
+./DYNSCREEN3/screenw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
+./DYNSCREEN/screenw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
+./DYNSCREEN3/screenw2.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
+./DYNSCREEN3/rdscreen.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
+./DYNSCREEN3/calculate_chi01.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
+./DYNSCREEN3/calculate_chi02.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
+./DYNSCREEN3/screenwsub.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
+./DYNSCREEN3/diag_lapack.o: Compiler.mk
+./DYNSCREEN3/diag_mods.o: Compiler.mk
+./DYNSCREEN/screenwsub.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./EELS/angularmesh.o: ./COMMON/m_inpmodules.o ./EELS/m_qvectors.o ./EELS/m_work.o ./COMMON/m_constants.o Compiler.mk
 ./EELS/calculateweights.o: ./EELS/m_work.o ./EELS/m_qvectors.o ./COMMON/m_inpmodules.o ./COMMON/m_constants.o Compiler.mk
 ./EELS/concat.o: Compiler.mk
@@ -347,6 +360,7 @@
 ./OPCONSAT/getelement.o: Compiler.mk
 ./OPCONSAT/opconsat.o: ./COMMON/m_inpmodules.o ./COMMON/m_constants.o ./POT/m_atomicpotio.o ./PAR/m_par.o ./ERRORMODS/m_errorfile.o ./COMMON/m_dimsmod.o Compiler.mk
 ./PAR/m_par.o: Compiler.mk
+./PAR/par.o: ./PAR/m_par.o Compiler.mk
 ./PAR/parallel.o: ./PAR/m_par.o Compiler.mk
 ./PATH/ccrit.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./PATH/heap.o: Compiler.mk
@@ -371,6 +385,8 @@
 ./POT/coulom.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./POT/fermi.o: ./COMMON/m_constants.o Compiler.mk
 ./POT/ff2g.o: ./COMMON/m_constants.o ./COMMON/m_dimsmod.o Compiler.mk
+./POT/fkgk.o: Compiler.mk
+./POT/fkgk_int.o: Compiler.mk
 ./POT/fmsie.o: ./KSPACE/m_controls.o ./COMMON/m_dimsmod.o Compiler.mk
 ./POT/frnrm.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./POT/grids.o: ./COMMON/m_constants.o Compiler.mk

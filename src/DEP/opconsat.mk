@@ -1,5 +1,5 @@
 opconsatSRC = \
-./OPCONSAT/opconsat.f90 ./OPCONSAT/getelement.f90 ./PAR/parallel.f90 \
+./OPCONSAT/opconsat.f90 ./OPCONSAT/getelement.f90 ./PAR/par.f90 \
 ./COMMON/wlog.f90 ./COMMON/str.f90 ./OPCONSAT/epsdb.f90 \
 ./RDINP/rdline.f90 ./COMMON/nxtunt.f90 ./COMMON/padlib.f90 \
 ./OPCONSAT/addeps.f90 ./COMMON/rdcmt.f90 ./MATH/terp.f90 \

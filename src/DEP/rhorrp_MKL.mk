@@ -1,5 +1,5 @@
 rhorrpSRC = \
-./RHORRP/rhorrp.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./RHORRP/rhorrp.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./COMMON/rdpot.f90 \
 ./COMMON/padlib.f90 ./COMMON/rdxsph.f90 ./COMMON/fixvar.f90 \
 ./MATH/terp.f90 ./MATH/polint.f90 ./COMMON/fixdsx.f90 \

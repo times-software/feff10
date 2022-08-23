@@ -1,5 +1,5 @@
 xsphSRC = \
-./XSPH/xsph.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./XSPH/xsph.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./XSPH/rexsph.f90 \
 ./KSPACE/crystalstructure.f90 ./KSPACE/readcrystaldata.f90 ./KSPACE/pointgroup.f90 \
 ./MATH/invertmatrix.f90 ./KSPACE/spacegroup.f90 ./KSPACE/subtract_a.f90 \

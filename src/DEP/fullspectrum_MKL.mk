@@ -1,5 +1,5 @@
 fullspectrumSRC = \
-./FULLSPECTRUM/fullspectrum.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./FULLSPECTRUM/fullspectrum.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./FULLSPECTRUM/rdop.f90 \
 ./COMMON/isedge.f90 ./COMMON/getcom.f90 ./COMMON/padlib.f90 \
 ./RDINP/rdline.f90 ./COMMON/nxtunt.f90 ./COMMON/fixstr.f90 \

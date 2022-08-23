@@ -1,5 +1,5 @@
 genfmtSRC = \
-./GENFMT/genfmt.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./GENFMT/genfmt.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./GENFMT/regenf.f90 \
 ./COMMON/rdhead.f90 ./COMMON/setkap.f90 ./GENFMT/genfmtsub.f90 \
 ./COMMON/pertab.f90 ./MATH/cwig3j.f90 ./COMMON/getxk.f90 \

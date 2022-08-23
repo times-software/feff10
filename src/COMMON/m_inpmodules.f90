@@ -966,6 +966,160 @@
 	end module
 
 !=======================================================================
+!     SCREENW (dynamic screened core-hole)
+!=======================================================================
+
+        module screenw_inp
+          use atoms_inp,only: nph
+          implicit none
+
+          TYPE ScreenwInputVars
+             integer ner, nei, ne2, nomega, maxl, irrh, iend, lfxc, nrptx0
+             double precision emin, emax, eimax, ermin, rfms, omega_max, gam1, gam2, xmu, dx 
+          END TYPE ScreenwInputVars
+
+          character(*),parameter,private :: filename='screenw.inp'
+          TYPE(ScreenwInputVars) ScreenI
+          
+        contains
+    
+          subroutine screenw_write
+            open(unit=3,file=filename,status='unknown')
+            write(3,*) 'ner',ScreenI%ner
+            write(3,*) 'nei',ScreenI%nei
+            write(3,*) 'ne2',ScreenI%ne2
+            write(3,*) 'nom',ScreenI%nomega
+            write(3,*) 'omx',ScreenI%omega_max
+            write(3,*) 'gm1',ScreenI%gam1
+            write(3,*) 'gm2',ScreenI%gam1
+            write(3,*) 'xmu',ScreenI%xmu            
+            write(3,*) 'maxl',ScreenI%maxl
+            write(3,*) 'irrh',ScreenI%irrh
+            write(3,*) 'iend',ScreenI%iend
+            write(3,*) 'lfxc',ScreenI%lfxc
+            write(3,*) 'emin',ScreenI%emin
+            write(3,*) 'emax',ScreenI%emax
+            write(3,*) 'eimax',ScreenI%eimax
+            write(3,*) 'ermin',ScreenI%ermin
+            write(3,*) 'rfms',ScreenI%rfms
+            write(3,*) 'nrptx0',ScreenI%nrptx0
+            write(3,*) 'dx', ScreenI%dx
+            close(3)
+            return
+          end subroutine screenw_write
+
+        subroutine screenw_inp_parse(str,vars)
+          implicit none
+          character*30,intent(in) :: str
+          real*8,intent(in) ::  vars
+          if (str .eq. 'ner') then
+             ScreenI%ner   = vars
+          elseif (str .eq. 'nei') then
+             ScreenI%nei   = vars
+          elseif (str .eq. 'ne2') then
+             ScreenI%ne2   = vars
+          elseif (str .eq. 'nom') then
+             ScreenI%nomega   = vars
+          elseif (str .eq. 'omx') then
+             ScreenI%omega_max   = vars
+          elseif (str .eq. 'gm1') then
+             ScreenI%gam1   = vars
+          elseif (str .eq. 'gm2') then
+             ScreenI%gam2   = vars
+          elseif (str .eq. 'xmu') then
+             ScreenI%xmu   = vars
+          elseif (str .eq. 'max') then
+             ScreenI%maxl  = vars
+          elseif (str .eq. 'irr') then
+             ScreenI%irrh  = vars
+          elseif (str .eq. 'ien') then
+             ScreenI%iend  = vars
+          elseif (str .eq. 'lfx') then
+             ScreenI%lfxc  = vars
+          elseif (str .eq. 'emi') then
+             ScreenI%emin  = vars
+          elseif (str .eq. 'ema') then
+             ScreenI%emax  = vars
+          elseif (str .eq. 'eim') then
+             ScreenI%eimax = vars
+          elseif (str .eq. 'erm') then
+             ScreenI%ermin = vars
+          elseif (str .eq. 'rfm') then
+             ScreenI%rfms  = vars
+          elseif (str .eq. 'nrp')then
+             ScreenI%nrptx0  = vars
+          else
+             call wlog("Unrecognized keyword submitted to screen.inp in SCREEN_INP_PARSE ; aborting.")
+             stop
+          endif
+          return
+        end subroutine screenw_inp_parse
+
+        subroutine screenw_read
+          ! Reads screen.inp.  This routine is set up a little different from its brothers in the other input modules.
+          ! This is to keep it compatible with situations where there either is no screen.inp file (in which case defaults are used for all variables),
+          ! and with situations where screen.inp contains only the variables for which non-default values are specified.
+          ! This is because I've only added mandatory screen.inp files being written by rdinp now 1-2012.  KJ
+          integer i
+          character*8 strs
+          character*3 str
+          double precision vars
+          call screenw_init  !KJ set defaults in case screen.inp doesn't exist!
+          open (file=filename, unit=3, status='old', err=60)
+          !KJ			read (3,*)  !KJ 11-2011 removing header line from screen.inp because it is incompatible with screen_inp_and_parse above.
+          do i = 1, 100
+             read(3,*,end=60)  strs, vars
+             str = strs(1:3)
+             if (str .eq. 'ner') ScreenI%ner   = nint(vars)
+             if (str .eq. 'nom') ScreenI%nomega   = nint(vars)
+             if (str .eq. 'omx') ScreenI%omega_max  = vars
+             if (str .eq. 'gm1') ScreenI%gam1  = vars
+             if (str .eq. 'gm2') ScreenI%gam2  = vars
+             if (str .eq. 'xmu') ScreenI%xmu  = vars             
+             if (str .eq. 'nei') ScreenI%nei   = nint(vars)
+             if (str .eq. 'ne2') ScreenI%ne2   = nint(vars)
+             if (str .eq. 'max') ScreenI%maxl  = nint(vars)
+             if (str .eq. 'irr') ScreenI%irrh  = nint(vars)
+             if (str .eq. 'ien') ScreenI%iend  = nint(vars)
+             if (str .eq. 'lfx') ScreenI%lfxc  = nint(vars)
+             if (str .eq. 'emi') ScreenI%emin  = vars
+             if (str .eq. 'ema') ScreenI%emax  = vars
+             if (str .eq. 'eim') ScreenI%eimax = vars
+             if (str .eq. 'erm') ScreenI%ermin = vars
+             if (str .eq. 'rfm') ScreenI%rfms  = vars
+             if (str .eq. 'nrp') ScreenI%nrptx0  = nint(vars)
+             if (str .eq. 'dx') ScreenI%dx  = nint(vars)
+          end do
+60        continue
+          close(3)
+          return
+        end subroutine screenw_read
+
+        subroutine screenw_init
+          ScreenI%ner   = 40
+          ScreenI%nei   = 20
+          ScreenI%ne2   = 100
+          ScreenI%nomega= 100
+          ScreenI%omega_max = 30.d0
+          ScreenI%gam1 = 0.1d0
+          ScreenI%gam2 = 0.d0
+          ScreenI%xmu = 1.d2
+          ScreenI%maxl  = 4
+          ScreenI%irrh  = 1
+          ScreenI%iend  = 0
+          ScreenI%emin  = -40.0d0 !KJ This and next 3 values are in eV ; converted to Ha at a later point in the code (screen/rdgeom.f90)
+          ScreenI%emax  = 0.0d0
+          ScreenI%eimax = 2.0d0
+          ScreenI%ermin = 0.001d0
+          ScreenI%lfxc  = 0
+          ScreenI%rfms  = 4.0d0
+          ScreenI%nrptx0 = 251
+          ScreenI%dx=0.05
+        end subroutine screenw_init
+        
+      end module screenw_inp
+
+!=======================================================================
 !     CRPA
 !=======================================================================
 

@@ -80,7 +80,10 @@ subroutine getph ( ri, dx, x0, rmt, rnrm, ne, em, ixc,            &
   !     ilast is the last integration point
   !     it is larger than jnrm for better interpolations
   ilast = jnrm + 6
-  if (ilast .gt. nrptx) ilast = nrptx
+  if (ilast .gt. nrptx) then
+          PRINT*, 'WARNING: ilast > nrptx in getph!'
+          ilast = nrptx
+  end if
 
   do ie = 1, ne
      !       p2 is (complex momentum)**2 referenced to energy dep xc

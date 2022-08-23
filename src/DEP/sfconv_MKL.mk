@@ -1,5 +1,5 @@
 sfconvSRC = \
-./SFCONV/sfconv.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./SFCONV/sfconv.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./SFCONV/so2conv.f90 \
 ./SFCONV/ppole.f90 ./SFCONV/croots.f90 ./SFCONV/qlimits.f90 \
 ./SFCONV/senergies.f90 ./SFCONV/grater.f90 ./DEBYE/sigms.f90 \

@@ -1,5 +1,5 @@
 comptonSRC = \
-./COMPTON/compton.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./COMPTON/compton.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./COMMON/rdhead.f90 \
 ./KSPACE/readcrystaldata.f90 ./RDINP/mkptz.f90 ./COMMON/rdpot.f90 \
 ./COMMON/padlib.f90 ./COMMON/rdxsph.f90 ./COMMON/fixvar.f90 \

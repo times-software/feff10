@@ -82,10 +82,10 @@
          ampl = b/sin(phx)
       endif
 
-      if (dble(ampl).lt. 0.d0) then
-         ampl = -ampl
-         phx = phx + pi
-      endif
+      !if (dble(ampl).lt. 0.d0) then
+      !   ampl = -ampl
+      !   phx = phx + pi
+      !endif
 
       return
       end

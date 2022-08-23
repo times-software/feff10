@@ -1,5 +1,5 @@
 screenSRC = \
-./SCREEN/screen.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./SCREEN/screen.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./SCREEN/rdgeom.f90 \
 ./COMMON/rdhead.f90 ./SCREEN/frgrid.f90 ./SCREEN/prep.f90 \
 ./COMMON/rdpot.f90 ./COMMON/padlib.f90 ./SCREEN/fegrid.f90 \

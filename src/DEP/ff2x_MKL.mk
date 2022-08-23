@@ -1,5 +1,5 @@
 ff2xSRC = \
-./FF2X/ff2x.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./FF2X/ff2x.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./FF2X/reff2x.f90 \
 ./COMMON/rdhead.f90 ./COMMON/setkap.f90 ./FF2X/ff2xmujas.f90 \
 ./COMMON/padlib.f90 ./FF2X/rdfbinl.f90 ./COMMON/str2dp.f90 \

@@ -45,7 +45,8 @@
       complex*16 xjl,xnl,asx,acx
       complex*16 xi,xi2,xi3,xi4,xi5,xi6,xi7,xi8,xi9,xi10,xi11
 
-      parameter (xcut = 1.d0, xcut1 = 7.51d0, xcut2 = 5.01d0)
+      !parameter (xcut = 1.d0, xcut1 = 7.51d0, xcut2 = 5.01d0)
+      parameter (xcut = 1.d0, xcut1 = 17.d0, xcut2 = 5.01d0)
 
       if (dble(x) .le. 0)  stop 'Re(x) is .le. zero in besjn'
 
@@ -152,7 +153,8 @@
    80    continue
          do 90 lp1 = 12,lmaxp1
             l = lp1-2
-            tlxp1 = float(2*l+1)
+            !tlxp1 = float(2*l+1)
+            tlxp1 = DBLE(2*l+1) ! JK - Why was float being used?
             sjl(lp1) = tlxp1*xi*sjl(lp1-1)-sjl(lp1-2)
             cjl(lp1) = tlxp1*xi*cjl(lp1-1)-cjl(lp1-2)
             snl(lp1) = tlxp1*xi*snl(lp1-1)-snl(lp1-2)

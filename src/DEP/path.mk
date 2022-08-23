@@ -1,5 +1,5 @@
 pathSRC = \
-./PATH/path.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
+./PATH/path.f90 ./PAR/par.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./PATH/repath.f90 \
 ./COMMON/rdhead.f90 ./COMMON/setkap.f90 ./PATH/prcrit.f90 \
 ./COMMON/rdxsphjas.f90 ./COMMON/padlib.f90 ./COMMON/rdxsph.f90 \

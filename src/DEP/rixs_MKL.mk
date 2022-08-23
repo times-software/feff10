@@ -1,6 +1,6 @@
 rixsSRC = \
 ./RIXS/rixs.f90 ./RIXS/kkint.f90 ./RIXS/doublelorentz.f90 \
-./PAR/parallel.f90 ./COMMON/wlog.f90 ./COMMON/str.f90 \
+./PAR/par.f90 ./COMMON/wlog.f90 ./COMMON/str.f90 \
 ./FMS/reafms.f90 ./KSPACE/crystalstructure.f90 ./KSPACE/readcrystaldata.f90 \
 ./KSPACE/pointgroup.f90 ./MATH/invertmatrix.f90 ./KSPACE/spacegroup.f90 \
 ./KSPACE/subtract_a.f90 ./KSPACE/change_car.f90 ./KSPACE/symmetrycheck.f90 \
