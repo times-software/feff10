@@ -1,0 +1,47 @@
+DEBYE 298.0 194.97065234710175 0
+COREHOLE RPA
+
+SCF 6.0 30 0.1 0
+
+FMS 6 0 0 0.0 0.0 40.0
+
+SETEDGE
+
+ABSOLUTE
+
+RGRID 0.01
+
+TARGET 1
+
+EDGE K
+
+EGRID
+e_grid -10 10 0.1
+k_grid last 5 0.07
+
+CONTROL 1 0 0 0 0 0
+
+LDOS -140.0 40.0 0.25 400
+*LDOS -20.0 0 0.01 300
+
+RPATH 0.1
+
+CIF /home/jjkas/Papers/mpopcons/Other_Data_for_JJK/Ag_04_08/Ag/mp-124/corvus_oc/CIF_symm.cif
+
+REAL
+
+ATOMS
+0.0 0.0 0.0 0
+
+POTENTIALS
+0 29 Cu -1 -1 1.0
+
+EXCHANGE 0 0.0 0.0 0
+*MPSE 1
+*EPS0 -1
+
+PRINT 0 0 0 0 0 0
+
+XANES 10
+
+END
