@@ -31,7 +31,10 @@
 #              mpi
 ########################################
 #@mpi MPIF90 = mpif90
-#@mpi MPIFLAGS =  -g -O3 
+#$gfortran flags
+#@mpi MPIFLAGS =  -g -O3 -ffree-line-length-none
+#$ifort flags
+#$mpi MPIFLAGS =  -g -O3 
 #$mpi MPIFLAGS = -O3 -check arg_temp_created -gen-interfaces -warn interfaces -g -fp-stack-check -traceback  -heap-arrays -check bounds
 
 

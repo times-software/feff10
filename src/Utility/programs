@@ -18,5 +18,6 @@ RDINP/rdinp.f90
 RHORRP/rhorrp.f90
 RIXS/rixs.f90
 SCREEN/screen.f90
+DYNSCREEN/screenw2.f90
 SFCONV/sfconv.f90
 XSPH/xsph.f90

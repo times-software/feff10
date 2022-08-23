@@ -1,10 +1,10 @@
 infiles="feff.inp screenw.inp"
 outfiles="beta.dat beta_0.dat"
-rm -rf ~/tmp/tmp_clean
+git rm -rf ~/tmp/tmp_clean
 mkdir ~/tmp/tmp_clean
 cp $infiles ~/tmp/tmp_clean
 cp $outfiles ~/tmp/tmp_clean
-rm -r *
+git rm -rf *
 pd=`pwd`
 cd ~/tmp/tmp_clean
 cp $infiles $pd
@@ -14,3 +14,4 @@ do
 done
 cd $pd
 rm -r ~/tmp/tmp_clean
+git add *

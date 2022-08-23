@@ -103,19 +103,22 @@
 ./DMDW/m_const_and_conv.o: ./COMMON/m_kinds.o Compiler.mk
 ./DMDW/m_dmdw.o: ./COMMON/m_kinds.o ./DMDW/m_const_and_conv.o ./INPGEN/m_ptable.o ./DMDW/m_math.o ./INPGEN/m_strings.o Compiler.mk
 ./DMDW/m_math.o: ./COMMON/m_kinds.o Compiler.mk
-./DYNSCREEN3/prepw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
+./DYNSCREEN/calculate_chi01.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
+./DYNSCREEN/calculate_chi01_old.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
+./DYNSCREEN/calculate_chi02.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
+./DYNSCREEN/calculate_chi02_old.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
+./DYNSCREEN/diag_lapack.o: Compiler.mk
+./DYNSCREEN/diag_mods.o: Compiler.mk
 ./DYNSCREEN/prepw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
-./DYNSCREEN3/prepw2.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
-./DYNSCREEN3/screenw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
+./DYNSCREEN/prepw2.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o ./PAR/m_par.o Compiler.mk
+./DYNSCREEN/rdscreen.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
 ./DYNSCREEN/screenw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
-./DYNSCREEN3/screenw2.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
-./DYNSCREEN3/rdscreen.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
-./DYNSCREEN3/calculate_chi01.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
-./DYNSCREEN3/calculate_chi02.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
-./DYNSCREEN3/screenwsub.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
-./DYNSCREEN3/diag_lapack.o: Compiler.mk
-./DYNSCREEN3/diag_mods.o: Compiler.mk
+./DYNSCREEN/screenw2.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
 ./DYNSCREEN/screenwsub.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
+./DYNSCREEN/sor.o: Compiler.mk
+./DYNSCREEN2/prepw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
+./DYNSCREEN2/screenw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./PAR/m_par.o ./COMMON/m_inpmodules.o ./ERRORMODS/m_errorfile.o Compiler.mk
+./DYNSCREEN2/screenwsub.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./EELS/angularmesh.o: ./COMMON/m_inpmodules.o ./EELS/m_qvectors.o ./EELS/m_work.o ./COMMON/m_constants.o Compiler.mk
 ./EELS/calculateweights.o: ./EELS/m_work.o ./EELS/m_qvectors.o ./COMMON/m_inpmodules.o ./COMMON/m_constants.o Compiler.mk
 ./EELS/concat.o: Compiler.mk
@@ -321,6 +324,8 @@
 ./MATH/bcoef.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./MATH/besjh.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./MATH/besjn.o: ./COMMON/m_dimsmod.o Compiler.mk
+./MATH/besjn_old.o: ./COMMON/m_dimsmod.o Compiler.mk
+./MATH/besjn_scaled.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./MATH/bjnser.o: Compiler.mk
 ./MATH/conv.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./MATH/cpl0.o: Compiler.mk
@@ -331,6 +336,7 @@
 ./MATH/determ.o: Compiler.mk
 ./MATH/dist.o: Compiler.mk
 ./MATH/exjlnl.o: Compiler.mk
+./MATH/exjlnl2.o: Compiler.mk
 ./MATH/invertmatrix.o: Compiler.mk
 ./MATH/lint.o: Compiler.mk
 ./MATH/lu.o: Compiler.mk

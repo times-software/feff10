@@ -12,7 +12,7 @@ screenSRC = \
 ./FOVRG/solin.f90 ./MATH/besjh.f90 ./MATH/bjnser.f90 \
 ./FOVRG/muatcc.f90 ./MATH/cwig3j.f90 ./FOVRG/potex.f90 \
 ./FOVRG/aprdec.f90 ./FOVRG/yzkrdc.f90 ./FOVRG/yzktec.f90 \
-./MATH/besjn.f90 ./MATH/phamp.f90 ./MATH/exjlnl.f90 \
+./MATH/besjn_scaled.f90 ./MATH/phamp.f90 ./MATH/exjlnl.f90 \
 ./CRPA/chi_crpa.f90 ./MATH/lu.f90 ./MATH/seigen.f90 \
 ./COMMON/setkap.f90 ./FMS/yprep.f90 ./FMS/xstaff.f90 \
 ./FMS/fmspack.f90 ./MATH/ylm.f90 ./FMS/gglu.f90 \

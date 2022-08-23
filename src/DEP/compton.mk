@@ -11,7 +11,7 @@ comptonSRC = \
 ./FOVRG/intout.f90 ./FOVRG/solin.f90 ./MATH/besjh.f90 \
 ./MATH/bjnser.f90 ./FOVRG/muatcc.f90 ./MATH/cwig3j.f90 \
 ./FOVRG/potex.f90 ./FOVRG/aprdec.f90 ./FOVRG/yzkrdc.f90 \
-./FOVRG/yzktec.f90 ./MATH/besjn.f90 ./MATH/phamp.f90 \
+./FOVRG/yzktec.f90 ./MATH/besjn_scaled.f90 ./MATH/phamp.f90 \
 ./MATH/exjlnl.f90 ./MATH/cpl0.f90 ./MATH/ylm.f90 \
 ./MATH/terpc.f90 ./MATH/lu.f90 ./MATH/seigen.f90 
 compton_MODULESRC = \

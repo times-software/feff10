@@ -58,7 +58,10 @@ echo "include Compiler.mk" >> Makefile
 echo -e "$newlines" >> Makefile
 echo 'ifneq ($(F90),gfortran)
 	FPPTASK=-DFEFF -fpp 
+else
+	FPPTASK=-DFEFF -cpp
 endif' >> Makefile
+echo "parFPPTASK = \$(shell \$(MPIF90) -show |grep -c gfortran |awk '{if(\$\$1==0) print \"-DFEFF -fpp\"; else print \"-DFEFF -cpp\"}')" >> Makefile
 echo -e "$newlines" >> Makefile
 
 # Define the tool to make libraries
@@ -117,7 +120,7 @@ echo 'all:
 mpi:
 	cp PAR/parallel.src PAR/par.f90
 	mkdir -p ../bin/MPI
-	make $(EXECUTABLES) "F90=$(MPIF90)" "FLAGS=$(MPIFLAGS)" "EXECDIR=../bin/MPI/"
+	make $(EXECUTABLES) "F90=$(MPIF90)" "FLAGS=$(MPIFLAGS)" "EXECDIR=../bin/MPI/" "FPPTASK=$(parFPPTASK)"
 	. Utility/MkFeffScript mpi
 	cp `find ./ -name *.script` ../bin/MPI/
 	echo -e $(parmessg1) $(parmessg2) $(parmessg3)
@@ -177,8 +180,8 @@ echo 'include DEP/dependencies.mk
 
 # How to make a .o file from .f90
 .f90.o:
-	@echo "cd $(<D); $(F90) -FR -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
-	@cd $(<D); $(F90) -FR -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
+	@echo "cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
+	@cd $(<D); $(F90) -c $(FLAGS) $(FPPTASK) $(INCLUDEFLAGS) $(<F)
 
 .f.o:
 	@echo "cd $(<D); $(F90) -FI -c $(FLAGS) $(FPPTASK) INCLUDEFLAGS $(<F)"
