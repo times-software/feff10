@@ -589,7 +589,8 @@
 			  write(3,10) 'gamach, rgrd, ca1, ecv, totvol, rfms1, corval_emin'
 			  write(3,30)  gamach, rgrd, ca1, ecv, totvol, rfms1, corval_emin
 			  write(3,10) ' iz, lmaxsc, xnatph, xion, folp'
-		  120   format ( 2i5, 4f13.5)
+        ! CC Changed 120 format to accommodate more extreme stoichiometries
+		  120   format ( 2i5, 4f20.10)
 			  do ip = 0, nph
 		        write(3,120) iz(ip), lmaxsc(ip), xnatph(ip), xion(ip), folp(ip)
 			  enddo
