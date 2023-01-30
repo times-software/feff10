@@ -95,7 +95,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   LOGICAL FreeElectronTest, DiagonalizeEps
   DOUBLE PRECISION kf
 
-  DiagonalizeEps = .TRUE.
+  DiagonalizeEps = .FALSE.
   ! Allocate variables
   allocate(xnmues(0:lx,0:nphx))
 
@@ -125,39 +125,40 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
 
   dx0 = 0.05
 !KJ here, it is necessary to be careful ...  If pot ran in k-space, rfms 
-  rfms2  = real(ScreenI%rfms)
-  rdirec = real(ScreenI%rfms*2)
+  rfms2  = real(ScreenwI%rfms)
+  rdirec = real(ScreenwI%rfms*2)
+  DiagonalizeEps = ScreenwI%DiagE
 
   edge = xmu - vr0
   emu  = emu - vr0
   ! xmu for rutile
   !xmu = -15.d0/hart
-  IF(ScreenI%xmu.LT.0.d0) xmu = ScreenI%xmu
-  IF(ScreenI%xmu.GT.1.d-1) FreeElectronTest = .TRUE.
+  IF(ScreenwI%xmu.LT.0.d0) xmu = ScreenwI%xmu
+  IF(ScreenwI%xmu.GT.1.d-1) FreeElectronTest = .TRUE.
 
   ! Read these from input in future.
   !domega = 0.33333d0/hart
-  nomega = ScreenI%nomega
-  omega_max = ScreenI%omega_max
+  nomega = ScreenwI%nomega
+  omega_max = ScreenwI%omega_max
   domega = omega_max/(nomega-1)
-  ne2    = ScreenI%ne2
-  ilast0 = ScreenI%nrptx0
+  ne2    = ScreenwI%ne2
+  ilast0 = ScreenwI%nrptx0
   IF(ilast0.LT.0) ilast0=MIN(INT((LOG(-ilast0*rnrm(0))+8.8d0)/dx)+1,nrx)
   IF(ilast0.GT.nrx) THEN
      IF(master) PRINT*, 'nrptx0 > nrx, resetting'
      ilast0 = nrx
   END IF
-  IF(ScreenI%maxl.LT.lmaxph(0)+1) THEN
+  IF(ScreenwI%maxl.LT.lmaxph(0)+1) THEN
      IF(master) PRINT*, 'maxl < lmaxph+1, resetting to lmaxph+1' 
-     ScreenI%maxl = lmaxph(0) + 1
+     ScreenwI%maxl = lmaxph(0) + 1
   END IF
   IF(master) THEN
      PRINT*, 'ilast=', ilast0
      PRINT*, 'ne2=', ne2
      PRINT*, 'nomega=', nomega
      PRINT*, 'omega_max=', omega_max*hart
-     PRINT*, 'gam1=', ScreenI%gam1*hart
-     PRINT*, 'maxl=', ScreenI%maxl
+     PRINT*, 'gam1=', ScreenwI%gam1*hart
+     PRINT*, 'maxl=', ScreenwI%maxl
      PRINT*, 'lmaxph(0)', lmaxph(0)
      PRINT*, 'xmu=', xmu*hart
      PRINT*, 'rmax = ', ri(ilast0)
@@ -170,17 +171,17 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! Free electron gas - rs = 4.0
   IF(FreeElectronTest) THEN
-     rs = ScreenI%xmu*hart
+     rs = ScreenwI%xmu*hart
      IF(master) PRINT*, 'rs = ', rs
      kf = fa/rs
      xmu = kf**2/2.d0
      IF(master) PRINT*, 'xmu =', xmu
-     ScreenI%emin = -2*xmu 
+     ScreenwI%emin = -2*xmu 
   END IF
 
-  !PRINT*, 'DEBUG: 1' 
+  PRINT*, 'DEBUG: 1' 
   ! Set omega independent energy grids
-  call setegi(xmu+ScreenI%emin, xmu, ScreenI%eimax, ScreenI%gam1, ScreenI%ner, ScreenI%nei, em, ne)
+  call setegi(xmu+ScreenwI%emin, xmu, ScreenwI%eimax, ScreenwI%gam1, ScreenwI%ner, ScreenwI%nei, em, ne)
   !PRINT*, em(1)*hart, em(20)*hart, em(ne-20)*hart, em(ne)*hart
 
   !     transform to single precision
@@ -280,8 +281,8 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   !=================================================================
   !     LDA Exchange Correlation (actually this probably doesn't work)
   !=================================================================  
-  if (ScreenI%lfxc .gt. 0) then
-     call ldafxc(ilast, ri, rhoph, ScreenI%lfxc, fxc)
+  if (ScreenwI%lfxc .gt. 0) then
+     call ldafxc(ilast, ri, rhoph, ScreenwI%lfxc, fxc)
      call wlog('Using TDLDA kernel.')
      do i = 1, ilast
         Kmat(i,i) = Kmat(i,i) + 4.0d0*pi * fxc(i)
@@ -289,7 +290,9 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   end if
 
   ! Perform FMS for these first 2 grids and get gtrl for each
+  PRINT*, 'DEBUG: 2'
   call getgtrl(em, ne, eref(1), ph1, lmaxph, 0, nph, lfms2, inclus, rdirec, toler1, toler2, iprint, gtrl1) 
+  PRINT*, 'DEBUG: 3'
   !PRINT*, 'gtrl', gtrl1(0,1)
   !STOP
   
@@ -300,7 +303,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   omega = domega*iomega
   if(master) PRINT*, 'Calculating beta(omega) for omega = ', omega, 'iproc = ', this_process
   if(master) PRINT*, 'iomega, nomega = ', iomega, nomega
-  !ilast0 = ScreenI%nrptx0
+  !ilast0 = ScreenwI%nrptx0
 
   IF(FreeElectronTest) THEN
      deltaE = omega/(ne2-1)
@@ -310,7 +313,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
      emin2 = xmu - omega
   END IF
   DO ie = 1, ne2
-     em2(ie) = emin2 + (ie-1)*deltaE + ScreenI%gam1*coni
+     em2(ie) = emin2 + (ie-1)*deltaE + ScreenwI%gam1*coni
   END DO
   em3(1:ne) = em(1:ne) - omega
   em4(1:ne2) = em2(1:ne2) + omega
@@ -372,7 +375,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   ixc0 = 0
   IF(master) PRINT*, 'Calculating Chi0_1.'
   call calculate_chi01( inclus, master, FreeElectronTest, nrx,                              &
-     &                   ScreenI%maxl, lmaxph(0), ScreenI%irrh, ScreenI%iend, ScreenI%nrptx0,  &
+     &                   ScreenwI%maxl, lmaxph(0), ScreenwI%irrh, ScreenwI%iend, ScreenwI%nrptx0,  &
      &                   ihole, xmu, adgc, adpc, iz(0),             &
      &                   xion(0), iunf, xnval,                      &
      &                   ri, dx, x0, rmt(0), rnrm(0), em, ne, omega, ixc0, &
@@ -382,7 +385,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   !PRINT*, 'Before calc2'
   IF(master) PRINT*, 'Calculating Chi0_2.'
   call calculate_chi02( inclus, master, FreeElectronTest, nrx,                                &
-     &                   ScreenI%maxl, lmaxph(0), ScreenI%irrh, ScreenI%iend, ScreenI%nrptx0,  &
+     &                   ScreenwI%maxl, lmaxph(0), ScreenwI%irrh, ScreenwI%iend, ScreenwI%nrptx0,  &
      &                   ihole, xmu, adgc, adpc, iz(0),             &
      &                   xion(0), iunf, xnval,                      &
      &                   ri, dx, x0, rmt(0), rnrm(0), em2, ne2, omega, ixc0, &
@@ -437,6 +440,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
 
   IF(.FALSE.) GOTO 105 ! Skip
   IF(DiagonalizeEps) THEN
+     IF(master) PRINT*, 'Diagonalizing epsilon.'
      Amat2 = Amat 
      DO i = 1, ilast0
         Amat2(i,i) = Amat(i,i) - 1.d0

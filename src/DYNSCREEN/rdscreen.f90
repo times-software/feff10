@@ -23,16 +23,16 @@ subroutine rdscreen
   !ScreenI%maxl=min(ScreenI%maxl,lx+1) !KJ Yoshi didn't have this - not sure why!  His default maxl=4 causes trouble if lx=2 (or smaller). 
 
   !     transform to code units (bohrs and hartrees - atomic units)
-  ScreenI%emin   = ScreenI%emin   / hart
-  ScreenI%emax   = ScreenI%emax   / hart
-  ScreenI%eimax  = ScreenI%eimax  / hart
-  ScreenI%omega_max  = ScreenI%omega_max  / hart
-  ScreenI%xmu  = ScreenI%xmu  / hart
-  ScreenI%gam1  = ScreenI%gam1  / hart
-  ScreenI%gam2  = ScreenI%gam2  / hart
+  ScreenwI%emin   = ScreenwI%emin   / hart
+  ScreenwI%emax   = ScreenwI%emax   / hart
+  ScreenwI%eimax  = ScreenwI%eimax  / hart
+  ScreenwI%omega_max  = ScreenwI%omega_max  / hart
+  ScreenwI%xmu  = ScreenwI%xmu  / hart
+  ScreenwI%gam1  = ScreenwI%gam1  / hart
+  ScreenwI%gam2  = ScreenwI%gam2  / hart
 
-  ScreenI%rfms = ScreenI%rfms/bohr
-  ScreenI%ermin  = ScreenI%ermin  / hart
+  ScreenwI%rfms = ScreenwI%rfms/bohr
+  ScreenwI%ermin  = ScreenwI%ermin  / hart
 
 
   return

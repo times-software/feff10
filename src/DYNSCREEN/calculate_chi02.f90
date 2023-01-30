@@ -268,19 +268,19 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
               pn(j,ipart) = bessh(ll+1)*exp(coni*ph0) *ri(j)*dum1
               qn(j,ipart) = bessh(ll+2)*exp(coni*ph0) *ri(j)*dum1*factor
            end do
-           IF(ll.EQ.5) THEN
-              do j = 1, jri0 -1
-                 WRITE(132,'(1e20.10,I5,I2,6e20.10)') ri(j), ie, ipart, DBLE(pn(j,ipart)*pr(j,ipart)), &
-             &       DBLE(pn(j,ipart)*pr(j,ipart)), DBLE(qn(j,ipart)), DIMAG(qn(j,ipart)), DBLE(ph0), DIMAG(ph0)
-              end do
-              WRITE(132,*)
-           END IF
+           !IF(ll.EQ.5) THEN
+           !   do j = 1, jri0 -1
+           !      WRITE(132,'(1e20.10,I5,I2,6e20.10)') ri(j), ie, ipart, DBLE(pn(j,ipart)*pr(j,ipart)), &
+           !  &       DBLE(pn(j,ipart)*pr(j,ipart)), DBLE(qn(j,ipart)), DIMAG(qn(j,ipart)), DBLE(ph0), DIMAG(ph0)
+           !   end do
+           !   WRITE(132,*)
+           !END IF
         end do ! end of loop over parts G(E) and G(E-w)
         !=============================================================
         !         setup prefactors
         !=============================================================
         ll = k - 1
-        IF(.TRUE.) THEN ! DEBUG
+        IF(.FALSE.) THEN ! DEBUG
            IF(ll.EQ.14) THEN
               DO ipart = 1, 2
                  DO j = 1, ilast0
