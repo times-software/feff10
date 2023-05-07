@@ -324,16 +324,23 @@
 !              ixc=3  Dirac-Hara + HL imag part + const real & imag part
 !              ixc=5  partially nonlocal: Dirac-Fock for core + HL for
 !                     valence electrons, + const real & imag part
-!              ixc=10 same as ixc=0 with broadened plasmon HL selfenergy
-!              ixc=13 same as ixc=3 with broadened plasmon HL selfenergy
-!              ixc=15 same as ixc=5 with broadened plasmon HL selfenergy
+!              ixc=6  Finite temperature RPA GW
+!              ixc=9  Undocumented options, it does the following (not sure whats the purpose)
+!                       For unnocupied states:
+!                          Use HL for the valence electrons:
+!                          Use HL - DH (correlation only) for core electrons.
+!                       For occupied states:
+!                          Use VBH(rs) - DH(rs_core, k_fermi(rs_core) 
+!              ixc=10 same as ixc=0 with broadened plasmon HL self-energy
+!              ixc=13 same as ixc=3 with broadened plasmon HL self-energy
+!              ixc=15 same as ixc=5 with broadened plasmon HL self-energy
 !              vr0 is const imag part of potential
 !              vi0 is const imag part of potential
 !              Default is HL. (ixc=0, vr0=0, vi0=0, ixc0 = 2)
                vr0=0.0
                vi0=0.0
                read(words(2),20,err=900)  ixc
-         if (ixc.lt.0) ixc=0  !default
+               if (ixc.lt.0) ixc=0  !default
 !              if (nwords.ge.3) (read(words(3),30,err=900)  vr0
                 read(words(3),30,err=900)  vr0
 !              if (nwords.ge.4) read(words(4),30,err=900)  vi0
@@ -1069,6 +1076,7 @@
             elseif (itok .eq. 76) then
 !              Added by Fer
                read(words(2),*,err=900) ChSh_Type
+               if (nwords.gt.2) read(words(3),*,err=900) custom_chsh ! TTS 05/22 custom core level shift
             elseif (itok .eq. 77) then
                ! DIMS card
                ! First is nclusx, second is lx
@@ -1174,7 +1182,7 @@
                IF(iph.gt.nphxhardlimit) then
                   call wlog("iph > nphxhardlimit in feff.inp")
                   call wlog(TRIM(ADJUSTL(line)))
-                  call par_stop
+                  call par_stop('')
                END IF
                read(words(3),30) NumDens(iph)
             elseif (itok .eq. 85) then

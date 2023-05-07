@@ -59,7 +59,7 @@
       complex*16  eref(nex)
       complex*16  ph(nex,-ltot:ltot)
       integer ispin
-
+      character(len=50) :: fname
 !     work space for xcpot
       dimension   vxcrmu(nrptx), vxcimu(nrptx), gsrel(nrptx)
       dimension   vvxcrm(nrptx), vvxcim(nrptx)
@@ -162,8 +162,9 @@
       ColumnLabels(:) = ' '
       ColumnLabels(1) = 'Rs'
       ColumnLabels(1) = 'wp (eV)'
-!KJ         write(*,*) 'writing mpse.dat in PHASE'         
-      CALL WriteData('mpse.dat',Double1 = (3 / (4*pi*edens(jri+1))) ** third, &
+!KJ         write(*,*) 'writing mpse.dat in PHASE'      
+      fname='mpse'   
+      CALL WriteData(TRIM(fname)//'.dat',Double1 = (3 / (4*pi*edens(jri+1))) ** third, &
            &    Double2 = SQRT(3.d0/((3 / (4*pi*edens(jri+1))) ** third)**3)*hart,     &
            &    ColumnLabels = ColumnLabels, WriteDataInHeader = .TRUE., &
            &    Headers = (/ 'This file contains information about the' //&
@@ -179,7 +180,7 @@
      &               em(ie), xmu,                                       &
      &               vtot, vvalgs, edens, dmag, edenvl,                 &
      &               eref(ie), v, vval, iPl, WpCorr, Gamma, AmpFac, EGap, &
-     &               vxcrmu, vxcimu, gsrel, vvxcrm, vvxcim)
+     &               vxcrmu, vxcimu, gsrel, vvxcrm, vvxcim, fname)
 
          if (dble(em(ie)).lt.-10.d0 .or. dble(em(ie)) .gt.3.d2) goto 220
 !        p2 is (complex momentum)**2 referenced to energy dep xc
@@ -197,7 +198,8 @@
          call besjn (xkmt, jl, nl)
          call besjn (xkmtEC, jlEC, nlEC)
 
-         if (mod(ixc,10) .lt. 5) then
+      !    if (mod(ixc,10) .lt. 5) then
+         IF ((ixc.EQ.0).OR.(ixc.EQ.1).OR.(ixc.EQ.2).OR.(ixc.EQ.3).OR.(ixc.EQ.6).OR.(ixc.EQ.7)) THEN ! Replace mod(ixc,10) .lt. 5
              ncycle = 0
          else
              ncycle = 3
@@ -310,7 +312,7 @@
   220 continue
 !     Josh - Close mpse.dat, rl.dat
       IF((iph.EQ.0).AND.PrintRl) CALL CloseFl('rl.dat')
-      CALL CloseFl('mpse.dat')
+      CALL CloseFl(TRIM(fname)//'.dat')
 !     Josh END
 
       do ie = max(1,ne12+1), ne  !KJ Feb 14 - added "max(1" to respect array bounds

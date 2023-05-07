@@ -111,7 +111,8 @@
          call fixvar (rmt(iph),edens(1,iph),vtot(1,iph),dmag(1,iph),    &
      &                vint, rhoint, dx, rgrd, jumprm,                   &
      &                vjump, ri, vtotph, dum, dmagx)
-         if (mod(ixc,10) .ge.5) then
+      !    if (mod(ixc,10) .ge.5) then
+         IF ((ixc.EQ.5).OR.(ixc.EQ.9).OR.(ixc.EQ.15)) THEN ! Replace mod(ixc,10).ge.5
             if (jumprm .gt. 0) jumprm = 2
             call fixvar (rmt(iph), edenvl(1,iph), vvalgs(1,iph),        &
      &                dmag(1,iph), vint, rhoint, dx, rgrd , jumprm,     &
@@ -125,7 +126,8 @@
         eref = vtotph(jri1)
         do 40 i = 1, jri1
   40    vtotph(i) = vtotph(i) - eref
-        if (ixc.ge.5) then
+      !   if (ixc.ge.5) then
+        IF ((ixc.EQ.5).OR.(ixc.EQ.9).OR.(ixc.EQ.10).OR.(ixc.EQ.13).OR.(ixc.EQ.15)) THEN ! Replace ixc.ge.5
            do 50 i = 1, jri1
   50       vvalph(i) = vvalph(i) - eref
         else

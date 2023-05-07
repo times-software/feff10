@@ -57,7 +57,9 @@ xsphSRC = \
 ./TDLDA/ellfun.f90 ./TDLDA/yzktd.f90 ./MATH/conv.f90 \
 ./TDLDA/kkchi.f90 ./TDLDA/dmscf.f90 ./XSPH/phase.f90 \
 ./XSPH/phase_h.f90 ./XSPH/wphase.f90 ./XSPH/wrxsph.f90 \
-./XSPH/axafs.f90 ./MATH/determ.f90 
+./XSPH/axafs.f90 ./MATH/determ.f90 \
+./EXCH/rgw.f90 ./EXCH/imgw.f90
+
 xsph_MODULESRC = \
 ./PAR/m_par.f90 ./COMMON/m_constants.f90 ./KSPACE/m_struct.f90 \
 ./KSPACE/m_controls.f90 ./KSPACE/m_boundaries.f90 ./KSPACE/m_kklist.f90 \
@@ -73,3 +75,4 @@ xsph_MODULESRC = \
 ./IOMODS/m_iomod.f90 ./COMMON/m_stkets.f90 ./FMS/m_fms.f90 \
 ./COMMON/m_t3j.f90 ./SELF/m_SelfEnergy.f90 ./TDLDA/getchi0.f90 \
 ./COMMON/m_kinds.f90 ./POT/m_mtdp.f90 ./POT/m_atomicpotio.f90 
+

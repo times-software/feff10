@@ -87,7 +87,8 @@
       do ie = 1, ne
 !       p2 is (complex momentum)**2 referenced to energy dep xc
         p2 = em(ie) - eref
-        if (mod(ixc,10) .lt. 5) then
+        ! if (mod(ixc,10) .lt. 5) then
+        if ((mod(ixc,10).lt.5).OR.(ixc.EQ.6).OR.(ixc.EQ.7)) then ! TTS
           ncycle = 0
         else
           ncycle = 3

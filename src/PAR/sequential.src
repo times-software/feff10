@@ -221,6 +221,15 @@
       return
       end
 
+      subroutine par_bcast_double_scalar(buf,count,source)
+!  **************************************************
+!  Call mpi_bcast for double arrays
+!  **************************************************
+      integer count, source
+      double precision buf
+      return
+      end
+
       subroutine MPE_DECOMP1D( n, num_procs, myid, s, e )
 !  ******************************************************
 !  A routine for producing a decomposition of a 1-d 

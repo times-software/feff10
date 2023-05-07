@@ -33,7 +33,7 @@ CONTAINS
     COMPLEX*16 :: ec(nex), fc(nex), xmu(nex), pole
     COMPLEX*16 :: xmu1(nex), xmu2(nex), xmu3(nex), xmu4(nex)
     REAL(8), PARAMETER :: eps4 = 1.0d-4
-    LOGICAL, PARAMETER :: print_out = .TRUE.
+    LOGICAL, PARAMETER :: print_out = .FALSE.
     EXTERNAL :: lorenz, astep
     COMPLEX*16 :: lorenz
     REAL(8) :: astep
@@ -58,6 +58,7 @@ CONTAINS
     ne4 = ne1
 
     efermi = DBLE(emxs(ne-extra))
+
     xloss = DIMAG(emxs(ne4+1))
     cheight = DIMAG(emxs(1))
 
@@ -67,25 +68,25 @@ CONTAINS
       xmu(ie) = xsec(ie) + xsnorm(ie)*chia(ie)
     ENDDO
 
-
-    OPEN(UNIT=155, file='curve.dat', status='REPLACE')
-    OPEN(UNIT=150, file="prexmu.dat", status='REPLACE')
-    OPEN(UNIT=149, file="raw.dat", status='REPLACE')
-    OPEN(UNIT=153, file="leg1.dat", status='REPLACE')
-    OPEN(UNIT=151, file='residue.dat', status='REPLACE')
-    OPEN(UNIT=152, file='contour.dat', status='REPLACE')
-    OPEN(UNIT=1543, file='ratio.dat', status='REPLACE')
-    WRITE(149,*) "Temperature (Hatree)", tk
-    WRITE(149,*) "Electronic Temperature (eV)", electronic_temperature
-    WRITE(149,*) "xloss = ", xloss, " Hatree"
-    WRITE(149,*) "Chemical potential = ", efermi*hart, " eV with shift", vrcorr*hart
-    WRITE(149,*) "Number of poles = ", npole
-    WRITE(149, *) 'Omega(Hart)  \t  Re CCHI  \t   Im CCHI \t  1-Fermi \t  Re xmu0  \t  Im xmu0'
-
-    DO ie =1, ne
-      WRITE(155, '(I4,20E20.10E3)') ie, DBLE(emxs(ie)), DIMAG(emxs(ie))
-    ENDDO
-    CLOSE(155)
+    IF (print_out) THEN 
+      ! OPEN(UNIT=155, file='curve.dat', status='REPLACE')
+      OPEN(UNIT=150, file="prexmu.dat", status='REPLACE')
+      OPEN(UNIT=149, file="raw.dat", status='REPLACE')
+      OPEN(UNIT=153, file="leg1.dat", status='REPLACE')
+      ! OPEN(UNIT=151, file='residue.dat', status='REPLACE')
+      OPEN(UNIT=152, file='contour.dat', status='REPLACE')
+      ! OPEN(UNIT=1543, file='ratio.dat', status='REPLACE')
+      WRITE(149,*) "Temperature (Hatree)", tk
+      WRITE(149,*) "Electronic Temperature (eV)", electronic_temperature
+      WRITE(149,*) "xloss = ", xloss, " Hatree"
+      WRITE(149,*) "Chemical potential = ", efermi*hart, " eV with shift", vrcorr*hart
+      WRITE(149,*) "Number of poles = ", npole
+      WRITE(149, *) 'Omega(Hart)  \t  Re CCHI  \t   Im CCHI \t  1-Fermi \t  Re xmu0  \t  Im xmu0'
+    ENDIF
+    ! DO ie =1, ne
+    !   WRITE(155, '(I4,20E20.10E3)') ie, DBLE(emxs(ie)), DIMAG(emxs(ie))
+    ! ENDDO
+    ! CLOSE(155)
 
 
     !---------- Construct the integration contour
@@ -137,7 +138,7 @@ CONTAINS
       IF (ispec.ne.2) cchi(ie) = xmu0 - cchi(ie) ! Absorption
       dummy = 1-dummy
       z1 = omega(ie)
-      WRITE(149, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie)), DBLE(dummy), DBLE(xmu0), DIMAG(xmu0), DBLE(fermiDirac(z1,tk,efermi))
+      ! WRITE(149, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie)), DBLE(dummy), DBLE(xmu0), DIMAG(xmu0), DBLE(fermiDirac(z1,tk,efermi))
 
       !!!!!!!!!!!!!!!!!!!!!!
       !! RESIDUE of Fermi !!
@@ -154,7 +155,7 @@ CONTAINS
       residue = -residue*(2.d0*coni*tk)
 
       IF (ispec.ne.2) residue = - residue ! Absorption
-      WRITE(151, '(20E20.10E3)') DBLE(omega(ie)), DBLE(residue), DIMAG(residue), DBLE(efermi)
+      !WRITE(151, '(20E20.10E3)') DBLE(omega(ie)), DBLE(residue), DIMAG(residue), DBLE(efermi)
 
       !!!!!!!!!!!!!!!
       !! First leg !!
@@ -162,7 +163,7 @@ CONTAINS
       ! Integrate from 0 to cheight with x in R-space.
 
       corr1 = 0.d0
-      WRITE(153, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr1), DIMAG(corr1)
+      IF (print_out) WRITE(153, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr1), DIMAG(corr1)
 
       !!!!!!!!!!!!!!!!!
       !! Second  leg !!
@@ -171,36 +172,41 @@ CONTAINS
       CALL cchi_eff(emxs(1:ne4), xmu2, ne4, efermi, tk, xmu0, xloss, omega(ie), ispec, corr2)
       ! CALL fermilorenH(emxs(1:ne4), ne4, efermi, tk, xloss, omega(ie), ispec, dummy2)
       ! CALL fermilorenTH(omega(ie),tk,efermi,xloss,cheight,dummy2)
-      ! WRITE(152, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr2), DIMAG(corr2), DBLE(xmu2(ie)-xmu0), DIMAG(xmu2(ie)-xmu0)
+      IF (print_out) WRITE(152, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr2), DIMAG(corr2), DBLE(xmu2(ie)-xmu0), DIMAG(xmu2(ie)-xmu0), xmu0
       ! WRITE(1543, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr2), DIMAG(corr2), &
       !                            & DBLE(cchi(ie)), DIMAG(cchi(ie)), &
       !                            & DBLE(dummy), DBLE(xmu0), DIMAG(xmu0), DBLE(dummy2), DIMAG(dummy2)
-      WRITE(1543, '(20E20.10E3)') DBLE(omega(ie)), DBLE(1-fermiDirac(omega(ie)+coni*0.d0,tk,efermi)), &
-                                 &  DBLE(dummy),&
-                                 &  DBLE(cchi(ie)), DIMAG(cchi(ie)), &
-                                 &  DBLE(corr2), DIMAG(corr2), &
-                                 &  DBLE(cauchy(omega(ie)+coni*0.0d0,efermi,xloss)), &
-                                 & DIMAG(xmu2(ie)-xmu0)
+      ! WRITE(1543, '(20E20.10E3)') DBLE(omega(ie)), DBLE(1-fermiDirac(omega(ie)+coni*0.d0,tk,efermi)), &
+      !                            &  DBLE(dummy),&
+      !                            &  DBLE(cchi(ie)), DIMAG(cchi(ie)), &
+      !                            &  DBLE(corr2), DIMAG(corr2), &
+      !                            &  DBLE(cauchy(omega(ie)+coni*0.0d0,efermi,xloss)), &
+      !                            & DIMAG(xmu2(ie)-xmu0)
       !!!!!!!!!!!!!!!!!!!!!
       !! Combine results !!
       !!!!!!!!!!!!!!!!!!!!!
       corr = corr1 + corr2
       cchi(ie) = cchi(ie) + corr + residue
-      WRITE(150, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie))
+      ! WRITE(149, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie))
 
       ! Return the result of convolution minus bare value
       cchi(ie) = cchi(ie) - xmu2(ie)
+      ! WRITE(150, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie))
+      IF (print_out) WRITE(149, '(20E20.10E3)') DBLE(omega(ie)*hart), DIMAG(cchi(ie)), DIMAG(xsec(ie)), DIMAG(xsnorm(ie)*chia(ie)), DIMAG(xsec(ie)+xsnorm(ie)*chia(ie)+cchi(ie))
+      
+      
     ENDDO !------- End of convolution
 
-    CLOSE(149)
-    CLOSE(150)
-    CLOSE(151)
-    CLOSE(152)
-    CLOSE(153)
-    CLOSE(1543)
-
+    IF (print_out) THEN
+      CLOSE(149)
+      CLOSE(150)
+      ! CLOSE(151)
+      CLOSE(152)
+      CLOSE(153)
+      ! CLOSE(1543)
+    ENDIF
     RETURN
-  END SUBROUTINE
+  END SUBROUTINE thermal_xscorr
 
   SUBROUTINE fermilorenT(omega, tk, efermi, xloss, result)
     ! Perform convolution between fermi function
@@ -539,8 +545,8 @@ CONTAINS
     ! Find where does xmu +/- window_terp lies on the contour
     ind_m3 = binarysearch(DBLE(efermi_m3), DBLE(emxs), ne4)-1
     ind_p3 = binarysearch(DBLE(efermi_p3), DBLE(emxs), ne4)
-
-    IF (ind_m3.EQ.0) BUG=.TRUE.
+    ! IF ((ind_m3.EQ.0).AND.(ABS( DBLE(efermi_m3) - DBLE(emxs(1))).GT.1e-16)) BUG=.TRUE.
+    IF ((ind_m3.EQ.0).AND.(.NOT.(DBLE(efermi_m3).EQ.DBLE(emxs(1))))) BUG=.TRUE.
     IF (BUG) THEN
       ! Need to be careful regarding the window_size_terp
       ! efermi_m3 must be greater than emxs(1)
@@ -738,7 +744,7 @@ CONTAINS
     COMPLEX*16 :: ec(nex), fc(nex), xmu(nex), pole
     COMPLEX*16 :: xmu1(nex), xmu2(nex), xmu3(nex), xmu4(nex)
     REAL(8), PARAMETER :: eps4 = 1.0d-4
-    LOGICAL, PARAMETER :: print_out = .TRUE.
+    LOGICAL, PARAMETER :: print_out = .FALSE.
     EXTERNAL :: lorenz, astep
     COMPLEX*16 :: lorenz, astep
 
@@ -771,24 +777,26 @@ CONTAINS
       xmu(ie) = xsec(ie) + xsnorm(ie)*chia(ie)
     ENDDO
 
-    OPEN(UNIT=155, file='curve.dat', status='REPLACE')
-    OPEN(UNIT=150, file="prexmu.dat", status='REPLACE')
-    OPEN(UNIT=149, file="raw.dat", status='REPLACE')
-    OPEN(UNIT=153, file="leg1.dat", status='REPLACE')
-    OPEN(UNIT=151, file='residue.dat', status='REPLACE')
-    OPEN(UNIT=152, file='contour.dat', status='REPLACE')
-    ! OPEN(UNIT=154, file='lorentzian.dat', status='REPLACE')
-    WRITE(149,*) "Temperature (Hatree)", tk
-    WRITE(149,*) "Electronic Temperature (eV)", electronic_temperature
-    WRITE(149,*) "xloss = ", xloss, " Hatree"
-    WRITE(149,*) "Chemical potential = ", efermi*hart, " eV"
-    WRITE(149,*) "Number of poles = ", npole
-    WRITE(149, *) 'Omega(Hart)  \t  Re CCHI  \t   Im CCHI \t  1-Fermi \t  Re xmu0  \t  Im xmu0'
+    IF (print_out) THEN
+      OPEN(UNIT=155, file='curve.dat', status='REPLACE')
+      OPEN(UNIT=150, file="prexmu.dat", status='REPLACE')
+      OPEN(UNIT=149, file="raw.dat", status='REPLACE')
+      OPEN(UNIT=153, file="leg1.dat", status='REPLACE')
+      OPEN(UNIT=151, file='residue.dat', status='REPLACE')
+      OPEN(UNIT=152, file='contour.dat', status='REPLACE')
+      ! OPEN(UNIT=154, file='lorentzian.dat', status='REPLACE')
+      WRITE(149,*) "Temperature (Hatree)", tk
+      WRITE(149,*) "Electronic Temperature (eV)", electronic_temperature
+      WRITE(149,*) "xloss = ", xloss, " Hatree"
+      WRITE(149,*) "Chemical potential = ", efermi*hart, " eV"
+      WRITE(149,*) "Number of poles = ", npole
+      WRITE(149, *) 'Omega(Hart)  \t  Re CCHI  \t   Im CCHI \t  1-Fermi \t  Re xmu0  \t  Im xmu0'
 
-    DO ie =1, ne
-      WRITE(155, '(20E20.10E3)') ie, DBLE(emxs(ie)), DIMAG(emxs(ie))
-    ENDDO
-    CLOSE(155)
+      DO ie =1, ne
+        WRITE(155, '(20E20.10E3)') ie, DBLE(emxs(ie)), DIMAG(emxs(ie))
+      ENDDO
+      CLOSE(155)
+    ENDIF
     !---------- Construct the integration contour
     nc = 0
     ! DO ie = 1, ne2
@@ -840,7 +848,7 @@ CONTAINS
       cchi(ie) = xmu0*cchi(ie)
       IF (ispec.ne.2) cchi(ie) = xmu0 - cchi(ie) ! Absorption
       dummy = 1-dummy
-      WRITE(149, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie)), DBLE(dummy), DBLE(xmu0), DIMAG(xmu0)
+      IF (print_out) WRITE(149, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie)), DBLE(dummy), DBLE(xmu0), DIMAG(xmu0)
 
       !!!!!!!!!!!!!!!!!!!!!!
       !! RESIDUE of Fermi !!
@@ -856,7 +864,7 @@ CONTAINS
       residue = -residue*(2.d0*coni*tk)
 
       IF (ispec.ne.2) residue = - residue ! Absorption
-      WRITE(151, '(20E20.10E3)') DBLE(omega(ie)), DBLE(residue), DIMAG(residue), DBLE(efermi)
+      IF (print_out) WRITE(151, '(20E20.10E3)') DBLE(omega(ie)), DBLE(residue), DIMAG(residue), DBLE(efermi)
 
       !!!!!!!!!!!!!!!!
       !! Correction !!
@@ -880,7 +888,7 @@ CONTAINS
       IF (ispec.eq.2) corr1 = -corr1
 
 
-      WRITE(153, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr1), DIMAG(corr1)
+      IF (print_out) WRITE(153, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr1), DIMAG(corr1)
 
       !!!!!!!!!!!!!!!!!
       !! Second  leg !!
@@ -902,25 +910,27 @@ CONTAINS
       ENDDO
       IF (ispec.EQ.2) corr2 = -corr2
 
-      WRITE(152, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr2), DIMAG(corr2)
+      IF (print_out) WRITE(152, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr2), DIMAG(corr2)
 
       !!!!!!!!!!!!!!!!!!!!!
       !! Combine results !!
       !!!!!!!!!!!!!!!!!!!!!
       corr = corr1 + corr2
       cchi(ie) = cchi(ie) + corr + residue
-      WRITE(150, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie))
+      IF (print_out) WRITE(150, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie))
 
       ! Return the result of convolution minus bare value
       cchi(ie) = cchi(ie) - xmu2(ie)
     ENDDO !------- End of convolution
 
-    CLOSE(149)
-    CLOSE(150)
-    CLOSE(151)
-    CLOSE(152)
-    CLOSE(153)
-    ! CLOSE(154)
+    IF (print_out) THEN
+      CLOSE(149)
+      CLOSE(150)
+      CLOSE(151)
+      CLOSE(152)
+      CLOSE(153)
+      ! CLOSE(154)
+    ENDIF
 
     RETURN
   END SUBROUTINE
@@ -944,6 +954,7 @@ CONTAINS
     COMPLEX*16 :: corr, corr1, corr2, correction, leg3, residue
     COMPLEX*16 :: ec(nex), fc(nex), xmu(nex), pole
     REAL(8), PARAMETER :: eps4 = 1.0d-4
+    LOGICAL, PARAMETER :: print_out = .FALSE.
     EXTERNAL :: lorenz, astep
     REAL(8) :: astep
     COMPLEX*16 :: lorenz
@@ -967,21 +978,22 @@ CONTAINS
     ! Only happens at low temperature
     IF (MOD(xloss, tk*pi).LT.eps4) PRINT*, "WARNING: xloss close to pole"
 
-    OPEN(UNIT=150, file="prexmu.dat", status='REPLACE')
-    OPEN(UNIT=149, file="raw.dat", status='REPLACE')
-    OPEN(UNIT=153, file="leg1.dat", status='REPLACE')
-    OPEN(UNIT=151, file='residue.dat', status='REPLACE')
-    OPEN(UNIT=152, file='contour.dat', status='REPLACE')
-    OPEN(UNIT=155, file='curve.dat', status='REPLACE')
-    OPEN(UNIT=156, file='correction.dat', status='REPLACE')
-    ! OPEN(UNIT=154, file='lorentzian.dat', status='REPLACE')
-    WRITE(149,*) "Temperature (Hatree)", tk
-    WRITE(149,*) "Electronic Temperature (eV)", electronic_temperature
-    WRITE(149,*) "xloss = ", xloss, " Hatree"
-    WRITE(149,*) "Chemical potential = ", efermi*hart, " eV"
-    WRITE(149,*) "Number of poles = ", npole
-    WRITE(149, *) 'Omega(Hart)  \t  Re CCHI  \t   Im CCHI \t  1-Fermi \t  Re xmu0  \t  Im xmu0'
-
+    IF (print_out) THEN
+      OPEN(UNIT=150, file="prexmu.dat", status='REPLACE')
+      OPEN(UNIT=149, file="raw.dat", status='REPLACE')
+      OPEN(UNIT=153, file="leg1.dat", status='REPLACE')
+      OPEN(UNIT=151, file='residue.dat', status='REPLACE')
+      OPEN(UNIT=152, file='contour.dat', status='REPLACE')
+      OPEN(UNIT=155, file='curve.dat', status='REPLACE')
+      OPEN(UNIT=156, file='correction.dat', status='REPLACE')
+      ! OPEN(UNIT=154, file='lorentzian.dat', status='REPLACE')
+      WRITE(149,*) "Temperature (Hatree)", tk
+      WRITE(149,*) "Electronic Temperature (eV)", electronic_temperature
+      WRITE(149,*) "xloss = ", xloss, " Hatree"
+      WRITE(149,*) "Chemical potential = ", efermi*hart, " eV"
+      WRITE(149,*) "Number of poles = ", npole
+      WRITE(149, *) 'Omega(Hart)  \t  Re CCHI  \t   Im CCHI \t  1-Fermi \t  Re xmu0  \t  Im xmu0'
+    ENDIF
     DO ie = 1, ne
       xmu(ie) = xsec(ie) + xsnorm(ie)*chia(ie)
     ENDDO
@@ -1016,7 +1028,7 @@ CONTAINS
         nc = nc + 1
         ec(nc) = emxs(ne1+ie)
         fc(nc) = xmu(ne1+ie)
-        WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
+        IF (print_out) WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
       ENDIF
     ENDDO
 
@@ -1026,11 +1038,11 @@ CONTAINS
     if (abs(vrcorr).gt.eps4) then
       ec(nc) = efermi + coni*xloss
       fc(nc) = bb * xmu(ik0)
-      WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
+      IF (print_out) WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
     else
       ec(nc) = emxs(ik0)
       fc(nc) = xmu(ik0)
-      WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
+      IF (print_out) WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
     endif
 
     IF (ispec.NE.2) THEN
@@ -1039,7 +1051,7 @@ CONTAINS
           nc = nc+1
           ec(nc) = emxs(ie)
           fc(nc) = xmu(ie)
-          WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
+          IF (print_out) WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
         ENDIF
       ENDDO
     ELSE
@@ -1048,7 +1060,7 @@ CONTAINS
           nc = nc+1
           ec(nc) = emxs(ie)
           fc(nc) = xmu(ie)
-          WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
+          IF (print_out) WRITE(155, '(20E20.10E3)')  DBLE(ec(nc)), DIMAG(ec(nc)), DBLE(fc(nc)), DIMAG(fc(nc))
         ENDIF
       ENDDO
     ENDIF
@@ -1079,7 +1091,7 @@ CONTAINS
       cchi(ie) = xmu0*cchi(ie)
       IF (ispec.ne.2) cchi(ie) = xmu0 - cchi(ie) ! Absorption
       dummy = 1-dummy
-      WRITE(149, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie)), DBLE(dummy), DBLE(xmu0), DIMAG(xmu0)
+      IF (print_out) WRITE(149, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie)), DBLE(dummy), DBLE(xmu0), DIMAG(xmu0)
 
       !!!!!!!!!!!!!!!!!!!!!!!!!!!
       !! sommerfeld correction !!
@@ -1114,7 +1126,7 @@ CONTAINS
       w1 = DIMAG(ec(1))
       corr = corr + lorenz0(xloss,w1,dele)*ff(1)*coni*w1
       leg3 = lorenz0(xloss,w1,dele)
-      WRITE(151, '(20E20.10E3)') DBLE(omega(ie)), DBLE(leg3), DIMAG(leg3)
+      IF (print_out) WRITE(151, '(20E20.10E3)') DBLE(omega(ie)), DBLE(leg3), DIMAG(leg3)
 
       ! Horizontal  Contour
       DO ic = 1, nc-1
@@ -1134,8 +1146,8 @@ CONTAINS
       IF (ispec.eq.2) corr = -corr
 
       cchi(ie) = cchi(ie) + corr + correction !+  correction + residue
-      WRITE(152, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr), DIMAG(corr)
-      WRITE(150, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie))
+      IF (print_out) WRITE(152, '(20E20.10E3)') DBLE(omega(ie)), DBLE(corr), DIMAG(corr)
+      IF (print_out) WRITE(150, '(20E20.10E3)') DBLE(omega(ie)), DBLE(cchi(ie)), DIMAG(cchi(ie))
 
 
 
@@ -1144,13 +1156,15 @@ CONTAINS
       cchi(ie) = cchi(ie) - xmu(ie)
     ENDDO !------- End of convolution
 
-    CLOSE(149)
-    CLOSE(150)
-    CLOSE(151)
-    CLOSE(152)
-    CLOSE(153)
-    CLOSE(155)
-    CLOSE(156)
+    IF (print_out) THEN
+      CLOSE(149)
+      CLOSE(150)
+      CLOSE(151)
+      CLOSE(152)
+      CLOSE(153)
+      CLOSE(155)
+      CLOSE(156)
+    ENDIF
     ! end of cycle over frequency points
 
     if (abs(vrcorr).gt.eps4) then

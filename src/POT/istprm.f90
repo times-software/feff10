@@ -315,6 +315,10 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
           call vbh( rs, xmag, vvbh )
         case(12)
           call pz_vxc( rs, vvbh )
+        case default
+          write(slog, 911) 'Invalid choice of xc potential ', iscfxc
+          911          format (a, i3)
+          call wlog(slog)
       end select
 
       ! else
@@ -332,14 +336,16 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
       ! end if
 
       vtot(i,iph) = vclap(i,iph) + vvbh
-      if (mod(ixc,10).eq.5) then
+      ! if (mod(ixc,10).eq.5) then
+      IF ((ixc.EQ.5).OR.(ixc.EQ.15)) THEN
         rsval = 10.0
         if (edenvl(i,iph) .gt. 0.00001) rsval = (edenvl(i,iph)/3)**(-third)
         if (rsval.gt.10.0) rsval = 10.0
         xmagvl = 1.0 + idmag * dmag(i,iph) * edens(i,iph) / edenvl(i,iph)
         call vbh(rsval,xmagvl,vvbhvl)
         vvalgs(i,iph) = vclap(i,iph) + vvbhvl
-      elseif (mod(ixc,10) .ge. 6) then
+      ! elseif (mod(ixc,10) .ge. 6) then
+      ELSEIF (ixc.EQ.9) THEN
         if (edens(i,iph).le.edenvl(i,iph)) then
           rscore =101.0
         else
@@ -397,7 +403,8 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
   call ovp2mt(nph, edens, 0, qtotel, ri, xnatph, lnear, inrm, imt, rnrm, rmt, cmovp, ipiv, rhoint,inters)
   rhoint = 4*pi * rhoint / volint
 
-  if (ixc.ge.5) then
+  ! if (ixc.ge.5) then
+    IF ((ixc.EQ.5).OR.(ixc.EQ.9).OR.(ixc.EQ.10).OR.(ixc.EQ.13).OR.(ixc.EQ.15)) THEN ! Replace ixc.ge.5
     !        find valence potential inside mt sphere (vintvl -dummy)
     call ovp2mt(nph, vvalgs, 1, qtotel, ri, xnatph, lnear, inrm, imt, rnrm, rmt, cmovp, ipiv, vintvl,inters)
   endif
