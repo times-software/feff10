@@ -526,7 +526,7 @@
 		integer, allocatable :: iz(:)
 !		iz(0:nphx)    - atomic number, input
 		integer, allocatable :: lmaxsc(:)
-		real rfms1
+		real rfms1, rfms1_start
 		double precision gamach, rgrd, ca1, ecv, totvol
 		double precision, allocatable :: xnatph(:), folp(:), spinph(:)
 !		xnatph(0:nphx) - given unique pot, how many atoms are there
@@ -534,7 +534,7 @@
 !		folp(0:nphx) -  overlap factor for rmt calculation
 		double precision, allocatable ::  xion(:)
 !		xion(0:nphx)  - ionicity, input
-		logical ExternalPot, FiniteNucleus
+		logical ExternalPot, FiniteNucleus, ramp_scf
 	!     for OVERLAP option
 	    logical StartFromFile
 		! read potential from pot.bin file and start from there
@@ -546,7 +546,7 @@
 !		rovr(novrx,0:nphx)  -   r for overlap shell
 		! Added by Fer
 		! Used to correct the excitation energy for chemical shifts
-		integer  ChSh_Type
+		integer  ChSh_Type, nramp
 		integer configtype !KJ 12-2010 : which method for choosing atomic configuration?
 		double precision corval_emin  !KJ 12-2012 defines energy window for search for core-valence separation energy.
 
@@ -620,6 +620,8 @@
         write(3,*) negrid, emaxscf
         write(3,10) 'FiniteNucleus'
         write(3,*) FiniteNucleus
+        write(3,'(A)') 'ramp_scf  rfms_start  nramp'
+        write(3,*) ramp_scf, rfms1_start, nramp
         close(3)
 		! standard formats for string, integers and real numbers
 	  10  format(a)
@@ -656,6 +658,7 @@
         read(3,*) ; read(3,*) iscfth, xntol, nmu
         read(3,*) ; read(3,*) negrid, emaxscf
         read(3,*) ; read(3,*) FiniteNucleus
+        read(3,*) ; read(3,*) ramp_scf, rfms1_start, nramp
 			  55 continue
 			close(3)
 		end subroutine potential_read
@@ -709,6 +712,9 @@
       emaxscf = 5.0 ! eV
       negrid = 400
       FiniteNucleus = .FALSE.
+      ramp_scf = .FALSE.
+      rfms1_start = 0.0
+      nramp = 1
 		end subroutine potential_init
 
 	end module

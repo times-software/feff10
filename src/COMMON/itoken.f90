@@ -236,6 +236,8 @@
             itoken = 108
          elseif (w .eq. 'SCFT') then !TS 07/2020
             itoken = 109
+         elseif (w .eq. 'SCFR') then !TS 07/2020
+            itoken = 110
          elseif (w .eq. 'END ') then
             itoken = -1            
          else
@@ -383,6 +385,7 @@
             if(itoken.eq.107) w='SCXC'
             if(itoken.eq.108) w='HIGHZ'
             if(itoken.eq.109) w='SCFTH'
+            if(itoken.eq.110) w='SCFR'
 
       elseif (flname(1:10).eq.'spring.inp') then
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
