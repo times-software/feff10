@@ -100,10 +100,10 @@ subroutine pot !KJ put everything in modules 7-09
   real*8    	   sh_rmt, sh_dx, sh_p2f, sh_edge, sh_ri(nrptx), &
   sh_dgcn(nrptx,41), sh_dpcn(nrptx,41), &
   sh_adgc(10,41), sh_adpc(10,41), &
-  sh_eorb(41)
+  sh_eorb(41), rfms1_end
   complex*16       sh_vxc(nrptx)
   ! correorb output
-  integer          sh_neg(41), sh_norbp
+  integer          sh_neg(41), sh_norbp, iramp
   real*8    	   sh_eng(nex,41), sh_rhoj(nex,41)
 
   ! Added by FDV
@@ -121,7 +121,13 @@ subroutine pot !KJ put everything in modules 7-09
 
   ! Allocate some more arrays:
 
-
+  ! Set final scf radius if ramping requested.
+  IF(ramp_scf) THEN
+     rfms1_end = rfms1
+     rfms1 = rfms1_start
+     iramp = 1
+  END IF
+     
   !     Josh - for now if nohole=2 reset to 0 so that regular nohole potential is used
   nhtmp = nohole
   if (nohole.eq.2) nohole = 0
@@ -353,6 +359,7 @@ subroutine pot !KJ put everything in modules 7-09
     &               rnrmav, qtotel, inters, totvol)
     xmunew = xmu
   endif
+195 CONTINUE
   if(master) then
     write(slog,131) ecv*hart
     call wlog(slog)
@@ -547,7 +554,18 @@ subroutine pot !KJ put everything in modules 7-09
       write(slog,'(a,i4,a)') 'Convergence reached in ',iscmt,' iterations.'
       call wlog(slog)
     endif
-    211 if (master) close(28)  ! convergence.scf file
+    211 CONTINUE
+    
+    IF(ramp_scf) THEN
+       ! increase rfms1 and restart scf loop
+       rfms1 = rfms1_start + (rfms1_end - rfms1_start)*DBLE(iramp)/DBLE(nramp)
+       iramp = iramp + 1
+       IF(rfms1.LE.rfms1_end) THEN
+         IF(master) PRINT*, 'Restarting SCF with rscf = ', rfms1, iramp, nramp
+         GOTO 195
+       END IF
+    END IF
+    if (master) close(28)  ! convergence.scf file
 
 
     if (track_dos_convergence) then

@@ -89,6 +89,7 @@
 
 !     transform to code units (bohrs and hartrees - atomic units)
       rfms1 = rfms1 / bohr
+      rfms1_start = rfms1_start/bohr
       gamach = gamach / hart
       ecv   = ecv   / hart
       totvol = totvol / bohr**3
