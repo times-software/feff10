@@ -138,6 +138,12 @@ CONTAINS
       e1 = np * 2*pi*temp
     endif
 
+    ! JK - if imaginary part is too large, just use 4eV and no poles.
+    if (pi*temp/2.0.GT.eimmax) THEN
+       e1 = eimmax
+       np = 0
+    end if
+
     n1 = 10
     n2 = ne - n1
     if (final_leg) n2 = ne - n1*2

@@ -86,7 +86,7 @@ subroutine pot !KJ put everything in modules 7-09
   !     Josh use nhtmp to save nohole value
   integer nhtmp, nstarts !nstarts : how often have we attempted scf
   integer, parameter :: nstartsmax = 3
-  integer nscmt_min !KJ minimum number of scf iterations (3 or 2 depending on circumstances)
+  integer nscmt_min !KJ minimum number of scf iterations (3 or 2 depending on circumstances) 
   ! Dimension emu and erelax to hold all possible edge values.
   real*8 emu, erelax, vTmp
   real*8 chargedistance, partialchargedistance !KJ test of SCF convergence
@@ -135,27 +135,27 @@ subroutine pot !KJ put everything in modules 7-09
 
   if (StartFromFile) then
     nscmt_min=2
-  else
-    nscmt_min=3
-  endif
-
-
-  !     variables ecv0 and folp0 serve as input only; do not change them
-  !     since it will change file feff.ior content
-  !     ecv and folp are passed through pot.bin to next modules.
-  ecv = ecv0
-  folp(0:nph) = folp0(0:nph)
-  ok=.true. !KJ
-  if (master) open(28,file='convergence.scf',access='append',status='unknown',form='formatted') !KJ
-  if (master) write(28,*) '# it. E_fermi(eV)  Charge Distance  Partial Chg. D.  Convergence'
-  if (master) open(29,file='convergence.scf.fine',access='append',status='unknown',form='formatted') !KJ
-
-  kappa(:,:) = 0
-
-  call inipot (dgc, dpc, edenvl, vvalgs, xnmues) !simply initializes these arrays to 0 LOL
-
-  !     increase the length of hydrogen bonds for potential only
-  call moveh (nat, iphat, iz, rat)
+   else
+     nscmt_min=3
+   endif
+ 
+ 
+   !     variables ecv0 and folp0 serve as input only; do not change them
+   !     since it will change file feff.ior content
+   !     ecv and folp are passed through pot.bin to next modules.
+   ecv = ecv0
+   folp(0:nph) = folp0(0:nph)
+   ok=.true. !KJ
+   if (master) open(28,file='convergence.scf',access='append',status='unknown',form='formatted') !KJ
+   if (master) write(28,*) '# it. E_fermi(eV)  Charge Distance  Partial Chg. D.  Convergence'
+   if (master) open(29,file='convergence.scf.fine',access='append',status='unknown',form='formatted') !KJ
+ 
+   kappa(:,:) = 0
+ 
+   call inipot (dgc, dpc, edenvl, vvalgs, xnmues) !simply initializes these arrays to 0 LOL
+ 
+   !     increase the length of hydrogen bonds for potential only
+   call moveh (nat, iphat, iz, rat)
 
 
   nfree = 1
@@ -406,6 +406,7 @@ subroutine pot !KJ put everything in modules 7-09
           call thscf_deinit
       endif
     else
+      IF(master) PRINT*, 'Running SCF with rscf = ', rfms1, iramp, nramp
       if (npr.le.1) then
         PRINT*, "Zero temperature single thread"
         call scmt(iscmt, ecv, nph, nat, vclap, edens, edenvl, vtot, vvalgs, rmt, rnrm, qnrm,   &
@@ -561,7 +562,6 @@ subroutine pot !KJ put everything in modules 7-09
        rfms1 = rfms1_start + (rfms1_end - rfms1_start)*DBLE(iramp)/DBLE(nramp)
        iramp = iramp + 1
        IF(rfms1.LE.rfms1_end) THEN
-         IF(master) PRINT*, 'Restarting SCF with rscf = ', rfms1, iramp, nramp
          GOTO 195
        END IF
     END IF

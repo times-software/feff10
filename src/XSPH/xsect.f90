@@ -701,7 +701,7 @@ endif
       CALL CloseFl('mpse.dat')
 
 !     *** optionally write ratio.dat and ratiop.dat *****
-      if (ipr2.ge.3) then
+      if (ipr2.ge.2) then
 !       calculate mu_0/rho_0 for XMCD normalization.
         chia(1:ne) = 0
         vrcorr = 0

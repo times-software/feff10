@@ -1240,7 +1240,7 @@
          endif
       elseif (itok .eq. 91) then
 !           SCREEN - pass on some options to the facultative screen.inp file
-               if (nwords.lt.3) then
+         if (nwords.lt.3) then
             stop 'SCREEN card must be followed by precisely two arguments, e.g. "SCREEN rfms 5.5"'
          else
             str3=words(2)  !takes first 3 letters

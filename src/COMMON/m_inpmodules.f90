@@ -808,7 +808,7 @@
 		implicit none
 
                 TYPE ScreenInputVars
-                   integer ner, nei, maxl, irrh, iend, lfxc, nrptx0
+                   integer ner, nei, maxl, irrh, iend, lfxc, nrptx0, icore
                    double precision emin, emax, eimax, ermin, rfms
                 END TYPE ScreenInputVars
 
@@ -831,6 +831,7 @@
 				   write(3,*) 'ermin',ScreenI%ermin
 				   write(3,*) 'rfms',ScreenI%rfms
 				   write(3,*) 'nrptx0',ScreenI%nrptx0
+				   write(3,*) 'icore',ScreenI%icore
                    close(3)
 				   return
 		end subroutine screen_write
@@ -861,8 +862,10 @@
 				   ScreenI%ermin = vars
 				elseif (str .eq. 'rfm') then
 				   ScreenI%rfms  = vars
-				elseif (str .eq. 'nrp')then
+				elseif (str .eq. 'nrp') then
 				   ScreenI%nrptx0  = vars
+                                elseif (str .eq. 'ico') then
+                                   ScreenI%icore = vars
 				else
 				   call wlog("Unrecognized keyword submitted to screen.inp in SCREEN_INP_PARSE ; aborting.")
 				   stop
@@ -933,7 +936,7 @@
 			call screen_init  !KJ set defaults in case screen.inp doesn't exist!
 			open (file=filename, unit=3, status='old', err=60)
 !KJ			read (3,*)  !KJ 11-2011 removing header line from screen.inp because it is incompatible with screen_inp_and_parse above.
-			do i = 1, 12
+			do i = 1, 100
 				read(3,*,end=60)  strs, vars
 				str = strs(1:3)
 				if (str .eq. 'ner') ScreenI%ner   = nint(vars)
@@ -948,6 +951,7 @@
 				if (str .eq. 'erm') ScreenI%ermin = vars
 				if (str .eq. 'rfm') ScreenI%rfms  = vars
 				if (str .eq. 'nrp') ScreenI%nrptx0  = nint(vars)
+				if (str .eq. 'ico') ScreenI%icore  = nint(vars)
 			end do
 		  60 continue
 		  close(3)
@@ -967,6 +971,7 @@
 		  ScreenI%lfxc  = 0
 		  ScreenI%rfms  = 4.0d0
 		  ScreenI%nrptx0 = 251
+		  ScreenI%icore = -1
 		end subroutine screen_init
 
 	end module
@@ -1295,6 +1300,7 @@
 			  read(3,*) ; read(3,*)  mfms, idwopt, minv
 			  read(3,*) ; read(3,*)  rfms2, rdirec, toler1, toler2
 			  read(3,*) ; read(3,*)  tk, thetad, sig2g
+                          PRINT*, 'nph=', nph
 			  read(3,*) ; read(3,*)  (lmaxph(iph),iph=0,nph)
 			  !KJ 7-09 Next line for feff8q
 			  read(3,*) ; read(3,*) ldecmx
