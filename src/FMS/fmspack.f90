@@ -180,7 +180,7 @@ subroutine fms(lfms, nsp, ispin, inclus, npot, ck, lipotx, xphase,&
 
 400 format(i4)
   do i=0,nphx
-     if (lipotx(i).le.0)  lipotx(i) = lx
+     if (lipotx(i).lt.0)  lipotx(i) = lx
      if (lipotx(i).gt.lx) lipotx(i) = lx
      i0(i) = -1
   enddo
