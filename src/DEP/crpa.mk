@@ -1,7 +1,7 @@
 crpaSRC = \
 ./CRPA/crpa.f90 ./PAR/parallel.f90 ./COMMON/wlog.f90 \
 ./COMMON/str.f90 ./COMMON/chopen.f90 ./SCREEN/rdgeom.f90 \
-./COMMON/rdhead.f90 ./SCREEN/frgrid.f90 ./SCREEN/prep.f90 \
+./COMMON/rdhead.f90 ./SCREEN/frgrid.f90 ./SCREEN/prep.f90 ./SCREEN/get_pe_dens.f90\
 ./COMMON/rdpot.f90 ./COMMON/padlib.f90 ./SCREEN/fegrid.f90 \
 ./COMMON/fixvar.f90 ./MATH/terp.f90 ./MATH/polint.f90 \
 ./COMMON/fixdsx.f90 ./SCREEN/getph.f90 ./FOVRG/dfovrg.f90 \

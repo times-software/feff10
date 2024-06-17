@@ -974,7 +974,7 @@
 
         TYPE CRPAInputVars
            integer  l_crpa, do_CRPA
-           double precision  rcut
+           double precision  rcut, emin, emax ! JK -for now used to get photoelectron density.
         END TYPE CRPAInputVars
 
         character(*),parameter,private :: filename='crpa.inp'
@@ -987,6 +987,8 @@
 				   write(3,*) 'do_CRPA', CRPAI%do_CRPA
 				   write(3,*) 'rcut', CRPAI%rcut
 				   write(3,*) 'l_crpa', CRPAI%l_crpa
+				   write(3,*) 'emin', CRPAI%emin
+				   write(3,*) 'emax', CRPAI%emax
                    close(3)
 				   return
 		end subroutine crpa_write
@@ -1005,7 +1007,8 @@
 				if (strs .eq. 'do_CRPA') CRPAI%do_CRPA= nint(vars)
 				if (strs .eq.  'rcut') CRPAI%rcut = vars
 				if (strs .eq. 'l_crpa') CRPAI%l_crpa = nint(vars)
-
+				if (strs .eq. 'emin') CRPAI%emin = vars
+				if (strs .eq. 'emax') CRPAI%emax = vars
 			end do
 		  60 continue
 		  close(3)
@@ -1016,6 +1019,8 @@
 		  CRPAI%do_CRPA= 0
 		  CRPAI%rcut = 1.6
 		  CRPAI%l_crpa= 3
+		  CRPAI%emin = 0.0
+                  CRPAI%emax = 1.0
 		end subroutine crpa_init
 
 	end module

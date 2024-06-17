@@ -8,7 +8,7 @@
 !=======================================================================
 !     PREP
 !=======================================================================
-subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
+subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, pe_dens, CRPA)
 !KJ removed unused ibounc
   use DimsMod, only: natx, nrptx, nphx=>nphu, nex, lx, ltot
   use constants
@@ -23,7 +23,7 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   integer, intent(out) :: ilast
   logical :: CRPA
   !     W, the result of calculation
-  double precision,intent(out) :: vch(nrx), wscrn(nrx)
+  double precision,intent(out) :: vch(nrx), wscrn(nrx), pe_dens(nrx)
 
   !     =================================================================
   !     function getiat
@@ -64,11 +64,11 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   integer iph, jnew
   double precision edge, vjump
 
-  integer jri, jri1, ne, ne1, ne3, i, j, iholetmp
+  integer jri, jri1, ne, ne2, ne1, ne3, i, j, iholetmp
   integer inclus(0:nphx), lmax(0:nphx)
-  complex*16 ph(nex, ltot+1, 0:nphx)
+  complex*16 ph(nex, ltot+1, 0:nphx), ph2(nex,ltot+1,0:nphx)
   double precision de, enext
-  complex*16 eref(nex), em(nex)
+  complex*16 eref(nex), em(nex), em2(nex)
 
   ! Allocate variables
     allocate(xnmues(0:lx,0:nphx))
@@ -102,6 +102,10 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   ! Now shift grid so that real part is at EFermi.
   !em(1:ne) = em(1:ne) + xmu
   call setegi(xmu+ScreenI%emin, xmu+ScreenI%emax, ScreenI%eimax, ScreenI%ermin, ScreenI%ner, ScreenI%nei, em, ne)
+  ! JK - Add a second energy grid for the photoelectron density.
+  PRINT*, 'second call'
+  print*, 'emin, emax', CRPAI%emin, CRPAI%emax
+  call setegi(xmu+CRPAI%emin, xmu+CRPAI%emax, ScreenI%eimax, ScreenI%ermin, ScreenI%ner, ScreenI%nei, em2, ne2)
 
   !     compute phase shifts
   do iph = 0, nph
@@ -140,6 +144,13 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
           &             adgc(1,1,iph), adpc(1,1,iph),                        &
           &             iz(iph), xion(iph), iunf,                            &
           &             iholetmp, lx, xnval(1,iph), ph(1,1,iph), iph) !KJ iph
+     ! Add another call to getph for the second energy grid.
+     call getph( ri, dx, x0, rmt(iph), rnrm(iph), ne2, em2, ixc,       &
+          &             vtotph(1,iph), vvalph(1,iph),                        &
+          &             dgcn(1,1,iph), dpcn(1,1,iph), eref(1),               &
+          &             adgc(1,1,iph), adpc(1,1,iph),                        &
+          &             iz(iph), xion(iph), iunf,                            &
+          &             iholetmp, lx, xnval(1,iph), ph2(1,1,iph), iph) !KJ iph
   end do
 
   !=================================================================
@@ -154,6 +165,7 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   
   !KJ 12-2011 bugfix.  It's not because only type=0 is evaluated that you should pass arrays here and expect them to come out as scalars on the other end !!!! Ugh.
   IF(CRPA) THEN     
+     PRINT*, 'Calling CRPA for Hubbard U'
      !wscrn(1) = ermin
      call chi_crpa( nat, nph, iphat, srat,                               &
        &            toler1, toler2, lmaxph, rdirec, rfms2, lfms2,         &
@@ -164,14 +176,24 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
        &            ixc0, iph, vtotph, vvalph, eref(1), dgcn, dpcn, ph,      &
        &            ilast, vch, wscrn,CRPAI%rcut, CRPAI%l_crpa)
   ELSE
+     PRINT*, 'Calling RPA for screening.'
+     
+     call get_pe_dens( nat, nph, iphat, srat,                               &
+       &            toler1, toler2, lmaxph, rdirec, rfms2, lfms2,         &
+       &            ScreenI%maxl, ScreenI%irrh, ScreenI%iend, ScreenI%lfxc, ScreenI%nrptx0,                       &
+       &            ihole, xmu, adgc, adpc, iz(0),                           &
+       &            xion(0), iunf, xnval, edens, dgc0, dpc0,                 &
+       &            ri, dx, x0, rmt(0), rnrm(0), em2, ne2,                        &
+       &            ixc0, iph, vtotph, vvalph, eref(1), dgcn, dpcn, ph2,      &
+       &            ilast, vch, pe_dens, CRPAI%rcut, CRPAI%l_crpa)
 
      call screen( nat, nph, iphat, srat,                               &
        &            toler1, toler2, lmaxph, rdirec, rfms2, lfms2,         &
        &            ScreenI%maxl, ScreenI%irrh, ScreenI%iend, ScreenI%lfxc, ScreenI%nrptx0,                       &
        &            ihole, xmu, adgc, adpc, iz(0),                           &
        &            xion(0), iunf, xnval, edens, dgc0, dpc0,                 &  !KJ added (0) for xion, iz, rmt, rnrm
-       &            ri, dx, x0, rmt(0), rnrm(0), em, ne,                        &
-       &            ixc0, iph, vtotph, vvalph, eref(1), dgcn, dpcn, ph,      &  !KJ added (1) for eref.  Frankly this one is suspicious ...
+       &            ri, dx, x0, rmt(0), rnrm(0), em, ne,            &
+       &            ixc0, iph, vtotph, vvalph, eref(1), dgcn, dpcn, ph,       &  !KJ added (1) for eref.  Frankly this one is suspicious ...
        &            ilast, vch, wscrn)
   END IF
   ! Deallocate variables

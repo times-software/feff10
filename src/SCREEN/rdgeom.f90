@@ -16,6 +16,7 @@ subroutine rdgeom
   use atoms_inp
   use ldos_inp
   use screen_inp
+  use crpa_inp
   use stkets
   use rotx
   use lnlm
@@ -35,6 +36,7 @@ subroutine rdgeom
   call atoms_read
   call ldos_read
   call screen_read  !KJ emin/emax from screen.inp override values set in ldos.inp as in Yoshi's original version
+  call crpa_read
   ScreenI%maxl=min(ScreenI%maxl,lx+1) !KJ Yoshi didn't have this - not sure why!  His default maxl=4 causes trouble if lx=2 (or smaller). 
 
   !     transform to code units (bohrs and hartrees - atomic units)
@@ -49,6 +51,8 @@ subroutine rdgeom
 
   ScreenI%rfms = ScreenI%rfms/bohr
   ScreenI%ermin  = ScreenI%ermin  / hart
+  CRPAI%emin = CRPAI%emin / hart
+  CRPAI%emax = CRPAI%emax / hart
 
 
   return

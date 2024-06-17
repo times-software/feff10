@@ -20,11 +20,11 @@ program  ffmod8
   use errorfile
   implicit none
 
+  integer,parameter :: nrx = 251
   double precision dx, x0, vr0, ri(nrptx)
   !     W, the result of calculation
-  double precision vch(nrptx), wscrn(nrptx)
+  double precision vch(nrptx), wscrn(nrptx), pe_dens(nrx)
   integer i, ilast, ixc0, ios
-  integer,parameter :: nrx = 251
 
   call par_begin
   if (worker) go to 400
@@ -32,6 +32,7 @@ program  ffmod8
   call init_dimensions
 
   call potential_read
+  PRINT*, 'nohole=', nohole
   if (nohole.ne.2) goto 5
 
   call wlog('Calculating screened core-hole potential ...')
@@ -54,15 +55,17 @@ program  ffmod8
   vr0  = 0.0d0
   ixc0 = 0
 
-  call prep(vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, .FALSE.)
+  call prep(vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, pe_dens, .FALSE.)
 
    !=================================================================
   !     open files for output
   !=================================================================
   open (unit=24, file='wscrn.dat', status='unknown', iostat=ios)
+  open (unit=25, file='pe_dens.dat', status='unknown', iostat=ios)
   write(24,*) '# r       w_scrn(r)      v_ch(r)'   !KJ
   do i = 1, ilast
      write(24, '(33e20.10)') ri(i), wscrn(i), vch(i)
+     write(25, '(33e20.10)') ri(i), pe_dens(i)
   end do
   close (unit=24)
 

@@ -293,7 +293,7 @@
             !if (ipr2 .eq. 5)  goto 576
             write(1,500) nuptot, npat0+1, real(ndeg),                   &
      &              rcurr/2
-  500       format (1x, 2i5, f8.3,                                      &
+  500       format (1x, 2i6, f8.3,                                      &
      &             '  index, nleg, degeneracy, r=', f8.4)
             write(1,502)
   502       format ('      x           y           z     ipot  ',       &

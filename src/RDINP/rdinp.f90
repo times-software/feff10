@@ -1345,6 +1345,8 @@
                CRPAI%do_CRPA=1
                read(words(2),20,err=900) CRPAI%l_crpa
                read(words(3),30,err=900)  CRPAI%rcut
+               read(words(4),30,err=900)  CRPAI%emin
+               read(words(5),30,err=900)  CRPAI%emax
       elseif (itok .eq. 106) then
             ! FULLSPECTRUM
                mFullSpectrum = 1

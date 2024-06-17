@@ -4,7 +4,7 @@ screenSRC = \
 ./COMMON/rdhead.f90 ./SCREEN/frgrid.f90 ./SCREEN/prep.f90 \
 ./COMMON/rdpot.f90 ./COMMON/padlib.f90 ./SCREEN/fegrid.f90 \
 ./COMMON/fixvar.f90 ./MATH/terp.f90 ./MATH/polint.f90 \
-./COMMON/fixdsx.f90 ./SCREEN/getph.f90 ./FOVRG/dfovrg.f90 \
+./COMMON/fixdsx.f90 ./SCREEN/getph.f90 ./SCREEN/get_pe_dens.f90 ./FOVRG/dfovrg.f90 \
 ./FOVRG/inmuac.f90 ./COMMON/getorb.f90 ./RDINP/rdline.f90 \
 ./COMMON/nxtunt.f90 ./FOVRG/diff.f90 ./FOVRG/wfirdc.f90 \
 ./FOVRG/nucdec.f90 ./ATOM/nucmass.f90 ./FOVRG/potdvp.f90 \
