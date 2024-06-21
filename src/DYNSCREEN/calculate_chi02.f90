@@ -11,7 +11,7 @@
 ! inputs: geom.dat => 1st line, ldos.inp => 2nd, scrn.inp => 3rd
 !         pot.bin => 4,5th, grids => 6th, atomic and potentials => 6,7th
 ! output: wscrn
-subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
+subroutine calculate_chi02( inclus, master, FreeElectronTest, CalcDipole, nrx,            &
      &                   maxl, lmax_fms, irrh, iend, nrptx0,            &
      &                   ihole, xmu, adgc, adpc, iz,          &
      &                   xion, iunf, xnval,                   &
@@ -59,7 +59,7 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
   !     work space for xcpot
   complex*16 v(nrptx), vval(nrptx)
   !     work space for fovrg
-  complex*16 pr(nrptx,2), qr(nrptx,2), pn(nrptx,2), qn(nrptx,2)
+  complex*16 pr(nrptx,2,2), qr(nrptx,2,2), pn(nrptx,2,2), qn(nrptx,2,2)
   complex*16 p2, ck, ck1, ck2, xkmt, xck
   complex*16 pu, qu, dum1, factor, de
   complex*16 xfnorm, xirf, temp, ph0
@@ -85,7 +85,9 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
   integer getiat
   external getiat
 
-  LOGICAL FreeElectronTest
+  LOGICAL FreeElectronTest, CalcDipole
+  
+  !CalcDipole = .TRUE.
   !     function getiat
   if ( mod(ixc0,10) .lt. 5 ) then
      ncycle = 0
@@ -128,6 +130,12 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
   do ie = 1, ne
      !       the maximum kappa
      do k = 1, maxl
+        IF(CalcDipole) THEN
+           pr(:,:,1) = pr(:,:,2)
+           qr(:,:,1) = qr(:,:,2)
+           pn(:,:,1) = pn(:,:,2)
+           qn(:,:,1) = qn(:,:,2)
+        END IF
         do ipart = 1, 2
            if(ipart.EQ.1) then
               p2 = em(ie) - eref
@@ -171,7 +179,7 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
            ELSE
               call dfovrg( ncycle, ikap, rmt, ilast, jri, p2, dx,           &
                 &                  ri , v, vval, dgcn, dpcn,  adgc, adpc, xnval,   &
-                &                  pu, qu, pr(:,ipart), qr(:,ipart), iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
+                &                  pu, qu, pr(:,ipart,2), qr(:,ipart,2), iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
            END IF
            !PRINT*, 'pr=', pr(2,ipart)
            !STOP
@@ -197,8 +205,8 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
            !         dum1 is relativistic correction to normalization
            !         normalize regular solution
            do i = 1, ilast
-              pr(i,ipart) = pr(i,ipart)*xfnorm
-              qr(i,ipart) = qr(i,ipart)*xfnorm
+              pr(i,ipart,2) = pr(i,ipart,2)*xfnorm
+              qr(i,ipart,2) = qr(i,ipart,2)*xfnorm
            end do
            !===========================================================
            !         get ''irregular'' solution
@@ -224,7 +232,7 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
            ELSE
               call dfovrg( ncycle, ikap, rmt, ilast, jri, p2, dx,           &
                 &                  ri, v, vval, dgcn, dpcn, adgc, adpc, xnval,     &
-                &                  pu, qu, pn(:,ipart), qn(:,ipart), iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
+                &                  pu, qu, pn(:,ipart,2), qn(:,ipart,2), iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
            END IF
            
            !         set N- irregular solution , which is outside
@@ -232,7 +240,7 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
            !         N = i*R - H*exp(i*ph0)
            temp = exp(coni*ph0)
            !         calculate wronskian (qu)
-           qu = 2*alpinv *temp*(pn(jri,ipart)*qr(jri,ipart)-pr(jri,ipart)*qn(jri,ipart))
+           qu = 2*alpinv *temp*(pn(jri,ipart,2)*qr(jri,ipart,2)-pr(jri,ipart,2)*qn(jri,ipart,2))
            IF(qu.ne.0.d0) THEN
               qu = 1 /qu / ck
            ELSE
@@ -240,8 +248,8 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
            END IF
            !         qu should be close to 1
            do i = 1, ilast
-              pn(i,ipart) = temp * pn(i,ipart)*qu
-              qn(i,ipart) = temp * qn(i,ipart)*qu
+              pn(i,ipart,2) = temp * pn(i,ipart,2)*qu
+              qn(i,ipart,2) = temp * qn(i,ipart,2)*qu
            end do
         
            !         Use exact solution to continue solutions beyond rmt
@@ -263,10 +271,10 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
               nl = bessn(ll+1)
               nlp1 = bessn(ll+2)
             
-              pr(j,ipart) =  (jl*cos(ph0) -   nl*sin(ph0))*ri(j)*dum1
-              qr(j,ipart) =(jlp1*cos(ph0) - nlp1*sin(ph0))*ri(j)*dum1*factor
-              pn(j,ipart) = bessh(ll+1)*exp(coni*ph0) *ri(j)*dum1
-              qn(j,ipart) = bessh(ll+2)*exp(coni*ph0) *ri(j)*dum1*factor
+              pr(j,ipart,2) =  (jl*cos(ph0) -   nl*sin(ph0))*ri(j)*dum1
+              qr(j,ipart,2) =(jlp1*cos(ph0) - nlp1*sin(ph0))*ri(j)*dum1*factor
+              pn(j,ipart,2) = bessh(ll+1)*exp(coni*ph0) *ri(j)*dum1
+              qn(j,ipart,2) = bessh(ll+2)*exp(coni*ph0) *ri(j)*dum1*factor
            end do
            !IF(ll.EQ.5) THEN
            !   do j = 1, jri0 -1
@@ -280,20 +288,25 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
         !         setup prefactors
         !=============================================================
         ll = k - 1
+        IF(CalcDipole.AND.ll.EQ.0) CYCLE
         IF(.FALSE.) THEN ! DEBUG
            IF(ll.EQ.14) THEN
               DO ipart = 1, 2
                  DO j = 1, ilast0
                     WRITE(133,'(4e20.10,I2,4e20.10)') ri(j), DBLE(omega), DBLE(em(ie)-eref), DIMAG(em(ie)), ipart, &
-             &       DBLE(pr(j,ipart)*pn(j,ipart)), &
-             &       DIMAG(pr(j,ipart)*pn(j,ipart)), DBLE(pn(j,ipart)), DIMAG(pn(j,ipart))
+             &       DBLE(pr(j,ipart,2)*pn(j,ipart,2)), &
+             &       DIMAG(pr(j,ipart,2)*pn(j,ipart,2)), DBLE(pn(j,ipart,2)), DIMAG(pn(j,ipart,2))
                  END DO
                  WRITE(133,*)
               END DO
            END IF
         END IF
         !         the factor includes averaged over spins
-        factor = -1.0d0/(2*(pi**2))*(2*ll+1.0d0)*(2.0d0)*(2.d0*ck2)*dx**2 ! Need to multiply ck1 below to take imag part.
+        IF(CalcDipole) THEN
+           factor = -1.0d0/(2*(pi**2))*(ll)*(2.0d0)*(2.d0*ck2)*dx**2
+        ELSE
+           factor = -1.0d0/(2*(pi**2))*(2*ll+1.0d0)*(2.0d0)*(2.d0*ck2)*dx**2 ! Need to multiply ck1 below to take imag part.
+        END IF
         !PRINT*, 'factor=', factor
         !PRINT*, 'll=', ll
         !PRINT*, 'ck1=', ck1, 'ck2=', ck2
@@ -306,8 +319,14 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
         !         Construct G_l(r,r')G_l(r',r) for W0 calculation, G(r,r') = R(r<)*H(r>)
         do i = 1, ilast0
            do j = i, ilast0
-              chi0re(i,j) = chi0re(i,j) + factor * ri(i)*ri(j)          &
-                   &                             * DIMAG(ck1*(pr(i,1)*pn(j,1)))*(pr(i,2)*pn(j,2))
+              IF(CalcDipole) THEN
+                 chi0re(i,j) = chi0re(i,j) + factor * ri(i)*ri(j)          &
+                      &    * (DIMAG(ck1*(pr(i,1,1)*pn(j,1,1)))*(pr(i,2,2)*pn(j,2,2)) &
+                      &    + DIMAG(ck1*(pr(i,1,2)*pn(j,1,2)))*(pr(i,2,1)*pn(j,2,1)))
+              ELSE
+                 chi0re(i,j) = chi0re(i,j) + factor * ri(i)*ri(j)          &
+                      &    * DIMAG(ck1*(pr(i,1,2)*pn(j,1,2)))*(pr(i,2,2)*pn(j,2,2))
+              END IF
            end do
         end do
         if (inclus .gt. 1 .AND. (.NOT.FreeElectronTest).AND.(ll.LE.lmax_fms)) then
@@ -318,10 +337,20 @@ subroutine calculate_chi02( inclus, master, FreeElectronTest, nrx,            &
            !		write(*,*) 'lx,nex,nrx',lx,nex,nrx
            do i = 1, jnrm
               do j = i, jnrm
-                 chi0re(i,j) = chi0re(i,j)+factor * ri(i)*ri(j) * (      &
-                      &            + DIMAG(ck1*gtrl1(ll,ie)*pr(i,1)*pr(j,1))*pr(i,2)*pn(j,2)          &
-                      &            + gtrl2(ll,ie)* pr(i,2)*pr(j,2)*DIMAG(ck1*pr(i,1)*pn(j,1))          &
-                      &            + DIMAG(ck1*gtrl1(ll,ie)*pr(i,1)*pr(j,1))*gtrl2(ll,ie)*pr(i,2)*pr(j,2)   )
+                 IF(CalcDipole) THEN
+                    chi0re(i,j) = chi0re(i,j)+factor * ri(i)*ri(j) * (      &
+                      &            + DIMAG(ck1*gtrl1(ll-1,ie)*pr(i,1,1)*pr(j,1,1))*pr(i,2,2)*pn(j,2,2)          &
+                      &            + gtrl2(ll,ie)* pr(i,2,2)*pr(j,2,2)*DIMAG(ck1*pr(i,1,1)*pn(j,1,1))          &
+                      &            + DIMAG(ck1*gtrl1(ll-1,ie)*pr(i,1,1)*pr(j,1,1))*gtrl2(ll,ie)*pr(i,2,2)*pr(j,2,2) &
+                      &            + DIMAG(ck1*gtrl1(ll,ie)*pr(i,1,2)*pr(j,1,2))*pr(i,2,1)*pn(j,2,1)          &
+                      &            + gtrl2(ll-1,ie)* pr(i,2,1)*pr(j,2,1)*DIMAG(ck1*pr(i,1,2)*pn(j,1,2))          &
+                      &            + DIMAG(ck1*gtrl1(ll,ie)*pr(i,1,2)*pr(j,1,2))*gtrl2(ll-1,ie)*pr(i,2,1)*pr(j,2,1))
+                 ELSE
+                    chi0re(i,j) = chi0re(i,j)+factor * ri(i)*ri(j) * (      &
+                      &            + DIMAG(ck1*gtrl1(ll,ie)*pr(i,1,2)*pr(j,1,2))*pr(i,2,2)*pn(j,2,2)          &
+                      &            + gtrl2(ll,ie)* pr(i,2,2)*pr(j,2,2)*DIMAG(ck1*pr(i,1,2)*pn(j,1,2))          &
+                      &            + DIMAG(ck1*gtrl1(ll,ie)*pr(i,1,2)*pr(j,1,2))*gtrl2(ll,ie)*pr(i,2,2)*pr(j,2,2)   )
+                 END IF
               end do
               
            end do

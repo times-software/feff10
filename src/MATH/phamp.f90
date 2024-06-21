@@ -25,6 +25,9 @@
       factor = isign*a/(1+sqrt(1+a**2))
 
 !     find a and b that pu = rmt*(a*jl+b*nl), qu=factor*rmt*(a*jlp+b*nlp)
+      !PRINT*, 'pu,qu', pu, qu
+      !PRINT*, 'jl,nl', jl, nl
+      !PRINT*, 'jlp,nlp', jlp, nlp
       a = isign*ck*xkr* (pu*nlp - qu*nl/factor)
       b = isign*ck*xkr* (qu*jl/factor - pu*jlp)
 
@@ -53,7 +56,11 @@
       endif
       beta = (xx**2 + (yy+1)**2) / (xx**2 + (yy-1)**2)
       beta = log(beta) / 4
-      phx = dcmplx (alph, beta)
+      !IF((xx**2 + (yy-1)**2).EQ.0.d0) THEN
+      !   phx = (0.d0, -1.d2)
+      !ELSE
+         phx = dcmplx (alph, beta)
+      !END IF
 
       return
       end
@@ -74,11 +81,24 @@
       elseif ( aa.gt.bb) then
          temp = b/a
          call atancc ( temp, phx)
+         IF(ABS(cos(phx)).EQ.0.d0) THEN
+            PRINT*, 'phamp failed:'
+            PRINT*, 'a, b =', a, b
+            PRINT*, 'phx = ', phx
+            STOP
+         END IF
          ampl = a / cos(phx)
       else
          temp = a/b
+         !PRINT*, temp, a, b
          call atancc ( temp, phx)
          phx = pi / 2 - phx
+         IF(ABS(sin(phx)).EQ.0.d0) THEN
+            PRINT*, 'phamp failed:'
+            PRINT*, 'a, b =', a, b
+            PRINT*, 'phx = ', phx
+            STOP
+         END IF
          ampl = b/sin(phx)
       endif
 

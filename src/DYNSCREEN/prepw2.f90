@@ -92,10 +92,11 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   integer info, lda, ldb, ipiv(nrx), nrhs, ilast0, iproc, iprint, ifirst
   character, parameter :: trans = 'N'
 
-  LOGICAL FreeElectronTest, DiagonalizeEps
+  LOGICAL FreeElectronTest, DiagonalizeEps, CalcDipole
   DOUBLE PRECISION kf
 
   DiagonalizeEps = .FALSE.
+  CalcDipole = .FALSE.
   ! Allocate variables
   allocate(xnmues(0:lx,0:nphx))
 
@@ -148,10 +149,10 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
      IF(master) PRINT*, 'nrptx0 > nrx, resetting'
      ilast0 = nrx
   END IF
-  IF(ScreenwI%maxl.LT.lmaxph(0)+1) THEN
-     IF(master) PRINT*, 'maxl < lmaxph+1, resetting to lmaxph+1' 
-     ScreenwI%maxl = lmaxph(0) + 1
-  END IF
+  !IF(ScreenwI%maxl.LT.lmaxph(0)+1) THEN
+  !   IF(master) PRINT*, 'maxl < lmaxph+1, resetting to lmaxph+1' 
+  !   ScreenwI%maxl = lmaxph(0) + 1
+  !END IF
   IF(master) THEN
      PRINT*, 'ilast=', ilast0
      PRINT*, 'ne2=', ne2
@@ -245,23 +246,26 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   ! definition of vch and K can be moved outside of frequency loop.
   vch(:) = 0.d0
   wscrn(:) = 0.d0
-
-  do i = 1, ilast0
-     vch(i)  = rhoc(i)
-  end do
-  do i = 1, ilast0
-     wscrn(i) = 0.0d0
-     do j = 1, i
-        wscrn(i) = wscrn(i) + vch(j)
+  IF(CalcDipole) THEN
+     vch(1:ilast0) = ri(1:ilast0)
+  ELSE
+        do i = 1, ilast0
+        vch(i)  = rhoc(i)
      end do
-     wscrn(i) = wscrn(i)/ri(i)
-     do j = i + 1, ilast0
-        wscrn(i) = wscrn(i) + vch(j)/ri(j)
+     do i = 1, ilast0
+        wscrn(i) = 0.0d0
+        do j = 1, i
+           wscrn(i) = wscrn(i) + vch(j)
+        end do
+        wscrn(i) = wscrn(i)/ri(i)
+        do j = i + 1, ilast0
+           wscrn(i) = wscrn(i) + vch(j)/ri(j)
+        end do
      end do
-  end do
-  do i = 1, ilast0
-     vch(i) = wscrn(i)
-  end do
+     do i = 1, ilast0
+        vch(i) = wscrn(i)
+     end do
+  END IF
   ! Calculate beta_SC(1)
   beta_SC(1) = 0.d0
   do i = 1, ilast0
@@ -270,21 +274,30 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
 
   ! Calculate K_00 (for now K = 4pi/r>)
   Kmat(:,:) = 0.d0
-  do i = 1, ilast0
-     do j = i, ilast0
-        Kmat(i,j) =  4.0d0*pi * 1/ri(j)
-        Kmat(j,i) = Kmat(i,j)
+  IF(CalcDipole) THEN
+     do i = 1, ilast0
+        do j = i, ilast0
+           Kmat(i,j) =  4.0d0*pi/3.d0 * ri(i)/ri(j)**2
+           Kmat(j,i) = Kmat(i,j)
+        end do
      end do
-  end do
+  ELSE
+     do i = 1, ilast0
+        do j = i, ilast0
+           Kmat(i,j) =  4.0d0*pi * 1/ri(j)
+           Kmat(j,i) = Kmat(i,j)
+        end do
+     end do
+  END IF
   !KMat = 0.d0! Test
 
   !=================================================================
   !     LDA Exchange Correlation (actually this probably doesn't work)
   !=================================================================  
   if (ScreenwI%lfxc .gt. 0) then
-     call ldafxc(ilast, ri, rhoph, ScreenwI%lfxc, fxc)
+     call ldafxc(ilast0, ri, rhoph, ScreenwI%lfxc, fxc)
      call wlog('Using TDLDA kernel.')
-     do i = 1, ilast
+     do i = 1, ilast0
         Kmat(i,i) = Kmat(i,i) + 4.0d0*pi * fxc(i)
      end do
   end if
@@ -374,7 +387,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
   ! Calculate chi01 and chi02 separately.
   ixc0 = 0
   IF(master) PRINT*, 'Calculating Chi0_1.'
-  call calculate_chi01( inclus, master, FreeElectronTest, nrx,                              &
+  call calculate_chi01( inclus, master, FreeElectronTest, CalcDipole, nrx,                              &
      &                   ScreenwI%maxl, lmaxph(0), ScreenwI%irrh, ScreenwI%iend, ScreenwI%nrptx0,  &
      &                   ihole, xmu, adgc, adpc, iz(0),             &
      &                   xion(0), iunf, xnval,                      &
@@ -384,7 +397,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
 
   !PRINT*, 'Before calc2'
   IF(master) PRINT*, 'Calculating Chi0_2.'
-  call calculate_chi02( inclus, master, FreeElectronTest, nrx,                                &
+  call calculate_chi02( inclus, master, FreeElectronTest, CalcDipole, nrx,                                &
      &                   ScreenwI%maxl, lmaxph(0), ScreenwI%irrh, ScreenwI%iend, ScreenwI%nrptx0,  &
      &                   ihole, xmu, adgc, adpc, iz(0),             &
      &                   xion(0), iunf, xnval,                      &
@@ -394,7 +407,7 @@ subroutine prepw2 (vr0, nrx, ri, dx, x0, ilast)
    
   DO i = 1, ilast0
      DO j = 1, ilast0
-        chi0(i,j) = (DIMAG(chi0_1(i,j)) + chi0_2(i,j))*EXP(-0.d0*abs(ri(i)-ri(j))/40.d0)
+        chi0(i,j) = DIMAG(chi0_1(i,j)) + chi0_2(i,j)
         chi0(j,i) = chi0(i,j)
         chi0_1(j,i) = chi0_1(i,j)
         chi0_2(j,i) = chi0_2(i,j)

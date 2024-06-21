@@ -181,6 +181,7 @@
      &               eref(ie), v, vval, iPl, WpCorr, Gamma, AmpFac, EGap, &
      &               vxcrmu, vxcimu, gsrel, vvxcrm, vvxcim)
 
+         PRINT*, DBLE(em(ie)), eref(ie)
          if (dble(em(ie)).lt.-10.d0 .or. dble(em(ie)) .gt.3.d2) goto 220
 !        p2 is (complex momentum)**2 referenced to energy dep xc
 !        notice that constant Im part (gamach/2+vi0) is cancelled,

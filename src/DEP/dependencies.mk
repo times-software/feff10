@@ -104,9 +104,7 @@
 ./DMDW/m_dmdw.o: ./COMMON/m_kinds.o ./DMDW/m_const_and_conv.o ./INPGEN/m_ptable.o ./DMDW/m_math.o ./INPGEN/m_strings.o Compiler.mk
 ./DMDW/m_math.o: ./COMMON/m_kinds.o Compiler.mk
 ./DYNSCREEN/calculate_chi01.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
-./DYNSCREEN/calculate_chi01_old.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./DYNSCREEN/calculate_chi02.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
-./DYNSCREEN/calculate_chi02_old.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./DYNSCREEN/diag_lapack.o: Compiler.mk
 ./DYNSCREEN/diag_mods.o: Compiler.mk
 ./DYNSCREEN/prepw.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o ./COMMON/m_inpmodules.o Compiler.mk
@@ -324,8 +322,6 @@
 ./MATH/bcoef.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./MATH/besjh.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./MATH/besjn.o: ./COMMON/m_dimsmod.o Compiler.mk
-./MATH/besjn_old.o: ./COMMON/m_dimsmod.o Compiler.mk
-./MATH/besjn_scaled.o: ./COMMON/m_dimsmod.o Compiler.mk
 ./MATH/bjnser.o: Compiler.mk
 ./MATH/conv.o: ./COMMON/m_dimsmod.o ./COMMON/m_constants.o Compiler.mk
 ./MATH/cpl0.o: Compiler.mk

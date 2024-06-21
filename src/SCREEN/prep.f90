@@ -102,7 +102,6 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   ! Now shift grid so that real part is at EFermi.
   !em(1:ne) = em(1:ne) + xmu
   call setegi(xmu+ScreenI%emin, xmu+ScreenI%emax, ScreenI%eimax, ScreenI%ermin, ScreenI%ner, ScreenI%nei, em, ne)
-
   !     compute phase shifts
   do iph = 0, nph
      IF(iph.EQ.0) THEN ! JK Fixed ihole bug 10/2010

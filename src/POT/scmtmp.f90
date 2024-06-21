@@ -1,4 +1,4 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Information about last revision of $RCSfile: scmtmp.f90,v $:
 ! $Revision: 1.13 $
 ! $Author: jorissen $
@@ -373,11 +373,14 @@
       ok = .true.
       if(master) write(29,*) '  Electronic configuration'
       if(master) write(29,*) '  type     l     N_el'
+      !call wlog('  Electronic configuration')
+      !call wlog('   iph    il      N_el')
  310  format (2i6, f9.3)
       do 320 ip= 0,nph
       do 320 il = 0,lx
          write (slog,310) ip,il,xnmues(il,ip)
          write(29,*) trim(slog)
+         !call wlog(slog)
 !        check that occupation numbers are consistent with those
 !        set in getorb.f
          diff = abs(xnmues(il,ip) - xnvmu(il,ip))

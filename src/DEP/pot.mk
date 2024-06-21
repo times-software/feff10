@@ -24,7 +24,7 @@ potSRC = \
 ./FOVRG/intout.f90 ./FOVRG/solin.f90 ./MATH/besjh.f90 \
 ./MATH/bjnser.f90 ./FOVRG/muatcc.f90 ./FOVRG/potex.f90 \
 ./FOVRG/aprdec.f90 ./FOVRG/yzkrdc.f90 ./FOVRG/yzktec.f90 \
-./MATH/besjn_scaled.f90 ./MATH/phamp.f90 ./MATH/exjlnl.f90 \
+./MATH/besjn.f90 ./MATH/phamp.f90 ./MATH/exjlnl.f90 \
 ./MATH/terpc.f90 ./MATH/csomm2.f90 ./POT/importpot.f90 \
 ./COMMON/rdpot.f90 ./COMMON/padlib.f90 ./POT/scmt.f90 \
 ./POT/grids.f90 ./POT/fmsie.f90 ./FMS/yprep.f90 \

@@ -202,9 +202,12 @@ subroutine screen( nat, nph, iphat, rat,                          &
            end do
         end do
         
+        !WRITE(81,*) lfms2, nsp, ispin, inclus, nph, cks, lmaxph
+        !WRITE(81,*) xphase, ie, iverb, minv, rdirec, toler1, toler2, lcalc
         call fms(lfms2, nsp, ispin, inclus, nph, cks,lmaxph, &
              & xphase,ie,iverb,minv,rdirec,toler1,toler2,lcalc, gg)
         
+        !WRITE(79,*) gg(1,1,iph)
         do il = 0, lmaxph(iph)
            ix = il**2
            do im = 1, 2*il+1
@@ -311,6 +314,12 @@ subroutine screen( nat, nph, iphat, rat,                          &
 
         !         the factor includes averaged over spins
         factor = -1.0d0/(2*(pi**2))*(2*ll+1.0d0)*(2.0d0*ck)**2*dx**2
+        !PRINT*, 'factor=', factor
+        !PRINT*, 'll=', ll
+        !PRINT*, 'ck=', ck
+        !PRINT*, dx
+        !PRINT*, pi
+        !STOP
 !         !=============================================================
 !         !         FMS
 !         !=============================================================
@@ -360,9 +369,8 @@ subroutine screen( nat, nph, iphat, rat,                          &
               chi0re(m,n) = chi0re(m,n) + factor * ri(m)*ri(n)          &
                    &                             * pr(m)*pr(m) * pn(n)*pn(n)
            end do
-
         end do
-
+        !PRINT*, gtrl(ll,ie)
         if (inclus .gt. 1) then
 !		write(*,*) 'size ri, size pr, size pn',size(ri),size(pr),size(pn)
 !		write(*,*) 'size chi0re',size(chi0re,1),size(chi0re,2)
@@ -377,6 +385,14 @@ subroutine screen( nat, nph, iphat, rat,                          &
               end do
 
            end do
+        !WRITE(80,*) chi0re(1,2)
+        !WRITE(80,*) 'factor=', factor
+        !WRITE(80,*) 'ris=', ri(1), ri(2)
+        !WRITE(80,*) 'pr=', pr(1)
+        !WRITE(80,*) 'pn=', pn(2)
+        !WRITE(80,*) 'pr*pn=', pn(2)*pr(1),pr(1)*pn(2)
+        !WRITE(80,*) 'pr*pn=', pn(2)*pr(1)*pr(1)*pn(2)*ri(1)*ri(2)*factor
+        !WRITE(80,*) 'gtrl=', gtrl(ll,ie)
         end if
 
      end do
@@ -392,12 +408,14 @@ subroutine screen( nat, nph, iphat, rat,                          &
         de = (em(ie+1) - em(ie-1))/2.0d0
      end if
 
+     !WRITE(82,*) ie, ne, em(ie), chi0re(1,2), de
      do ir1 = 1, ilast
         do i = ir1, ilast
            chi0r( ir1,i) = chi0r(ir1,i) + chi0re(ir1,i)*de
            chi0re(ir1,i) = (0.0d0, 0.0d0)
         end do
      end do
+     !WRITE(83,*) em(ie), chi0r(1,10)
 
      !       print the current progress to the wscrn
      if ( 100.0*ie/ne .gt. percent) then
@@ -410,7 +428,6 @@ subroutine screen( nat, nph, iphat, rat,                          &
         percent = percent + 20.0
      end if
   end do
-
   call wlog('  100%')
   !=================================================================
   !     end of energy cycle

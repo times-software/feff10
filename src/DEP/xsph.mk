@@ -6,7 +6,7 @@ xsphSRC = \
 ./KSPACE/change_car.f90 ./KSPACE/symmetrycheck.f90 ./KSPACE/kmesh.f90 \
 ./COMMON/rdhead.f90 ./COMMON/setkap.f90 ./XSPH/xsphsub.f90 \
 ./COMMON/rdpot.f90 ./COMMON/padlib.f90 ./TDLDA/correorb.f90 \
-./TDLDA/cdos.f90 ./MATH/besjn_scaled.f90 ./MATH/bjnser.f90 \
+./TDLDA/cdos.f90 ./MATH/besjn.f90 ./MATH/bjnser.f90 \
 ./FOVRG/inmuac.f90 ./COMMON/getorb.f90 ./RDINP/rdline.f90 \
 ./COMMON/nxtunt.f90 ./FOVRG/diff.f90 ./MATH/besjh.f90 \
 ./FOVRG/wfirdc.f90 ./FOVRG/nucdec.f90 ./ATOM/nucmass.f90 \

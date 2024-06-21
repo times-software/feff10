@@ -1,3 +1,10 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Information about last revision of $RCSfile: solin.f90,v $:
+! $Revision: 1.5 $
+! $Author: hebhop $
+! $Date: 2010/02/23 23:52:06 $
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine solin (en,fl,agi,api,kap,rmt,jri,imax,ic3,vm, iwkb)
 !                  resolution of the dirac equation
 !                   p' - kap*p/r = - ( en/cl-v )*g - eg/r
@@ -9,10 +16,10 @@
 ! at the origin of the large(small)component
 ! kap quantum number kappa
 ! imax the last point of tabulation of the wave function
-
+      use dimsmod, only: nrptx, ltot
+	  use constants
       implicit double precision (a-h,o-z)
-      include '../HEADERS/dim.h'
-      include '../HEADERS/const.h'
+
       parameter (npi=6, test=1.0d+5)
       complex*16 en,agi,api,c3,vmh
       complex*16 gg,ag,gp,ap,dv,av,eg,ceg,ep,cep, vm(nrptx)

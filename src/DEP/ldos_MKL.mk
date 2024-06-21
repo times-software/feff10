@@ -23,7 +23,7 @@ ldosSRC = \
 ./FOVRG/solout.f90 ./FOVRG/intout.f90 ./FOVRG/solin.f90 \
 ./MATH/besjh.f90 ./MATH/bjnser.f90 ./FOVRG/muatcc.f90 \
 ./FOVRG/potex.f90 ./FOVRG/aprdec.f90 ./FOVRG/yzkrdc.f90 \
-./FOVRG/yzktec.f90 ./MATH/besjn_scaled.f90 ./MATH/phamp.f90 \
+./FOVRG/yzktec.f90 ./MATH/besjn.f90 ./MATH/phamp.f90 \
 ./MATH/exjlnl.f90 ./MATH/csomm2.f90 ./LDOS/fmsdos.f90 \
 ./FMS/yprep.f90 ./FMS/xstaff.f90 ./FMS/fmskspace.f90 \
 ./FMS/kkrintegral.f90 ./COMMON/writematrix.f90 ./KSPACE/structurefactor.f90 \

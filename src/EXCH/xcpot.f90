@@ -453,7 +453,7 @@
   950    continue
          eref = dble(eref)
       endif
-
+      WRITE(9898,*) DBLE(em), DIMAG(eref)
 
       return
       end

@@ -15,8 +15,8 @@ subroutine ldafxc(ilast, ri, edens, exchange, fxc)
   implicit none
 
   integer ilast, exchange
-  double precision ri(nrptx), edens(251)
-  double precision fxc(251)
+  double precision ri(nrptx), edens(nrptx)
+  double precision fxc(nrptx)
   double precision rs
   integer i
 

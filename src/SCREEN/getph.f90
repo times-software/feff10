@@ -88,6 +88,7 @@ subroutine getph ( ri, dx, x0, rmt, rnrm, ne, em, ixc,            &
   do ie = 1, ne
      !       p2 is (complex momentum)**2 referenced to energy dep xc
      p2 = em(ie) - eref
+     IF(DBLE(p2).GT.-40.d0/hart) THEN 
      if (mod(ixc,10) .lt. 5) then
         ncycle = 0
      else
@@ -119,6 +120,9 @@ subroutine getph ( ri, dx, x0, rmt, rnrm, ne, em, ixc,            &
 
      end do
 10   continue
+     ELSE
+        ph(ie, :) = 0.d0
+     END IF
   end do
 
   return

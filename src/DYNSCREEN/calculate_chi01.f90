@@ -11,7 +11,7 @@
 ! inputs: geom.dat => 1st line, ldos.inp => 2nd, scrn.inp => 3rd
 !         pot.bin => 4,5th, grids => 6th, atomic and potentials => 6,7th
 ! output: wscrn
-subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
+subroutine calculate_chi01( inclus, master, FreeElectronTest, CalcDipole, nrx,          &
      &                   maxl, lmax_fms, irrh, iend, nrptx0,            &
      &                   ihole, xmu, adgc, adpc, iz,          &
      &                   xion, iunf, xnval,                   &
@@ -55,16 +55,16 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
   ! Local
   integer jri, jnrm, jri0
   integer ic3, irr, ikap
-  integer i, j, k,  ll, ie, ncycle
+  integer i, j, k,  ll, ie, ncycle, il
   !     work space for xcpot
   complex*16 v(nrptx), vval(nrptx)
   !     work space for fovrg
-  complex*16 pr(nrptx,2), qr(nrptx,2), pn(nrptx,2), qn(nrptx,2)
+  complex*16 pr(nrptx,2,2), qr(nrptx,2,2), pn(nrptx,2,2), qn(nrptx,2,2)
   complex*16 p2, ck, ck1, ck2, xkmt, xck
   complex*16 pu, qu, dum1, factor, de
   complex*16 xfnorm, xirf, temp, ph0
-  complex*16 bessj(ltot+2), bessh(ltot+2), bessn(ltot+2)
-  complex*16 jl, jlp1, nl, nlp1
+  complex*16 bessj(ltot+2), bessh(ltot+2), bessn(ltot+2), bessh0(ltot+2)
+  complex*16 jl, jlp1, nl, nlp1, jamp, namp
 
 
   !     phase shift      
@@ -81,12 +81,13 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
 
   ! String for log messages:
   character*512 slog
-  integer ipart
+  integer ipart, isign
   integer getiat
   external getiat
 
-  LOGICAL FreeElectronTest
+  LOGICAL FreeElectronTest, CalcDipole
   !     function getiat
+  !CalcDipole = .TRUE.
   IF(FreeElectronTest) eref = 0.d0
   if ( mod(ixc0,10) .lt. 5 ) then
      ncycle = 0
@@ -129,6 +130,12 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
   do ie = 1, ne
      !       the maximum kappa
      do k = 1, maxl
+        IF(k.GT.1.AND.CalcDipole) THEN
+           pr(:,:,1) = pr(:,:,2)
+           qr(:,:,1) = qr(:,:,2)
+           pn(:,:,1) = pn(:,:,2)
+           qn(:,:,1) = qn(:,:,2)
+        END IF
         do ipart = 1, 2
            if(ipart.EQ.1) then
               p2 = em(ie) - eref
@@ -156,7 +163,7 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
            !         get ''regular'' solution
            !=========================================================
            irr = -1
-            
+           
            !PRINT*, ncycle, ikap, rmt
            !PRINT*, ilast, jri, p2
            !PRINT*, dx, ri(1), v(1)
@@ -165,7 +172,7 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
            !PRINT*, pu, qu, pr(1)
            !PRINT*, qr(1), iz, ihole
            !PRINT*, xion, iunf, irr
-           !PRINT*, ic3, iph 
+           !PRINT*, ic3, iph
            IF(FreeElectronTest) THEN
               pu = 1.d0
               qu = 0.1d0
@@ -173,50 +180,64 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
            ELSE
               call dfovrg( ncycle, ikap, rmt, ilast, jri, p2, dx,           &
                 &                  ri , v, vval, dgcn, dpcn,  adgc, adpc, xnval,   &
-                &                  pu, qu, pr(:,ipart), qr(:,ipart), iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
+                &                  pu, qu, pr(:,ipart,2), qr(:,ipart,2), iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
            END IF
            !PRINT*, 'pr=', pr(2,ipart)
            !STOP
-           !call exjlnl(xkmt, ll, jl, nl)
-           !call exjlnl(xkmt, ll+1, jlp1, nlp1)
-           call besjn(xkmt, bessj, bessn)
-           jl = bessj(ll+1)
-           jlp1 = bessj(ll+2)
-           nl = bessn(ll+1)
-           nlp1 = bessn(ll+2)
-           call phamp(rmt,pu,qu,ck,jl,nl,jlp1,nlp1,ikap,ph0,temp)
-        
-           factor = ck*alphfs
-           factor = - factor/(1+sqrt(1+factor**2))
-           dum1   = 1 / sqrt(1+factor**2)
-           IF(temp.ne.0.d0) THEN
-              xfnorm = 1.d0 / temp * dum1
+           !IF(ll.LE.5) THEN
+           IF(.FALSE.) THEN
+             call exjlnl(xkmt, ll, jl, nl)
+             call exjlnl(xkmt, ll+1, jlp1, nlp1)
            ELSE
-              xfnorm = 0.d0
+             call besjn(xkmt, bessj, bessn)
+             jl = bessj(ll+1)
+             jlp1 = bessj(ll+2)
+             nl = bessn(ll+1)
+             nlp1 = bessn(ll+2)
            END IF
+           !IF(DBLE(p2).GT.-40.d0/hart) THEN 
+           IF(.TRUE.) THEN
+              call phamp(rmt,pu,qu,ck,jl,nl,jlp1,nlp1,ikap,ph0,temp)
+           
         
-           !         normalization factor
-           !         dum1 is relativistic correction to normalization
-           !         normalize regular solution
-           do i = 1, ilast
-              pr(i,ipart) = pr(i,ipart)*xfnorm
-              qr(i,ipart) = qr(i,ipart)*xfnorm
-           end do
-           !===========================================================
-           !         get ''irregular'' solution
-           !===========================================================
-           irr = 1
-           !         pu, qu are upper and lower components at muffin tin
-           !         set pu, qu - initial condition for irregular solution
+              factor = ck*alphfs
+              factor = - factor/(1+sqrt(1+factor**2))
+              dum1   = 1 / sqrt(1+factor**2)
+              IF(temp.ne.0.d0) THEN
+                 xfnorm = 1.d0 / temp * dum1
+              ELSE
+                 xfnorm = 0.d0
+              END IF
+        
+              !         normalization factor
+              !         dum1 is relativistic correction to normalization
+              !         normalize regular solution
+              do i = 1, ilast
+                 pr(i,ipart,2) = pr(i,ipart,2)*xfnorm
+                 qr(i,ipart,2) = qr(i,ipart,2)*xfnorm
+              end do
+              !===========================================================
+              !         get ''irregular'' solution
+              !===========================================================
+              irr = 1
+              !         pu, qu are upper and lower components at muffin tin
+              !         set pu, qu - initial condition for irregular solution
            
-           pu =   (nl*cos(ph0) +   jl*sin(ph0)) * rmt * dum1
-           qu = (nlp1*cos(ph0) + jlp1*sin(ph0)) * rmt * dum1 * factor
-           
-           if (irrh .eq. 1) then
-              call besjh(xkmt, maxl+1, bessj, bessh)
-              pu = bessh(ll+1)* exp(coni*ph0) *rmt * dum1
-              qu = bessh(ll+2)* exp(coni*ph0) *rmt * dum1* factor
-           end if
+              pu =   (nl*cos(ph0) +   jl*sin(ph0)) * rmt * dum1
+              qu = (nlp1*cos(ph0) + jlp1*sin(ph0)) * rmt * dum1 * factor
+              if (irrh .eq. 1) then
+                 call besjh(xkmt, maxl+1, bessj, bessh)
+                 pu = bessh(ll+1)* exp(coni*ph0) *rmt * dum1
+                 qu = bessh(ll+2)* exp(coni*ph0) *rmt * dum1* factor
+              end if
+           ELSE
+              ph0 = 0.d0
+              if (irrh .eq. 1) then
+                 call besjh(xkmt, maxl+1, bessj, bessh)
+                 pu = bessh(ll+1)* exp(coni*ph0) *rmt * dum1
+                 qu = bessh(ll+2)* exp(coni*ph0) *rmt * dum1* factor
+              end if
+           END IF
         
            IF(FreeElectronTest) THEN
               pu = 1.d0
@@ -226,7 +247,7 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
            ELSE
               call dfovrg( ncycle, ikap, rmt, ilast, jri, p2, dx,           &
                 &                  ri, v, vval, dgcn, dpcn, adgc, adpc, xnval,     &
-                &                  pu, qu, pn(:,ipart), qn(:,ipart), iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
+                &                  pu, qu, pn(:,ipart,2), qn(:,ipart,2), iz, ihole, xion, iunf, irr, ic3, iph) !KJ iph
            END IF
            
            !         set N- irregular solution , which is outside
@@ -234,18 +255,38 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
            !         N = i*R - H*exp(i*ph0)
            temp = exp(coni*ph0)
            !         calculate wronskian (qu)
-           qu = 2*alpinv *temp*(pn(jri,ipart)*qr(jri,ipart)-pr(jri,ipart)*qn(jri,ipart))
+           qu = 2*alpinv *temp*(pn(jri,ipart,2)*qr(jri,ipart,2)-pr(jri,ipart,2)*qn(jri,ipart,2))
            IF(qu.ne.0.d0) THEN
               qu = 1 /qu / ck
            ELSE
               qu = 0.d0
            END IF
-           !         qu should be close to 1
            do i = 1, ilast
-              pn(i,ipart) = temp * pn(i,ipart)*qu
-              qn(i,ipart) = temp * qn(i,ipart)*qu
+              pn(i,ipart,2) = temp * pn(i,ipart,2)*qu
+              qn(i,ipart,2) = temp * qn(i,ipart,2)*qu
            end do
-        
+           
+           !IF(DBLE(p2).LT.-40.d0/hart) THEN 
+           IF(.FALSE.) THEN
+              qu = 2*alpinv *temp*(pn(jri,ipart,2)*qr(jri,ipart,2)-pr(jri,ipart,2)*qn(jri,ipart,2))
+              IF(qu.ne.0.d0) THEN
+                 qu = 2 /qu
+              ELSE
+                 qu = 0.d0
+              END IF
+              ! Wronskian normalized, but divided by 2*ck since it is multilied back later.
+              pr(:,ipart,2) = pr(:,ipart,2)*qu/(-2*ck)
+              qr(:,ipart,2) = qr(:,ipart,2)*qu/(-2*ck)
+              ! Find a and b that pr = rmt*(a*jl+b*nl), qr = factor*rmt*(a*jlp+b*nlp)
+              isign=1
+              jamp = ck*alphfs
+              if (ikap.lt.0) isign = -1
+              factor = isign*ck*alphfs/(1+sqrt(1+jamp**2))
+              jamp = -((factor*nlp1*pr(jri,ipart,2) - nl*qr(jri,ipart,2))/(factor*(jlp1*nl - jl*nlp1)*rmt))
+              namp = -((-(factor*jlp1*pr(jri,ipart,2)) + jl*qr(jri,ipart,2))/(factor*(jlp1*nl - jl*nlp1)*rmt))
+           END IF
+           
+           
            !         Use exact solution to continue solutions beyond rmt
            IF(FreeElectronTest) THEN
               jri0 = 1
@@ -257,33 +298,44 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
            !WRITE(115,*), dum1, factor
            do j = jri0, ilast0
               xck  = ck * ri(j)
-              !call exjlnl(xck, ll, jl, nl)
-              !call exjlnl(xck, ll+1, jlp1, nlp1)
-              !PRINT*, 'xck = ', xck, maxl
-              !PRINT*, 'k = ', ck
-              !PRINT*, 'omega = ', omega
-              !PRINT*, 'r = ', ri(j)
-              !PRINT*, 'e = ', em(ie)
-              call besjh(xck, maxl+1, bessj, bessh)
-              call besjn(xck, bessj, bessn)
-              jl = bessj(ll+1)
-              jlp1 = bessj(ll+2)
-              nl = bessn(ll+1)
-              nlp1 = bessn(ll+2)
-              
-              pr(j,ipart) =  (jl*cos(ph0) -   nl*sin(ph0))*ri(j)*dum1
-              qr(j,ipart) =(jlp1*cos(ph0) - nlp1*sin(ph0))*ri(j)*dum1*factor
-              pn(j,ipart) = bessh(ll+1)*exp(coni*ph0) *ri(j)*dum1
-              qn(j,ipart) = bessh(ll+2)*exp(coni*ph0) *ri(j)*dum1*factor
+              !IF(ll.LE.5) THEN
+              IF(.FALSE.) THEN
+                 call exjlnl(xck, ll, jl, nl)
+                 call exjlnl(xck, ll+1, jlp1, nlp1)
+                 call besjh(xck, maxl+1, bessj, bessh)
+              ELSE
+                 call besjh(xck, maxl+1, bessj, bessh)
+                 call besjn(xck, bessj, bessn)
+                 jl = bessj(ll+1)
+                 jlp1 = bessj(ll+2)
+                 nl = bessn(ll+1)
+                 nlp1 = bessn(ll+2)
+              END IF
+              !IF(DBLE(p2).LT.-40.d0/hart) THEN 
+              IF(.FALSE.) THEN
+                 pn(j,ipart,2) = pn(jri0,ipart,2)*bessh(ll+1)/bessh0(ll+1)*ri(j)/ri(jri0)
+                 qn(j,ipart,2) = qn(jri0,ipart,2)*bessh(ll+2)/bessh0(ll+2)*ri(j)/ri(jri0)
+                 pr(j,ipart,2) = jl*jamp + nl*namp
+                 qr(j,ipart,2) = jlp1*jamp + nlp1*namp
+              ELSE
+                 pr(j,ipart,2) =  (jl*cos(ph0) -   nl*sin(ph0))*ri(j)*dum1
+                 qr(j,ipart,2) =(jlp1*cos(ph0) - nlp1*sin(ph0))*ri(j)*dum1*factor
+                 pn(j,ipart,2) = bessh(ll+1)*exp(coni*ph0) *ri(j)*dum1
+                 qn(j,ipart,2) = bessh(ll+2)*exp(coni*ph0) *ri(j)*dum1*factor
+              END IF
            end do
         end do ! end of loop over parts G(E) and G(E-w)
         !=============================================================
         !         setup prefactors
         !=============================================================
         ll = k - 1
-        
+        IF(CalcDipole.AND.ll.EQ.0) CYCLE ! start from ll=1 since we store ll-1
         !         the factor includes averaged over spins
-        factor = -1.0d0/(2*(pi**2))*(2*ll+1.0d0)*(2.0d0*ck1)*(2.d0*ck2)*dx**2
+        IF(CalcDipole) THEN
+           factor = -1.0d0/(2*(pi**2))*(ll)*(2.0d0*ck1)*(2.d0*ck2)*dx**2
+        ELSE
+           factor = -1.0d0/(2*(pi**2))*(2*ll+1.0d0)*(2.0d0*ck1)*(2.d0*ck2)*dx**2
+        END IF
         !PRINT*, 'factor=', factor
         !PRINT*, 'll=', ll
         !PRINT*, 'ck1=', ck1, 'ck2=', ck2
@@ -296,8 +348,13 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
         !         Construct G_l(r,r')G_l(r',r) for W0 calculation, G(r,r') = R(r<)*H(r>)
         do i = 1, ilast0
            do j = i, ilast0
-              chi0re(i,j) = chi0re(i,j) + factor * ri(i)*ri(j)          &
-                   &                             * pr(i,1)*pr(i,2) * pn(j,1)*pn(j,2)
+              IF(CalcDipole) THEN
+                 chi0re(i,j) = chi0re(i,j) + factor * ri(i)*ri(j)          &
+                   &    * (pr(i,1,1)*pr(i,2,2) * pn(j,1,1)*pn(j,2,2)+pr(i,1,2)*pr(i,2,1) * pn(j,1,2)*pn(j,2,1))
+              ELSE
+                 chi0re(i,j) = chi0re(i,j) + factor * ri(i)*ri(j)          &
+                   &                             * pr(i,1,2)*pr(i,2,2) * pn(j,1,2)*pn(j,2,2)
+              END IF
            end do
         end do
         if (inclus .gt. 1 .AND. (.NOT. FreeElectronTest).AND.(ll.LE.lmax_fms)) then
@@ -308,10 +365,20 @@ subroutine calculate_chi01( inclus, master, FreeElectronTest, nrx,          &
            !		write(*,*) 'lx,nex,nrx',lx,nex,nrx
            do i = 1, jnrm
               do j = i, jnrm
-                 chi0re(i,j) = chi0re(i,j)+factor * ri(i)*ri(j) * (      &
-                      &            + gtrl1(ll,ie)* pr(i,1)*pr(i,2) * pr(j,1)*pn(j,2)          &
-                      &            + gtrl2(ll,ie)* pr(i,2)*pr(i,1) * pr(j,2)*pn(j,1)          &
-                      &            + gtrl1(ll,ie)*gtrl2(ll,ie) * pr(i,1)*pr(i,2) * pr(j,1)*pr(j,2)   )
+                 IF(CalcDipole) THEN
+                    chi0re(i,j) = chi0re(i,j)+factor * ri(i)*ri(j) * (      &
+                      &            + gtrl1(ll-1,ie)* pr(i,1,1)*pr(i,2,2) * pr(j,1,1)*pn(j,2,2)          &
+                      &            + gtrl2(ll,ie)* pr(i,2,2)*pr(i,1,1) * pr(j,2,2)*pn(j,1,1)          &
+                      &            + gtrl1(ll-1,ie)*gtrl2(ll,ie) * pr(i,1,1)*pr(i,2,2) * pr(j,1,1)*pr(j,2,2)  &
+                      &            + gtrl1(ll,ie)* pr(i,1,2)*pr(i,2,1) * pr(j,1,2)*pn(j,2,1)          &
+                      &            + gtrl2(ll-1,ie)* pr(i,2,1)*pr(i,1,2) * pr(j,2,1)*pn(j,1,2)          &
+                      &            + gtrl1(ll,ie)*gtrl2(ll-1,ie) * pr(i,1,2)*pr(i,2,1) * pr(j,1,2)*pr(j,2,1)   )
+                 ELSE
+                    chi0re(i,j) = chi0re(i,j)+factor * ri(i)*ri(j) * (      &
+                      &            + gtrl1(ll,ie)* pr(i,1,2)*pr(i,2,2) * pr(j,1,2)*pn(j,2,2)          &
+                      &            + gtrl2(ll,ie)* pr(i,2,2)*pr(i,1,2) * pr(j,2,2)*pn(j,1,2)          &
+                      &            + gtrl1(ll,ie)*gtrl2(ll,ie) * pr(i,1,2)*pr(i,2,2) * pr(j,1,2)*pr(j,2,2)   )
+                 END IF
               end do
               
            end do

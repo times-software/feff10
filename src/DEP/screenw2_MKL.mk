@@ -13,8 +13,8 @@ screenw2SRC = \
 ./FOVRG/solin.f90 ./MATH/besjh.f90 ./MATH/bjnser.f90 \
 ./FOVRG/muatcc.f90 ./MATH/cwig3j.f90 ./FOVRG/potex.f90 \
 ./FOVRG/aprdec.f90 ./FOVRG/yzkrdc.f90 ./FOVRG/yzktec.f90 \
-./MATH/besjn_scaled.f90 ./MATH/phamp.f90 ./MATH/exjlnl.f90 \
-./SCREEN/fxc.f90 ./DYNSCREEN/calculate_chi01.f90 ./DYNSCREEN/calculate_chi02_old.f90 \
+./MATH/besjn.f90 ./MATH/phamp.f90 ./MATH/exjlnl.f90 \
+./SCREEN/fxc.f90 ./DYNSCREEN/calculate_chi01.f90 ./DYNSCREEN/calculate_chi02.f90 \
 ./DYNSCREEN/diag_lapack.f90 ./MATH/seigen.f90 ./FMS/fmspack.f90 \
 ./MATH/ylm.f90 ./FMS/gglu.f90 ./FMS/ggbi.f90 \
 ./FMS/ggrm.f90 ./FMS/gggm.f90 ./FMS/ggtf.f90 

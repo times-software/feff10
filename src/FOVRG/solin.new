@@ -9,6 +9,8 @@
 ! at the origin of the large(small)component
 ! kap quantum number kappa
 ! imax the last point of tabulation of the wave function
+      use dimsmod, only: nrptx, ltot
+	  use constants
 
       implicit double precision (a-h,o-z)
       include '../HEADERS/dim.h'

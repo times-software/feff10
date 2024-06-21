@@ -25,7 +25,7 @@ program  screenw2
   !     W, the result of calculation
   double precision vch(nrptx), wscrn(nrptx)
   integer i, ilast, ixc0, ios
-  integer,parameter :: nrx = 2501 !251 !2501 !1251 
+  integer,parameter :: nrx = 2502  !251 !2501 !1251 
 
   call par_begin
   !if (worker) go to 400
@@ -50,7 +50,8 @@ program  screenw2
   !=================================================================
   !     make radial grid
   !dx   = 0.05d0
-  dx = 0.05
+  !dx   = 0.03d0
+  !dx = 0.01d0
   dx   = 0.0075d0
   x0   = 8.8d0
   call setri(dx, x0, nrx, ri)
