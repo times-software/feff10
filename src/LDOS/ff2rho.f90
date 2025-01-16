@@ -48,6 +48,8 @@ subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmue
 
   !KJ allocate gtr dynamically ; for mt-potential, sum over m
   ! for full potential, save m-dependent information.
+  ! CC, forcing lm-projected dos to be written out
+  fullpot = .true.
   if(fullpot) then
      nlgtr=(lx+1)**2
      allocate(lmdos(nlgtr,nex))
@@ -170,6 +172,6 @@ subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmue
   deallocate(gtr,cchi)
 
   if(fullpot) deallocate(lmdos)
-
+  fullpot=.false.
   return
 end subroutine ff2rho

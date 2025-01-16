@@ -95,6 +95,8 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
 
   !KJ allocate gtr dynamically ; for mt-potential, sum over m
   ! for full potential, save m-dependent information.
+  ! CC, for printing out lm-projected dos
+  fullpot = .true.
   if(fullpot) then
      nlgtr=(lx+1)**2
   else
@@ -352,7 +354,7 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
   ! Deallocate local variables
   deallocate(gtr,gtrloc)
   deallocate(lcalc,gg,xphase,pstab,map,ck,etab,ptab)
-
+  fullpot = .false.
   return
 
 !1475 continue
