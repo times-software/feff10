@@ -8,8 +8,8 @@
       subroutine scmt (iscmt, ecv, nph, nat, vclap, edens, edenvl, vtot, vvalgs, rmt, rnrm,qnrm,      &
      &                ixc, rhoint, vint, xmu, jumprm, xnferm, xnvmu, xnval,      &
      &                x0, ri, dx, xnatph, xion, iunf, iz, adgc, adpc, dgc,dpc, ihole,      &
-     &                rat,iatph,iphat, lmaxsc, rhoval, xnmues, ok, rgrd, nohole, nscmt, icoul, ca1, rfms1, lfms1 & !)
-                      ,edos,scfdos)
+     &                rat,iatph,iphat, lmaxsc, rhoval, rhoval_l, xnmues, ok, rgrd, nohole, nscmt, icoul, ca1, rfms1, lfms1, & !)
+     &                edos,scfdos)
 
 !     Finds new Fermi level (xmu), electron counts (qnrm) and new valence densities (rhoval).
       use constants
@@ -33,15 +33,16 @@
 
 !     input and output
       dimension edens(251,0:nphx), edenvl(251,0:nphx)
-      dimension rhoval(251,0:nphx+1)
+      dimension rhoval(251,0:nphx+1), rhoval_l(251,0:lx)
 
 !     work space
       dimension dum(nrptx), vtotph(nrptx),vvalph(nrptx)
       dimension dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
       dimension adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
       dimension dgcn(nrptx,41), dpcn(nrptx,41)
-      complex*16 yrhoce(251,0:nphx), yrhocp(251,0:nphx)
-
+      complex*16 yrhoce(251,0:nphx), yrhocp(251,0:nphx), &
+     &            yrhoce_l(251,0:lx), yrhocp_l(251,0:lx)
+ 
       integer iph
 !     complex energy grid emg is decomposed into em and eref
       parameter (negx = 80)
@@ -88,6 +89,7 @@
 
 !     initialize new valence density
       rhoval(:,0:nphx) = 0.d0
+      rhoval_l(:,:) = 0.d0
 
 !     polarization average in scmt and ldos
       call grids (ecv, xmu, negx, neg, emg, step, nflrx)
@@ -96,9 +98,10 @@
       ie = 0
       ee = emg(1)
       ep = dble(ee)
-	  xrhoce(:,:)=dcmplx(0)
-	  xnmues(:,:)=0.d0
-	  yrhoce(:,:)=dcmplx(0)
+      xrhoce(:,:)=dcmplx(0)
+      xnmues(:,:)=0.d0
+      yrhoce(:,:)=dcmplx(0)
+      yrhoce_l(:,:)=dcmplx(0)
       iflr = nflrx
       iflrp = nflrx
 
@@ -107,7 +110,8 @@
       ie = ie + 1
 
       xrhocp(:,0:nph)=xrhoce(:,0:nph)
-	  yrhocp(:,0:nph)=yrhoce(:,0:nph)
+      yrhocp(:,0:nph)=yrhoce(:,0:nph)
+      yrhocp_l = yrhoce_l
 
       if (ie.eq.1 .or. mod(ie,20).eq.0) then
          write(slog,30) ie, dble(ee)*hart
@@ -145,7 +149,7 @@
          if (iph.eq.0 .and. nohole.lt.0) itmp = ihole
          call rholie( ri05, nr05(iph), rgrd, x0, ri, ee, ixc, rmt(iph), rnrm(iph),    &     ! vtotph,vvalph,(a)dg/pcn,xnval? => xrhole,xrhoce,yrhole,yrhoce,ph
                 vtotph, vvalph, xnval(1,iph), dgcn, dpcn, eref, adgc(1,1,iph), adpc(1,1,iph), xrhole(0,iph),           &
-                xrhoce(0,iph),yrhole(1,0,iph),yrhoce(1,iph),ph(1,iph), iz(iph), xion(iph), iunf, itmp,lmaxsc(iph), iph) !KJ iph
+                xrhoce(0,iph),yrhole(1,0,iph),yrhoce(1,iph),yrhoce_l,ph(1,iph), iz(iph), xion(iph), iunf, itmp,lmaxsc(iph), iph) !KJ iph
 		 !solves Dirac equation to obtain orbitals and phase shifts for FMS below
       enddo ! iph
 
@@ -174,7 +178,7 @@
 !       calculate density and integrated number of electrons in each
 !       channel for each type of atoms density, etc., find xntot. 
         call ff2g (gtr(0,iph), iph, ie, nr05(iph), xrhoce, xrhole(0,iph), xrhocp, ee, ep,                               &
-           yrhole(1,0,iph), yrhoce(1,iph), yrhocp(1,iph), rhoval(1,iph),&
+           yrhole(1,0,iph), yrhoce(1,iph), yrhoce_l, yrhocp(1,iph), yrhocp_l, rhoval(1,iph), rhoval_l,&
            xnmues(0,iph), xnatph(iph), xntot, iflr, iflrp, fl, fr, iunf)
 		   ! gtr, xrhoce etc. => rhoval, yrhoce, xrhoce, xntot, xnmues
            if (ie.le.negx) then

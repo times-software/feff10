@@ -583,6 +583,7 @@ endif
          ipol, ispinp, le2, angks,ptz, iph) !KJ iph
  !    write(*,*) 'Not broken down yet'
     else
+!     PMBSE 
       if (nonlocal.gt.0) then
 !   read potential with core-hole from a file
         if (nonlocal.eq.1) then

@@ -6,7 +6,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine ff2g (gtr, iph, ie, ilast, xrhoce, xrhole, xrhocp,     &
-     &             ee, ep, yrhole, yrhoce,  yrhocp, rhoval, xnmues,     &
+     &             ee, ep, yrhole, yrhoce,  yrhoce_l, yrhocp, yrhocp_l, rhoval, rhoval_l, xnmues,     &
      &             xnatph, xntot, iflr, iflrp, fl, fr, iunf)
 
       use constants
@@ -56,11 +56,11 @@
       complex, intent(in) :: gtr(0:lx)
 
       complex*16, intent(inout) :: xrhoce(0:lx,0:nphx), xrhocp(0:lx,0:nphx)
-      complex*16, intent(inout) :: yrhoce(251), yrhocp(251)
+      complex*16, intent(inout) :: yrhoce(251), yrhoce_l(251,0:lx), yrhocp(251), yrhocp_l(251,0:lx)
       real*8, intent(inout) :: xnmues(0:lx)
 
       complex*16 ee, ep, del, der, fl, fr
-      dimension rhoval(251)
+      dimension rhoval(251), rhoval_l(251,0:lx)
 
       do 730 il = 0,lx
         xrhoce(il, iph)=xrhoce(il, iph)+ gtr(il)*xrhole(il)
@@ -87,10 +87,27 @@
       do 840 ir = 1,ilast
        if (il.le.2 .or. iunf.ne.0) then
         yrhoce(ir) = yrhoce(ir) + gtr(il)*yrhole(ir,il)
-        if (ie.eq.1) yrhocp(ir) = yrhoce(ir)
+        if (ie.eq.1) then
+           yrhocp(ir) = yrhoce(ir)
+        endif
        endif
   840 continue
-
+      DO il = 0, lx
+         DO ir = 1, 251
+            if (il.le.2 .or. iunf.ne.0) then
+               IF(iph.eq.0) THEN
+                  yrhoce_l(ir,il) = yrhoce_l(ir,il) + gtr(il)*yrhole(ir,il)
+               END IF
+               if (ie.eq.1) then
+                  IF(iph.eq.0) yrhocp_l(ir,il) = yrhoce_l(ir,il)
+               endif
+               IF(iph.eq.0) THEN
+                  rhoval_l(ir,il) = rhoval_l(ir,il) + dimag(yrhoce_l(ir,il)*der + yrhocp_l(ir,il)*del)
+               END IF
+            end if
+         END DO
+      END DO
+         
       do 850 ir = 1, ilast
          rhoval(ir) = rhoval(ir) + dimag(yrhoce(ir)*der+yrhocp(ir)*del)
   850 continue

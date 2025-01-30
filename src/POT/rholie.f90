@@ -8,7 +8,7 @@
       subroutine rholie ( ri05, nr05, dx, x0, ri, em,                   &
      &                  ixc, rmt, rnrm,                                 &
      &                  vtot, vvalgs, xnval, dgcn, dpcn, eref,          &
-     &                  adgc, adpc, xrhole, xrhoce, yrhole, yrhoce, ph, &
+     &                  adgc, adpc, xrhole, xrhoce, yrhole, yrhoce, yrhoce_l, ph, &
      &                  iz, xion, iunf, ihole, lmaxsc, iph) !KJ iph
 
       use DimsMod, only: nrptx, lx
@@ -44,7 +44,8 @@
 !     output
       complex*16, intent(inout) :: xrhole(0:lx)
       complex*16, intent(inout) :: xrhoce(0:lx)
-      complex*16, intent(inout) :: yrhole(251,0:lx), yrhoce(251)
+      complex*16, intent(inout) :: yrhole(251,0:lx), yrhoce(251), &
+     &          yrhoce_l(251,0:lx)
       complex*16, intent(inout) :: ph(lx+1)
 
       dimension ri(nrptx), ri05(251)
@@ -93,9 +94,11 @@
       do 10 lll = 0, lx
       do 10 j = 1, 251
          yrhole(j,lll) = 0
+         IF(iph.eq.0) yrhoce_l(j,lll) = 0
   10  continue
       do 30 j = 1, 251
   30  yrhoce(j) = 0
+      
 
 !     p2 is 0.5*(complex momentum)**2 referenced to energy dep xc
 !     need hartree units for dfovrg
@@ -187,7 +190,7 @@
           xpc(i) = pr(i) * pr(i) + qr(i) * qr(i) 
  190    continue
           
-        do 191 ir=1,nr05
+        do 191 ir=1, nr05
            call terpc(ri, xpc, ilast, 3, ri05(ir), tempc)
            tempc = tempc * temp
            yrhole(ir,lll)= tempc
@@ -200,6 +203,17 @@
 !       print out xirf for Bruce
         xrhole(lll) = xirf*temp
 
+        ! JK - calculate rho_l out to last point for Slater-Condon parameters
+        IF(iph.eq.0) THEN
+           do i = 1, 251
+             xpc(i) = pn(i)*pr(i)-coni*pr(i)*pr(i)                         &
+     &           + qn(i)*qr(i)-coni*qr(i)*qr(i)
+           end do
+           do ir = 1, 251
+              call terpc(ri, xpc, 251, 3, ri05(ir), tempc)
+              yrhoce_l(ir,lll)= yrhoce_l(ir,lll) - temp*tempc
+           end do
+        END IF
 !     only central atom contribution needs irregular solution
         do 195  i = 1, ilast
           xpc(i) = pn(i)*pr(i)-coni*pr(i)*pr(i)                         &
@@ -210,6 +224,7 @@
            call terpc(ri, xpc, ilast, 3, ri05(ir), tempc)
            yrhoce(ir)=yrhoce(ir) - temp*tempc
  196    continue
+
 
         xirf =  1
         call csomm2 (ri, xpc, dx, xirf, rnrm, i0)

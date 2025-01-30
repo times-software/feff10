@@ -72,6 +72,8 @@
 !     since t is tri-diagonal, this product can be computed in n^2 time
 !     also fill up some work matrices for use in eigenvalue and
 !     determinant calculations and elsewhere
+! JK - Note that this is not really T and G0, with indices corresponding to atomic index.
+!      Instead, g0t contains 1 - chi0K(r,r'), so that the indices run over radial grids.
       istate = nx
       do 320 icol = 1,istate
         do 310 irow = 1,istate
@@ -124,6 +126,10 @@
         trans = 'NotTransposed'
         call cgetrs(trans, istate, ipart, g0t, istatx,                  &
      &                ipiv, g0s, istatx, info)
+
+        ! JK - g0s now contains [1-K*chi0]^{-1} r
+        ! or depending on matsize (which seems to always be 0), so the above.
+        ! JK - g0s now contains [1-K*chi0]^{-1} K phi_init*phi_final
         if (info.lt.0) then
             call wlog('    *** Error in cgetrf')
             write(cerr,400) abs(info)

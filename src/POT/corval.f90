@@ -65,7 +65,7 @@
     
       complex*16, dimension(:), allocatable :: xrhoce,xrhole, ph
       complex*16, dimension(:,:), allocatable :: yrhole
-      complex*16 yrhoce(251)
+      complex*16 yrhoce(251), yrhoce_l(251,0:lx)
 
 
 !!     dimension 32 = (0:lx)*(0:nphx)
@@ -177,7 +177,7 @@
   200    ie=ie + 1
             emg = elow + de*(ie-1) + eimag
             call rholie( ri05, nr05, rgrd, x0, ri, emg,ixc, rmt(iph), rnrm(iph), vtotph, vvalph, xnval(1,iph), dgcn, dpcn, eref,        &
-                 adgc(1,1,iph), adpc(1,1,iph), xrhole, xrhoce, yrhole, yrhoce, ph, iz(iph), xion(iph), iunf, itmp,lmaxsc(iph), iph) !KJ iph
+                 adgc(1,1,iph), adpc(1,1,iph), xrhole, xrhoce, yrhole, yrhoce, yrhoce_l, ph, iz(iph), xion(iph), iunf, itmp,lmaxsc(iph), iph) !KJ iph
 
 !           find the suspicious peaks on ldos and correct the energy
             nfound = 0

@@ -84,7 +84,7 @@
       real*8 vvxcrm(nrptx), vvxcim(nrptx)
 
 !     work space for fovrg
-      complex*16 p(nrptx), q(nrptx), pn(nrptx), qn(nrptx), fscf(nrptx)
+      complex*16 p(nrptx), q(nrptx), pn(nrptx), qn(nrptx), fscf(nrptx), pnrm(nrptx), qnrm(nrptx)
       complex*16 pp(nrptx), qp(nrptx), pnp(nrptx), qnp(nrptx)
 !     storage for calculation of cross term (SPIN 1 only)
       complex*16 xrcold(nrptx) , xncold(nrptx), yvec(nrptx,1)
@@ -587,7 +587,7 @@ endif
                   pat(i) = pat(i) / xinorm
                   qat(i) = qat(i) / xinorm
                enddo
-  
+
               !calculate overlap integral between f and atomic function (integral Rl(r)*Psi_at(r)dr from 0 till r').
               !intr(i) is that overlap integral. Later it will be multiplied by pr(i)*Psi_at(r') and integrated till Norman radius.
                do i=1,ilast
