@@ -1,0 +1,24 @@
+mphase,ipr2,ixc,ixc0,ispec,lreal,lfms2,nph,l2lp,iPlsmn,NPoles,iGammaCH,iGrid,iCoreState,iscfxc
+   0   0   0   2   1   0   0   2   0   0 100   0   0  -1  11
+vr0, vi0
+      0.00000      0.00000
+ lmaxph(0:nph)
+   3   3   2
+ potlbl(iph)
+Ce    Ce    O     
+rgrd, rfms2, gamach, xkstep, xkmax, vixan, Eps0, EGap
+      0.05000      3.07756      3.26955      0.07000      4.00000      0.00000      0.00000      0.00000
+spinph(0:nph)
+      0.00000      0.00000      0.00000
+izstd, ifxc, ipmbse, itdlda, nonlocal, ibasis
+   0   0   0   0   0   0
+electronic temperature
+      0.00000
+ChSh_Type:
+   0
+ the number of decomposition channels ; only used for nrixs
+   -1
+lopt
+ F
+PrintRL
+ F

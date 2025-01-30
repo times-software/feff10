@@ -1,0 +1,9 @@
+Launching FEFF version FEFF 10.0.0
+ RGRID, rgrd;   1.00000E-02
+Core hole lifetime is   0.596 eV.
+Your calculation:
+ Once upon a time ...
+Cu L3 edge XANES using no corehole.
+Using:     * Self-Consistent Field potentials   * SCF-converged f-states   * Custom electron configuration   * Finite Temperature Fermi Distribution
+Using cards:   ATOMS CONTROL EXCHANGE PRINT POTENTIALS XANES CORRECTIONS RGRID EDGE SCF FMS UNFREEZEF ABSOLUTE COREHOLE EGRID CONFIGURATION TEMP
+

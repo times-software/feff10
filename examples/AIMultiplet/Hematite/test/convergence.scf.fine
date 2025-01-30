@@ -1,0 +1,273 @@
+ SCF ITERATION NUMBER  1
+   Electronic configuration
+   type     l     N_el
+      0     0    0.444
+      0     1    0.716
+      0     2    6.266
+      1     0    0.444
+      1     1    0.716
+      1     2    6.266
+      2     0    1.852
+      2     1    4.533
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.113
+        1    0.113
+        2   -0.076
+   0      -0.989          0.000         0.0000     0
+   1     -10.999         0.1129         6.2659     0
+ SCF ITERATION NUMBER  2
+   Electronic configuration
+   type     l     N_el
+      0     0    0.473
+      0     1    0.744
+      0     2    6.849
+      1     0    0.473
+      1     1    0.744
+      1     2    6.849
+      2     0    1.834
+      2     1    4.122
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0   -0.010
+        1   -0.010
+        2    0.007
+   2     -11.969         0.1228         0.5826     0
+ SCF ITERATION NUMBER  3
+   Electronic configuration
+   type     l     N_el
+      0     0    0.437
+      0     1    0.709
+      0     2    6.013
+      1     0    0.437
+      1     1    0.709
+      1     2    6.013
+      2     0    1.862
+      2     1    4.702
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.137
+        1    0.137
+        2   -0.092
+   3      -9.983         0.1474         0.8357     0
+ SCF ITERATION NUMBER  4
+   Electronic configuration
+   type     l     N_el
+      0     0    0.474
+      0     1    0.747
+      0     2    6.708
+      1     0    0.474
+      1     1    0.747
+      1     2    6.710
+      2     0    1.836
+      2     1    4.211
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.126
+        1    0.125
+        2   -0.084
+   4     -11.358         0.0121         0.6969     0
+ SCF ITERATION NUMBER  5
+   Electronic configuration
+   type     l     N_el
+      0     0    0.470
+      0     1    0.743
+      0     2    6.673
+      1     0    0.470
+      1     1    0.743
+      1     2    6.666
+      2     0    1.837
+      2     1    4.244
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.123
+        1    0.125
+        2   -0.083
+   5     -11.344         0.0022         0.0435     0
+ SCF ITERATION NUMBER  6
+   Electronic configuration
+   type     l     N_el
+      0     0    0.469
+      0     1    0.741
+      0     2    6.642
+      1     0    0.469
+      1     1    0.741
+      1     2    6.668
+      2     0    1.837
+      2     1    4.244
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.127
+        1    0.124
+        2   -0.083
+   6     -11.376         0.0034         0.0303     0
+ SCF ITERATION NUMBER  7
+   Electronic configuration
+   type     l     N_el
+      0     0    0.469
+      0     1    0.741
+      0     2    6.728
+      1     0    0.469
+      1     1    0.741
+      1     2    6.661
+      2     0    1.838
+      2     1    4.249
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.125
+        1    0.124
+        2   -0.083
+   7     -11.384         0.0018         0.0863     0
+ SCF ITERATION NUMBER  8
+   Electronic configuration
+   type     l     N_el
+      0     0    0.469
+      0     1    0.741
+      0     2    6.689
+      1     0    0.469
+      1     1    0.740
+      1     2    6.664
+      2     0    1.837
+      2     1    4.247
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.124
+        1    0.124
+        2   -0.083
+   8     -11.398         0.0010         0.0391     0
+ SCF ITERATION NUMBER  9
+   Electronic configuration
+   type     l     N_el
+      0     0    0.468
+      0     1    0.740
+      0     2    6.665
+      1     0    0.468
+      1     1    0.740
+      1     2    6.666
+      2     0    1.837
+      2     1    4.247
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.124
+        1    0.124
+        2   -0.083
+   9     -11.409         0.0003         0.0240     0
+ SCF ITERATION NUMBER 10
+   Electronic configuration
+   type     l     N_el
+      0     0    0.468
+      0     1    0.740
+      0     2    6.662
+      1     0    0.468
+      1     1    0.740
+      1     2    6.667
+      2     0    1.837
+      2     1    4.246
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.125
+        1    0.125
+        2   -0.083
+  10     -11.412         0.0004         0.0039     0
+ SCF ITERATION NUMBER 11
+   Electronic configuration
+   type     l     N_el
+      0     0    0.468
+      0     1    0.740
+      0     2    6.665
+      1     0    0.468
+      1     1    0.740
+      1     2    6.666
+      2     0    1.837
+      2     1    4.247
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.125
+        1    0.125
+        2   -0.084
+  11     -11.411         0.0007         0.0039     0
+ SCF ITERATION NUMBER 12
+   Electronic configuration
+   type     l     N_el
+      0     0    0.468
+      0     1    0.740
+      0     2    6.666
+      1     0    0.468
+      1     1    0.740
+      1     2    6.666
+      2     0    1.837
+      2     1    4.247
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.126
+        1    0.126
+        2   -0.084
+  12     -11.413         0.0004         0.0003     0
+ SCF ITERATION NUMBER 13
+   Electronic configuration
+   type     l     N_el
+      0     0    0.468
+      0     1    0.740
+      0     2    6.665
+      1     0    0.468
+      1     1    0.740
+      1     2    6.667
+      2     0    1.837
+      2     1    4.247
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.126
+        1    0.126
+        2   -0.084
+  13     -11.415         0.0001         0.0007     0
+ SCF ITERATION NUMBER 14
+   Electronic configuration
+   type     l     N_el
+      0     0    0.468
+      0     1    0.740
+      0     2    6.666
+      1     0    0.468
+      1     1    0.740
+      1     2    6.666
+      2     0    1.837
+      2     1    4.247
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.126
+        1    0.126
+        2   -0.084
+  14     -11.415         0.0000         0.0014     0
+ SCF ITERATION NUMBER 15
+   Electronic configuration
+   type     l     N_el
+      0     0    0.468
+      0     1    0.740
+      0     2    6.667
+      1     0    0.468
+      1     1    0.740
+      1     2    6.666
+      2     0    1.837
+      2     1    4.247
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.126
+        1    0.126
+        2   -0.084
+  15     -11.414         0.0000         0.0002     0
+ SCF ITERATION NUMBER 16
+   Electronic configuration
+   type     l     N_el
+      0     0    0.468
+      0     1    0.740
+      0     2    6.666
+      1     0    0.468
+      1     1    0.740
+      1     2    6.666
+      2     0    1.837
+      2     1    4.247
+      2     2    0.000
+  Charge transfer:  type  charge 
+        0    0.126
+        1    0.126
+        2   -0.084
+  16     -11.414         0.0000         0.0001     1

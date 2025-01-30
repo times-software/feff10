@@ -1,0 +1,9 @@
+Launching FEFF version FEFF 10.0.0
+Core hole lifetime is   1.400 eV.
+WARNING  You are using RPATH and FMS.  This is syntactically permitted, but it's almost always a bad idea.
+Your calculation:
+ Once upon a time ...
+Ni L2 edge EXAFS using no corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS EXAFS EDGE SCF FMS S02 COREHOLE
+

@@ -1,0 +1,14 @@
+ m_run
+           0
+ gam_ch, gam_exp(1), gam_exp(2)
+        0.0001350512        0.0001350512        0.0001350512
+ EMinI, EMaxI, EMinF, EMaxF
+        0.0000000000        0.0000000000        0.0000000000        0.0000000000
+ xmu
+  -367493090.02742821     
+ Readpoles, SkipCalc, MBConv, ReadSigma
+ T F F F
+ nEdges
+           1
+ Edge           1
+ L3

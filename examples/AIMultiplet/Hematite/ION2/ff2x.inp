@@ -1,0 +1,12 @@
+mchi, ispec, idwopt, ipr6, mbconv, absolu, iGammaCH
+   0   0  -1   3   0   0   0
+vrcorr, vicorr, s02, critcw
+      0.00000      0.00000      1.00000      4.00000
+tk, thetad, alphat, thetae, sig2g, sig_gk
+      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+momentum transfer
+      0.00000      0.00000      0.00000
+ the number of decomposi
+   -1
+electronic temperature
+      0.00000

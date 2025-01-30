@@ -1,0 +1,60 @@
+ Calculating LDOS ...
+FEFF-serial using 1 thread.
+Using   300 energy points
+FMS for a cluster of  57 atoms around atom type  0
+Energy point    1/ 300
+Energy point   10/ 300
+Energy point   30/ 300
+Energy point   50/ 300
+Energy point   70/ 300
+Energy point   90/ 300
+Energy point  110/ 300
+Energy point  130/ 300
+Energy point  150/ 300
+Energy point  170/ 300
+Energy point  190/ 300
+Energy point  210/ 300
+Energy point  230/ 300
+Energy point  250/ 300
+Energy point  270/ 300
+Energy point  290/ 300
+FMS for a cluster of  57 atoms around atom type  1
+Energy point    1/ 300
+Energy point   10/ 300
+Energy point   30/ 300
+Energy point   50/ 300
+Energy point   70/ 300
+Energy point   90/ 300
+Energy point  110/ 300
+Energy point  130/ 300
+Energy point  150/ 300
+Energy point  170/ 300
+Energy point  190/ 300
+Energy point  210/ 300
+Energy point  230/ 300
+Energy point  250/ 300
+Energy point  270/ 300
+Energy point  290/ 300
+FMS for a cluster of  57 atoms around atom type  2
+Energy point    1/ 300
+Energy point   10/ 300
+Energy point   30/ 300
+Energy point   50/ 300
+Energy point   70/ 300
+Energy point   90/ 300
+Energy point  110/ 300
+Energy point  130/ 300
+Energy point  150/ 300
+Energy point  170/ 300
+Energy point  190/ 300
+Energy point  210/ 300
+Energy point  230/ 300
+Energy point  250/ 300
+Energy point  270/ 300
+Energy point  290/ 300
+Writing DOS for atom type     0
+Writing DOS for atom type     1
+Writing DOS for atom type     2
+ Done with LDOS.
+Done with module: LDOS.
+

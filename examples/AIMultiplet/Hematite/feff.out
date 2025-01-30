@@ -1,0 +1,673 @@
+Launching FEFF version FEFF 10.0.0
+Core hole lifetime is   0.896 eV.
+WARNING  You are using RPATH and FMS.  This is syntactically permitted, but it's almost always a bad idea.
+Your calculation:
+ Once upon a time ...
+Fe L2 edge EXAFS using no corehole.
+Using:     * Self-Consistent Field potentials   * Custom electron configuration
+Using cards:   ATOMS CONTROL EXCHANGE ION RPATH PRINT POTENTIALS EXAFS EDGE SCF FMS S02 COREHOLE CONFIGURATION
+
+Calculating atomic potentials ...
+Electron configuration set by user.
+    overlapped atomic potential and density for unique potential    0
+    overlapped atomic potential and density for unique potential    1
+    overlapped atomic potential and density for unique potential    2
+    overlapped atomic potential and density for unique potential    0
+    overlapped atomic potential and density for unique potential    1
+    overlapped atomic potential and density for unique potential    2
+Done with module: atomic potentials.
+
+Calculating SCF potentials ...
+FEFF-serial using 1 thread.
+Muffin tin radii and interstitial parameters [bohr]:
+type, norman radius, muffin tin, overlap factor
+    0  1.42669E+00  1.31279E+00  1.15000E+00
+    1  1.38321E+00  1.29344E+00  1.15000E+00
+    2  1.07545E+00  9.97558E-01  1.15000E+00
+Electron configuration set by user.
+ After corval
+Core-valence separation energy:  ecv=   -42.500 eV
+Initial Fermi level:              mu=    -5.673 eV
+ Zero temperature single thread
+SCF ITERATION NUMBER  1
+     point #   1  energy = -42.500
+FMS for a cluster of   51 atoms around atom type   0
+FMS for a cluster of   51 atoms around atom type   1
+FMS for a cluster of   51 atoms around atom type   2
+     point #  20  energy = -31.279
+     point #  40  energy = -15.182
+     point #  60  energy = -15.510
+New Fermi level:    mu= -15.761 eV  Charge distance=  1.7086 (partial c.d.= 10.4601)
+ Zero temperature single thread
+SCF ITERATION NUMBER  2
+     point #   1  energy = -42.500
+     point #  20  energy = -31.187
+     point #  40  energy = -15.761
+     point #  60  energy = -16.042
+     point #  80  energy = -17.161
+New Fermi level:    mu= -17.168 eV  Charge distance=  0.6141 (partial c.d.=  9.1333)
+ Zero temperature single thread
+SCF ITERATION NUMBER  3
+     point #   1  energy = -42.500
+     point #  20  energy = -31.354
+     point #  40  energy = -17.168
+New Fermi level:    mu= -17.120 eV  Charge distance=  0.1340 (partial c.d.=  8.0857)
+ Zero temperature single thread
+SCF ITERATION NUMBER  4
+     point #   1  energy = -42.500
+     point #  20  energy = -31.333
+     point #  40  energy = -17.120
+New Fermi level:    mu= -17.014 eV  Charge distance=  0.0770 (partial c.d.=  1.6427)
+ Zero temperature single thread
+SCF ITERATION NUMBER  5
+     point #   1  energy = -42.500
+     point #  20  energy = -31.286
+     point #  40  energy = -17.014
+     point #  60  energy = -16.777
+New Fermi level:    mu= -16.702 eV  Charge distance=  0.2156 (partial c.d.=  1.3238)
+ Zero temperature single thread
+SCF ITERATION NUMBER  6
+     point #   1  energy = -42.500
+     point #  20  energy = -31.149
+     point #  40  energy = -16.702
+     point #  60  energy = -16.880
+New Fermi level:    mu= -16.930 eV  Charge distance=  0.0295 (partial c.d.=  3.0015)
+ Zero temperature single thread
+SCF ITERATION NUMBER  7
+     point #   1  energy = -42.500
+     point #  20  energy = -31.249
+     point #  40  energy = -16.930
+New Fermi level:    mu= -16.991 eV  Charge distance=  0.0089 (partial c.d.=  0.8323)
+ Zero temperature single thread
+SCF ITERATION NUMBER  8
+     point #   1  energy = -42.500
+     point #  20  energy = -31.276
+     point #  40  energy = -16.991
+New Fermi level:    mu= -16.942 eV  Charge distance=  0.0042 (partial c.d.=  0.1151)
+ Zero temperature single thread
+SCF ITERATION NUMBER  9
+     point #   1  energy = -42.500
+     point #  20  energy = -31.255
+     point #  40  energy = -16.942
+New Fermi level:    mu= -16.944 eV  Charge distance=  0.0055 (partial c.d.=  0.0326)
+ Zero temperature single thread
+SCF ITERATION NUMBER 10
+     point #   1  energy = -42.500
+     point #  20  energy = -31.255
+     point #  40  energy = -16.944
+New Fermi level:    mu= -16.942 eV  Charge distance=  0.0092 (partial c.d.=  0.0080)
+ Zero temperature single thread
+SCF ITERATION NUMBER 11
+     point #   1  energy = -42.500
+     point #  20  energy = -31.255
+     point #  40  energy = -16.942
+New Fermi level:    mu= -16.937 eV  Charge distance=  0.0061 (partial c.d.=  0.0059)
+ Zero temperature single thread
+SCF ITERATION NUMBER 12
+     point #   1  energy = -42.500
+     point #  20  energy = -31.252
+     point #  40  energy = -16.937
+New Fermi level:    mu= -16.934 eV  Charge distance=  0.0004 (partial c.d.=  0.0011)
+ Zero temperature single thread
+SCF ITERATION NUMBER 13
+     point #   1  energy = -42.500
+     point #  20  energy = -31.251
+     point #  40  energy = -16.934
+New Fermi level:    mu= -16.935 eV  Charge distance=  0.0001 (partial c.d.=  0.0005)
+ Zero temperature single thread
+SCF ITERATION NUMBER 14
+     point #   1  energy = -42.500
+     point #  20  energy = -31.251
+     point #  40  energy = -16.935
+New Fermi level:    mu= -16.935 eV  Charge distance=  0.0001 (partial c.d.=  0.0005)
+ Zero temperature single thread
+SCF ITERATION NUMBER 15
+     point #   1  energy = -42.500
+     point #  20  energy = -31.252
+     point #  40  energy = -16.935
+New Fermi level:    mu= -16.936 eV  Charge distance=  0.0000 (partial c.d.=  0.0007)
+ Zero temperature single thread
+SCF ITERATION NUMBER 16
+     point #   1  energy = -42.500
+     point #  20  energy = -31.252
+     point #  40  energy = -16.936
+New Fermi level:    mu= -16.936 eV  Charge distance=  0.0000 (partial c.d.=  0.0002)
+Electronic configuration
+  type     l     N_el
+     0     0    0.587
+     0     1    0.934
+     0     2    7.004
+     1     0    0.462
+     1     1    0.717
+     1     2    6.558
+     2     0    1.819
+     2     1    4.351
+     2     2    0.000
+Charge transfer:  type  charge
+       0    1.525
+       1   -0.263
+       2    0.170
+Convergence reached in   16 iterations.
+ Integrals for:
+           1 s1/2
+           1 s1/2
+ k, Fk
+           0   438.67003614136905     
+ Integrals for:
+           2 s1/2
+           1 s1/2
+ k, Fk
+           0   130.94490136640275     
+ k, Gk
+           0   33.736864424351303     
+ Integrals for:
+           2 s1/2
+           2 s1/2
+ k, Fk
+           0   92.932186508272338     
+ Integrals for:
+           2 p1/2
+           1 s1/2
+ k, Fk
+           0   146.81032353981033     
+ k, Gk
+           1   25.397061033433193     
+ Integrals for:
+           2 p1/2
+           2 s1/2
+ k, Fk
+           0   98.320401150623127     
+ k, Gk
+           1   59.237362081715865     
+ Integrals for:
+           2 p1/2
+           2 p1/2
+ k, Fk
+           0   106.68573756723265     
+ Integrals for:
+           2 p3/2
+           1 s1/2
+ k, Fk
+           0   144.85398603690956     
+ k, Gk
+           1   23.995575987931559     
+ Integrals for:
+           2 p3/2
+           2 s1/2
+ k, Fk
+           0   97.897971577690313     
+ k, Gk
+           1   59.387830258335768     
+ Integrals for:
+           2 p3/2
+           2 p1/2
+ k, Fk
+           0   106.10503282656967     
+ k, Gk
+           2   50.024550584848633     
+ Integrals for:
+           2 p3/2
+           2 p3/2
+ k, Fk
+           0   105.53698777303612     
+           2   49.877246875699996     
+ Integrals for:
+           3 s1/2
+           1 s1/2
+ k, Fk
+           0   44.671373286048187     
+ k, Gk
+           0   4.5501401833168842     
+ Integrals for:
+           3 s1/2
+           2 s1/2
+ k, Fk
+           0   39.953934430543583     
+ k, Gk
+           0   10.651726429131704     
+ Integrals for:
+           3 s1/2
+           2 p1/2
+ k, Fk
+           0   40.553914451392004     
+ k, Gk
+           1   6.2261002435404480     
+ Integrals for:
+           3 s1/2
+           2 p3/2
+ k, Fk
+           0   40.506105584784684     
+ k, Gk
+           1   6.2468339999602698     
+ Integrals for:
+           3 s1/2
+           3 s1/2
+ k, Fk
+           0   30.517042128160206     
+ Integrals for:
+           3 p1/2
+           1 s1/2
+ k, Fk
+           0   43.916375796157126     
+ k, Gk
+           1   2.9928019907556918     
+ Integrals for:
+           3 p1/2
+           2 s1/2
+ k, Fk
+           0   38.926916929879184     
+ k, Gk
+           1   5.1073850473515492     
+ Integrals for:
+           3 p1/2
+           2 p1/2
+ k, Fk
+           0   39.700222647446317     
+ k, Gk
+           0   10.448671887437216     
+ Integrals for:
+           3 p1/2
+           2 p3/2
+ k, Fk
+           0   39.645742444940851     
+ k, Gk
+           2   4.1933038620580678     
+ Integrals for:
+           3 p1/2
+           3 s1/2
+ k, Fk
+           0   29.854074652379648     
+ k, Gk
+           1   19.941556530033534     
+ Integrals for:
+           3 p1/2
+           3 p1/2
+ k, Fk
+           0   29.246218201733338     
+ Integrals for:
+           3 p3/2
+           1 s1/2
+ k, Fk
+           0   43.120320411972457     
+ k, Gk
+           1   2.7560298907227092     
+ Integrals for:
+           3 p3/2
+           2 s1/2
+ k, Fk
+           0   38.417060446597688     
+ k, Gk
+           1   4.9476696347863030     
+ Integrals for:
+           3 p3/2
+           2 p1/2
+ k, Fk
+           0   39.157876981859282     
+ k, Gk
+           2   4.0654880127227369     
+ Integrals for:
+           3 p3/2
+           2 p3/2
+ k, Fk
+           0   39.105954299167898     
+           2   7.6594562422056161     
+ k, Gk
+           0   10.055855566483160     
+           2   4.0603706516376681     
+ Integrals for:
+           3 p3/2
+           3 s1/2
+ k, Fk
+           0   29.646351155308455     
+ k, Gk
+           1   19.812721176891809     
+ Integrals for:
+           3 p3/2
+           3 p1/2
+ k, Fk
+           0   29.047453071409045     
+ k, Gk
+           2   14.637661601202657     
+ Integrals for:
+           3 p3/2
+           3 p3/2
+ k, Fk
+           0   28.853227822065811     
+           2   14.557603218146465     
+ Integrals for:
+           3 d3/2
+           1 s1/2
+ k, Fk
+           0   35.324744249329243     
+ k, Gk
+           2   5.2936940353801969E-002
+ Integrals for:
+           3 d3/2
+           2 s1/2
+ k, Fk
+           0   34.704108088330393     
+ k, Gk
+           2   4.3405210921476982     
+ Integrals for:
+           3 d3/2
+           2 p1/2
+ k, Fk
+           0   34.857126003690155     
+ k, Gk
+           1   4.7084799836512454     
+ Integrals for:
+           3 d3/2
+           2 p3/2
+ k, Fk
+           0   34.845617855790643     
+           2   6.5946020382723480     
+ k, Gk
+           1   4.7948807551267372     
+           3   2.7281993346724200     
+ Integrals for:
+           3 d3/2
+           3 s1/2
+ k, Fk
+           0   27.421141615755477     
+ k, Gk
+           2   12.618357211091762     
+ Integrals for:
+           3 d3/2
+           3 p1/2
+ k, Fk
+           0   26.887510389879701     
+ k, Gk
+           1   16.705606915288822     
+ Integrals for:
+           3 d3/2
+           3 p3/2
+ k, Fk
+           0   26.722135964869761     
+           2   12.827442205370335     
+ k, Gk
+           1   16.641230084275964     
+           3   9.7951520209572180     
+ Integrals for:
+           3 d3/2
+           3 d3/2
+ k, Fk
+           0   24.996155324661334     
+           2   11.783158300192069     
+ Integrals for:
+           3 d5/2
+           1 s1/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   30.829380021744576     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   3.9303382941220100E-002
+ Integrals for:
+           3 d5/2
+           2 s1/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   30.351093857174742     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   3.3290411818605392     
+ Integrals for:
+           3 d5/2
+           2 p1/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   30.468666286357877     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           3   2.0512888561498293     
+ Integrals for:
+           3 d5/2
+           2 p3/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   30.459820308193542     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   5.1621753234652656     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           1   3.6761081435181615     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           3   2.0919401889907734     
+ Integrals for:
+           3 d5/2
+           3 s1/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   24.743577112097711     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   10.307420086237268     
+ Integrals for:
+           3 d5/2
+           3 p1/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   24.320717961078063     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           3   8.0986583018893334     
+ Integrals for:
+           3 d5/2
+           3 p3/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   24.191144014016494     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   10.941067349992506     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           1   13.914790148208562     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           3   8.0879512841764818     
+ Integrals for:
+           3 d5/2
+           3 d3/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   22.770751040588838     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   10.255940029388196     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   10.138837828936456     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           4   6.2986718723584909     
+ Integrals for:
+           3 d5/2
+           3 d5/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   20.985042091330541     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   9.2661651844880666     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           4   5.6961914231216966     
+ Integrals for:
+           4 s1/2
+           1 s1/2
+ k, Fk
+           0   9.2560974969481027     
+ k, Gk
+           0  0.35876750552317371     
+ Integrals for:
+           4 s1/2
+           2 s1/2
+ k, Fk
+           0   8.8865461123506932     
+ k, Gk
+           0  0.80399768688496520     
+ Integrals for:
+           4 s1/2
+           2 p1/2
+ k, Fk
+           0   8.9331003177978410     
+ k, Gk
+           1  0.47339392227421484     
+ Integrals for:
+           4 s1/2
+           2 p3/2
+ k, Fk
+           0   8.9293767177226755     
+ k, Gk
+           1  0.47490620925390736     
+ Integrals for:
+           4 s1/2
+           3 s1/2
+ k, Fk
+           0   8.2224114898617078     
+ k, Gk
+           0   2.1279653996869512     
+ Integrals for:
+           4 s1/2
+           3 p1/2
+ k, Fk
+           0   8.1802812555010291     
+ k, Gk
+           1   1.4516115783450030     
+ Integrals for:
+           4 s1/2
+           3 p3/2
+ k, Fk
+           0   8.1667238507761546     
+ k, Gk
+           1   1.4773970131086021     
+ Integrals for:
+           4 s1/2
+           3 d3/2
+ k, Fk
+           0   7.9408691574246264     
+ k, Gk
+           2   1.5228046345223327     
+ Integrals for:
+           4 s1/2
+           3 d5/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   7.7539037595598854     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           2   2.2330366213195245     
+ Integrals for:
+           4 s1/2
+           4 s1/2
+ k, Fk
+           0   3.6738385493317103     
+ Integrals for:
+           4 p1/2
+           1 s1/2
+ k, Fk
+           0   5.6504683883272193     
+ k, Gk
+           1  0.16383291274747755     
+ Integrals for:
+           4 p1/2
+           2 s1/2
+ k, Fk
+           0   5.3799338404892971     
+ k, Gk
+           1  0.27245007893090634     
+ Integrals for:
+           4 p1/2
+           2 p1/2
+ k, Fk
+           0   5.4215033209044492     
+ k, Gk
+           0  0.55344373831160121     
+ Integrals for:
+           4 p1/2
+           2 p3/2
+ k, Fk
+           0   5.4185641758702872     
+ k, Gk
+           2  0.22369406243799222     
+ Integrals for:
+           4 p1/2
+           3 s1/2
+ k, Fk
+           0   4.9283367647143441     
+ k, Gk
+           1  0.77233055860764810     
+ Integrals for:
+           4 p1/2
+           3 p1/2
+ k, Fk
+           0   4.9025765554586878     
+ k, Gk
+           0   1.4292397329349393     
+ Integrals for:
+           4 p1/2
+           3 p3/2
+ k, Fk
+           0   4.8936247566519624     
+ k, Gk
+           2  0.61331585719330894     
+ Integrals for:
+           4 p1/2
+           3 d3/2
+ k, Fk
+           0   4.7569366163782112     
+ k, Gk
+           1   1.1775968306980760     
+ Integrals for:
+           4 p1/2
+           3 d5/2
+ k, Fk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           0   4.6518126724518662     
+ k, Gk
+ total charge:   6.8237499804718924     
+ total charge:   6.8237499804718924     
+           3   1.0129107640006219     
+ Integrals for:
+           4 p1/2
+           4 s1/2
+ k, Fk
+           0   2.2223243049768979     
+ k, Gk
+           1   1.6471633503336314     
+ Integrals for:
+           4 p1/2
+           4 p1/2
+ k, Fk
+           0   1.3477753074854026     
+Done with module: potentials.
+

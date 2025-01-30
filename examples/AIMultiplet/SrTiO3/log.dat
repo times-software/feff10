@@ -1,0 +1,8 @@
+Launching FEFF version FEFF 10.0.0
+Core hole lifetime is   0.240 eV.
+Your calculation:
+ Once upon a time ...
+Ti L3 edge EXAFS using FSR corehole.
+Using:     * Self-Consistent Field potentials
+Using cards:   ATOMS CONTROL EXCHANGE RPATH PRINT POTENTIALS EXAFS EDGE SCF S02 COREHOLE
+

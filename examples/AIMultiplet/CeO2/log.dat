@@ -1,0 +1,8 @@
+Launching FEFF version FEFF 10.0.0
+Core hole lifetime is   3.270 eV.
+Your calculation:
+ Once upon a time ...
+Ce L3 edge XANES using no corehole.
+Using:     * Self-Consistent Field potentials   * SCF-converged f-states
+Using cards:   ATOMS CONTROL EXCHANGE PRINT POTENTIALS XANES EDGE SCF FMS LDOS S02 UNFREEZEF COREHOLE
+

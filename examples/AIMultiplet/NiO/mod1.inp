@@ -1,0 +1,14 @@
+mpot, nph, ntitle, ihole, ipr1, iafolp, ixc,ispec
+   1   2   1   4   5   0   0   0
+nmix, nohole, jumprm, inters, nscmt, icoul, lfms1, iunf
+   1  -1   0   0   0   0   0   0
+Null title                                                                      
+gamach, rgrd, ca1, ecv, totvol, rfms1
+      0.55000      0.05000      0.00000    -40.00000      0.00000     -1.00000
+ iz, lmaxsc, xnatph, xion, folp
+   28    2      1.00000      0.30000      1.15000
+   28    2    100.00000      0.20000      1.15000
+    8    2    100.00000     -0.20000      1.15000
+OVERLAP option: novr(iph)
+   0   0   0
+ iphovr  nnovr rovr 

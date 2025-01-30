@@ -1,0 +1,8 @@
+mldos, lfms2, ixc, ispin, minv, neldos, iscfxc
+   1   0   0   0   0     300   11
+rfms2, emin, emax, eimag, rgrd
+      3.07756   -200.00000      0.00000      0.10000      0.05000
+rdirec, toler1, toler2
+      6.15512      0.00100      0.00100
+ lmaxph(0:nph)
+   3   3   2

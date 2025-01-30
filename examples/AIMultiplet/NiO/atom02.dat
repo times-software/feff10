@@ -1,0 +1,20 @@
+  free atom            2
+     number of iterations  40
+
+     precision of the energies 5.00E-06
+
+                       wave functions   1.00E-05
+
+ the integration is made on 251 points-the first is equal to  0.0002
+ and the step-size pas =  0.0500
+
+matching of w.f. with precision 1.00E-07 in  50 attempts 
+
+ number of electrons nel and average values of r**n in a.u.
+     nel     -E      n= 6         4         2         1        -1        -2        -3
+1s  2.000        5.632587E+02        2.007545E-03        7.341646E-03        5.304175E-02        1.983700E-01        7.654781E+00        1.189751E+02
+2s  2.000        3.409447E+01        2.684866E+01        4.899381E+00        1.574115E+00        1.139395E+00        1.268925E+00        6.650510E+00
+2p* 2.000        1.638965E+01        1.017206E+02        1.025272E+01        2.026865E+00        1.245667E+00        1.104164E+00        1.805560E+00
+2p  2.000        1.704048E+01        9.256906E+01        9.699035E+00        1.981931E+00        1.233824E+00        1.110611E+00        1.818420E+00        4.977673E+00
+          overlap integrals
+      1s   2s     -0.0000001
