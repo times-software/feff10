@@ -51,12 +51,16 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm)
         kmi = 2*min(ki,kj)
         k = 0
         !PRINT*, 'k, Fk'
-        frmt = '(I1,X,A1,A3,X,I1,A1,A3,X,A1,I1,X,3F10.5)'
+        frmt = '(I1,A1,A3,X,I1,A1,A3,X,A1,I1,X,3F10.5)'
         DO WHILE (k.LE.kmi) 
            Fk = fkgk_int(i,i,j,j,k,dgc,dpc,rhoval_l,dr,ilast,alpha)
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
            Fk0 = fkgk_int(i,i,j,j,k,dgc,dpc,rho0,dr,ilast,alpha)
-           WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'F', k, Fk*hart, Fk0*hart, alpha
+           IF(Fk0.GT.0.d0) THEN
+              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
+           ELSE
+              RETURN
+           END IF
            !PRINT*, nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2)
            !PRINT*, nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2)
            !PRINT*, k, Fk*hart

@@ -72,7 +72,7 @@ subroutine pot !KJ put everything in modules 7-09
   !     additional data needed for relativistic version
   real*8 dgc(251,41,0:nphx+1), dpc(251,41,0:nphx+1)
   real*8 adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
-  real*8 rhoval(251,0:nphx+1), edenvl(251,0:nphx)
+  real*8 rhoval(251,0:nphx+1), rhoval_l(251,0:lx), edenvl(251,0:nphx)
   real*8 vvalgs (251,0:nphx)
 
   real*8 ri(nrptx)
@@ -291,6 +291,7 @@ subroutine pot !KJ put everything in modules 7-09
       endif
     endif
   endif
+  PRINT*, 'After corval'
 
   !      CALL WriteExternalPot(vtot, vint, edens, rhoint, rat(:,1:nat), xmu, imt, rmt)
   IF(ExternalPot) THEN
@@ -404,13 +405,13 @@ subroutine pot !KJ put everything in modules 7-09
         call scmt(iscmt, ecv, nph, nat, vclap, edens, edenvl, vtot, vvalgs, rmt, rnrm, qnrm,   &
         &                  ixc, rhoint, vint, xmunew, jumprm, xntot, xnvmu, xnval,        &
         &                  x0, ri, dx, xnatph, xion, iunf, iz, adgc, adpc, dgc,dpc, ihole,        &
-        &                  rat, iatph, iphat, lmaxsc, rhoval, xnmues, ok, rgrd, nohole, nscmt, icoul, ca1, rfms1, lfms1 & !)
-        ,edos,scfdos)
+        &                  rat, iatph, iphat, lmaxsc, rhoval, rhoval_l, xnmues, ok, rgrd, nohole, nscmt, icoul, ca1, rfms1, lfms1, & !)
+        &                  edos,scfdos)
       else
         call scmtmp (npr,  iscmt, ecv, nph, nat, vclap, edens, edenvl, vtot, vvalgs, rmt, rnrm, qnrm,            &
         &                  ixc, rhoint, vint, xmunew, jumprm, xntot, xnvmu, xnval,     &
         &                  x0, ri, dx, xnatph, xion, iunf, iz, adgc, adpc, dgc,dpc, ihole,   &
-        &                  rat, iatph, iphat, lmaxsc, rhoval, xnmues, ok, rgrd, nohole, nscmt, icoul, ca1, rfms1, lfms1,    &
+        &                  rat, iatph, iphat, lmaxsc, rhoval, rhoval_l, xnmues, ok, rgrd, nohole, nscmt, icoul, ca1, rfms1, lfms1,    &
         &                  gtr, xrhole, xrhoce, yrhole, yrhoce )
       endif
     endif
@@ -546,6 +547,13 @@ subroutine pot !KJ put everything in modules 7-09
       enddo
       write(slog,'(a,i4,a)') 'Convergence reached in ',iscmt,' iterations.'
       call wlog(slog)
+      ! JK - Calculate F_k, G_k for mulitplet calculations.
+      do i=1, 251
+         write(56,*) ri(i), (rhoval_l(i,il), il=0,lx), rhoval(i,0)
+      end do
+      OPEN(UNIT=33,FILE='Slater_Condon.dat',STATUS='REPLACE')
+      WRITE(33,*) 'state1, state2, SCType, AISC, AtomicSC, ratio'
+      CALL fkgk(40, dgc(:,:,0), dpc(:,:,0), rhoval_l(:,2), ri(1:251),imt(0))
     endif
     211 if (master) close(28)  ! convergence.scf file
 

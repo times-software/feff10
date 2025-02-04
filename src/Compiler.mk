@@ -30,7 +30,8 @@
 #              gfortran
 ########################################
  F90 =  gfortran
- FLAGS = -O0 -ffree-line-length-none -fcheck=bounds -g  -ffpe-trap=invalid
+ #FLAGS = -O0 -ffree-line-length-none -fcheck=bounds -g  -ffpe-trap=invalid
+ FLAGS = -O0 -ffree-line-length-none -fcheck=bounds -ffpe-trap=invalid -g -fallow-argument-mismatch
 
 ########################################
 #              mkl
