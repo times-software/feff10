@@ -33,7 +33,6 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
      IF(norm.lt.1.d-12) THEN
         CYCLE
      END IF
->>>>>>> 8094982 (Fixed slater condon printout)
      li = abs(kap(i))
      IF(kap(i).LT.0) THEN
         li = li - 1
@@ -44,15 +43,12 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
         ji = 2*li - 1
      END IF
      DO j = 1, i
-<<<<<<< HEAD
-=======
         IF(nnum(j).LT.0) CYCLE
         norm = NORM2(dgc(:,j))
         IF(norm.LT.1.d-12) CYCLE
         IF(norm.lt.1.d-12) THEN
            CYCLE
         END IF
->>>>>>> 8094982 (Fixed slater condon printout)
         ki = abs(kap(i)) - 1
         kj = abs(kap(j)) - 1
         lj = abs(kap(j))
@@ -76,13 +72,8 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
            Fk0 = fkgk_int(i,i,j,j,k,dgc,dpc,rho0,dr,ilast,alpha)
            IF(Fk0.GT.0.d0) THEN
               WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
-<<<<<<< HEAD
-           ELSE
-              RETURN
-=======
            !ELSE
            !   RETURN
->>>>>>> 8094982 (Fixed slater condon printout)
            END IF
            !PRINT*, nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2)
            !PRINT*, nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2)
@@ -102,13 +93,9 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
            Gk = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,dr,ilast, alpha)
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
            Gk0 = fkgk_int(i,j,i,j,k,dgc,dpc,rho0,dr,ilast, alpha)
-<<<<<<< HEAD
-           WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0*hart, alpha
-=======
            IF(Fk0.GT.0.d0) THEN
               WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0*hart, Gk/Gk0
            END IF
->>>>>>> 8094982 (Fixed slater condon printout)
            !PRINT*, k, Gk*hart
            k=k+2
         END DO
