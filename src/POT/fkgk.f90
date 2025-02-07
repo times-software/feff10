@@ -1,9 +1,9 @@
-SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm)
+SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
   IMPLICIT NONE
   ! JK - Calculate Slater-Condon parameters Fk and Gk between core-orbitals and self-consistent valence
-  INTEGER kap(40), norb, inrm, ilast
-  REAL(8) dgc(251,41), dpc(251,41), dr(251), rhoval_l(251), rho0(251)
-  INTEGER nnum(40) ! Principal quantum number
+  INTEGER kap(41), norb, inrm, ilast, iz
+  REAL(8) dgc(251,41), dpc(251,41), dr(251), rhoval_l(251), rho0(251), norm
+  INTEGER nnum(41) ! Principal quantum number
   INTEGER li, lj ! Orbital angular momentum
   INTEGER ji,jj ! Total angular momentu *2
   INTEGER i,j,k,ki,kj,kmi
@@ -14,17 +14,26 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm)
   CHARACTER orb_ang_mom(0:4)
   CHARACTER(3) tot_ang_mom(0:4)
   CHARACTER(100) frmt
+  !INTEGER, EXTERNAL, DIMENSION(41) :: principle_qn
 !     principal quantum number (energy eigenvalue)
-  data nnum  /1,2,2,2,3,  3,3,3,3,4,  4,4,4,4,4, &
-       &            4,5,5,5,5,  5,5,5,6,6,  6,6,6,7,7, &
-       &            7,8,8,8,7,  7,6,6,5,5/
+!  data nnum  /1,2,2,2,3,  3,3,3,3,4,  4,4,4,4,4, &
+!       &            4,5,5,5,5,  5,5,5,6,6,  6,6,6,7,7, &
+!       &            7,8,8,8,7,  7,6,6,5,5/
   data orb_ang_mom /'s','p','d','f','g'/
   data tot_ang_mom /'1/2','3/2','5/2','7/2','9/2'/
-  data kap /-1,-1, 1,-2,-1,  1,-2, 2,-3,-1,  1,-2, 2,-3, 3, &
-     &            -4,-1, 1,-2, 2, -3, 3,-4,-1, 1, -2, 2,-3,-1, 1, &
-     &            -2,-1, 1,-2, 2, -3, 3,-4, 4,-5/
+!  data kap /-1,-1, 1,-2,-1,  1,-2, 2,-3,-1,  1,-2, 2,-3, 3, &
+!     &            -4,-1, 1,-2, 2, -3, 3,-4,-1, 1, -2, 2,-3,-1, 1, &
+!     &            -2,-1, 1,-2, 2, -3, 3,-4, 4,-5/
+
+  call get_qns(iz,nnum,kap)
   ilast = inrm
   DO i = 1, norb
+     IF(nnum(i).LT.0) CYCLE
+     norm = NORM2(dgc(:,i))
+     IF(norm.lt.1.d-12) THEN
+        CYCLE
+     END IF
+>>>>>>> 8094982 (Fixed slater condon printout)
      li = abs(kap(i))
      IF(kap(i).LT.0) THEN
         li = li - 1
@@ -35,6 +44,15 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm)
         ji = 2*li - 1
      END IF
      DO j = 1, i
+<<<<<<< HEAD
+=======
+        IF(nnum(j).LT.0) CYCLE
+        norm = NORM2(dgc(:,j))
+        IF(norm.LT.1.d-12) CYCLE
+        IF(norm.lt.1.d-12) THEN
+           CYCLE
+        END IF
+>>>>>>> 8094982 (Fixed slater condon printout)
         ki = abs(kap(i)) - 1
         kj = abs(kap(j)) - 1
         lj = abs(kap(j))
@@ -58,8 +76,13 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm)
            Fk0 = fkgk_int(i,i,j,j,k,dgc,dpc,rho0,dr,ilast,alpha)
            IF(Fk0.GT.0.d0) THEN
               WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
+<<<<<<< HEAD
            ELSE
               RETURN
+=======
+           !ELSE
+           !   RETURN
+>>>>>>> 8094982 (Fixed slater condon printout)
            END IF
            !PRINT*, nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2)
            !PRINT*, nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2)
@@ -79,7 +102,13 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm)
            Gk = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,dr,ilast, alpha)
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
            Gk0 = fkgk_int(i,j,i,j,k,dgc,dpc,rho0,dr,ilast, alpha)
+<<<<<<< HEAD
            WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0*hart, alpha
+=======
+           IF(Fk0.GT.0.d0) THEN
+              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0*hart, Gk/Gk0
+           END IF
+>>>>>>> 8094982 (Fixed slater condon printout)
            !PRINT*, k, Gk*hart
            k=k+2
         END DO

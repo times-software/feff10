@@ -107,7 +107,7 @@ subroutine pot !KJ put everything in modules 7-09
   real*8    	   sh_eng(nex,41), sh_rhoj(nex,41)
 
   ! Added by FDV
-  real*8 Q_Tot
+  real*8 Q_Tot, norm
 
   10 format (4x, a, i5)
 
@@ -162,7 +162,7 @@ subroutine pot !KJ put everything in modules 7-09
   & erelax, emu, xnvmu, xnval(:,0:nph+1), norb, eorb, drho, dvcoul, iphat,    &
   & ratTmp, iatph(0:nph), novr(0:nph), iphovr, nnovr, rovr, nat, edens, &
   & edenvl, vclap,  rnrm(0:nph), kappa(:,0:nph+1), iorb(:,0:nph+1), s02)
-
+  WRITE(181,*) dgc(:,18,0)
   edensTrack(:,0)=edens(:,0) !atomic overlap for ipot=0 goes into iteration 0 of density tracker
 
   DO iph = 1, nph
@@ -291,7 +291,6 @@ subroutine pot !KJ put everything in modules 7-09
       endif
     endif
   endif
-  PRINT*, 'After corval'
 
   !      CALL WriteExternalPot(vtot, vint, edens, rhoint, rat(:,1:nat), xmu, imt, rmt)
   IF(ExternalPot) THEN
@@ -553,7 +552,9 @@ subroutine pot !KJ put everything in modules 7-09
       end do
       OPEN(UNIT=33,FILE='Slater_Condon.dat',STATUS='REPLACE')
       WRITE(33,*) 'state1, state2, SCType, AISC, AtomicSC, ratio'
-      CALL fkgk(40, dgc(:,:,0), dpc(:,:,0), rhoval_l(:,2), ri(1:251),imt(0))
+      !norm = NORM2(dgc(:,18,0))
+      !PRINT*, 'ouside, norm=', norm
+      CALL fkgk(40, dgc(:,:,0), dpc(:,:,0), rhoval_l(:,2), ri(1:251),imt(0),iz(0))
     endif
     211 if (master) close(28)  ! convergence.scf file
 

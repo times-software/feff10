@@ -244,3 +244,20 @@
              getspin = getspin + xmag(i)
           END DO
       end function getspin
+
+      subroutine get_qns(iz,nqn,nk)
+          IMPLICIT NONE
+          integer iz
+	  real*8 xion
+          integer iph, iunf
+	  integer norb, norbco, iorb(-5:4), ihole,iholep, nqn(41), nk(41)
+	  real*8 xnel(41), xnval(41), xmag(41)
+          iunf = 0
+          xmag = 0.d0
+          ihole = 0
+          iholep = 0
+          xion = 0.d0
+          iph = 0
+          nqn = -1
+          call getorb (iz, ihole, xion, iunf, norb, norbco, iorb, iholep, nqn, nk, xnel, xnval, xmag, iph)
+      end subroutine get_qns
