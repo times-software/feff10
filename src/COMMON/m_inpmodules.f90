@@ -725,7 +725,7 @@
 		use dimsmod,only : nphx=>nphu,nex
 		implicit none
 		character(*),parameter,private :: filename='ldos.inp'
-		integer mldos, lfms2, minv
+		integer mldos, lfms2, minv, ldostype
         integer, allocatable :: lmaxph(:)
 		double precision emin, emax, eimag
 		integer neldos
@@ -754,6 +754,8 @@
 			  write(3,30)  rdirec, toler1, toler2
 			  write(3,10) ' lmaxph(0:nph)'
 			  write(3,20)  (lmaxph(iph),iph=0,nph)
+              write(3,10) 'ldostype'
+              write(3,20) ldostype
 			close(3)
 		! standard formats for string, integers and real numbers
 	  10  format(a)
@@ -770,6 +772,7 @@
 			  read(3,*) ; read(3,*)  rfms2, emin, emax, eimag, rgrd
 			  read(3,*) ; read(3,*)  rdirec, toler1, toler2
 			  read(3,*) ; read(3,*)  (lmaxph(iph),iph=0,nph)
+			  read(3,*) ; read(3,*)  ldostype
 			close(3)
 		end subroutine ldos_read
 
@@ -788,6 +791,7 @@
 			toler1 = 1.d-3
 			toler2 = 1.d-3
 			lmaxph(:) = 0
+            ldostype = 0
 		end subroutine ldos_init
 
 	end module

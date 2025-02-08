@@ -5,7 +5,7 @@
 ! $Date: 2010/02/23 23:52:06 $
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmues, xmu, inclus)
+subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmues, xmu, inclus, ldostype)
 
   use DimsMod, only: nphx=>nphu, nex, lx
   use controls,only : fullpot
@@ -21,6 +21,7 @@ subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmue
   real*8,  intent(in) :: critcw ! not used
   real*8,  intent(in) :: qnrm(0:nphx), xnmues (0:lx,0:nphx),xmu
   integer, intent(in) :: inclus(0:nphx)
+  integer, intent(in) :: ldostype
   complex*16, intent(in) :: xrhole(0:lx, nex)
   complex*16, intent(in) :: em(nex)
 
@@ -48,9 +49,9 @@ subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmue
 
   !KJ allocate gtr dynamically ; for mt-potential, sum over m
   ! for full potential, save m-dependent information.
-  ! CC, forcing lm-projected dos to be written out
-  fullpot = .true.
-  if(fullpot) then
+
+  ! CC, adding ldostype for controling l,m projected DOS
+  if(fullpot.or.(ldostype > 0)) then
      nlgtr=(lx+1)**2
      allocate(lmdos(nlgtr,nex))
      lmdos=dble(0)
@@ -94,6 +95,7 @@ subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmue
      write(fname,905) iph
      open (unit=3, file=fname, status='unknown', iostat=ios)
      call chopen (ios, 'ldos.dat', 'ff2rho')
+
      write (3,915) coment, ' Fermi level (eV): ', xmu*hart
 915  format( 2a, f7.3)
      write (3,915) coment, ' Charge transfer : ', qnrm(iph)
@@ -129,11 +131,50 @@ subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmue
 1825 format(a,'     e        sDOS           pDOS          dDOS    ',   &
           &          '      fDOS    @#')
 
+
+     if (ldostype > 0) then
+  906  format('lmdos', i2.2, '.dat')
+       write(fname,906) iph
+       open (unit=67, file=fname, status='unknown', iostat=ios)
+       call chopen (ios, 'lmdos.dat', 'ff2rho')
+       write (67,915) coment, ' Fermi level (eV): ', xmu*hart
+       write (67,915) coment, ' Charge transfer : ', qnrm(iph)
+       write (67,915)  coment,                                           &
+            &           '   Electron counts for each orbital momentum:'
+  
+       do i=0,lx
+          write (67,935) coment, i, xnmues(i,iph)
+       enddo
+  
+       write (67,975) coment, inclus(iph)
+  
+       ! Write it out
+       write(67,1805) coment, dimag(em(1))*hart
+       write(67,1815) coment
+       if (ldostype == 1) then
+         write(67,1826) coment
+       elseif (ldostype == 2) then
+         write(67,1827) coment
+       endif
+       1826 format(a, '     e          s            p_y           p_z      ', &
+           '     p_x           d_xy          d_yz          d_z2     ', &
+           '     d_xz         d_x2y2      f_y(3x2-y2)     f_xyz     ', &
+           '    f_yz2          f_z3         f_xz2       f_z(x2-y2)  ', &
+           '  f_x(x2-3y2)      @#')
+
+       1827 format(a, '     e        Y_0^0         Y_1^-1        Y_1^0    ', &
+           '     Y_1^1         Y_2^-2        Y_2^-1        Y_2^0  ', &
+           '       Y_2^1         Y_2^2        Y_3^-3        Y_3^-2', &
+           '        Y_3^-1         Y_3^0         Y_3^1         Y_3^2', &
+           '         Y_3^3         @#')
+     endif
+
+
      !      write  l-dos to 'ldosNN.dat'
      do ik = 1, ne
         write(4,1935)  dble(em(ik))*hart, (xrhoce(il,ik),il=0,lx)
         if (msapp.ne.1) then
-           if(fullpot) then
+           if(fullpot.or.(ldostype > 0)) then
               do il = 0,lx
                  do im = 1,2*il+1
                     ix=il**2
@@ -155,23 +196,21 @@ subroutine ff2rho (critcw, ne, xrhoce, xrhole, iph, msapp, em, lfms, qnrm, xnmue
               enddo
            endif
         endif
-        if(fullpot) then
-           write(3,1934) dble(em(ik))*hart, & 
-                &        (xrhoce(il,ik),il=0,lx),lmdos(:,ik)
+        if(fullpot.or.(ldostype > 0)) then
+           write(67,1934) dble(em(ik))*hart, lmdos(:,ik)
 1934       format (1x, f10.4, 1x, 50(1pe13.6,1x))
-        else
-           write(3,1935)  dble(em(ik))*hart, (xrhoce(il,ik),il=0,lx)
-1935       format (1x, f10.4, 1x, 5(1pe13.6,1x))
         endif
+        write(3,1935)  dble(em(ik))*hart, (xrhoce(il,ik),il=0,lx)
+1935    format (1x, f10.4, 1x, 5(1pe13.6,1x))
      enddo
      close (unit=3)
      close (unit=4)
+     close (unit=67)
   endif MASTER_IF
 
   ! Deallocate local variables
   deallocate(gtr,cchi)
 
-  if(fullpot) deallocate(lmdos)
-  fullpot=.false.
+  if(fullpot.or.(ldostype > 0)) deallocate(lmdos)
   return
 end subroutine ff2rho
