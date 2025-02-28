@@ -261,3 +261,26 @@
           nqn = -1
           call getorb (iz, ihole, xion, iunf, norb, norbco, iorb, iholep, nqn, nk, xnel, xnval, xmag, iph)
       end subroutine get_qns
+
+      subroutine get_norb(iz,norb,norbco)
+          ! Get norb and norbco (number of orbitals/core-orbitals)
+          IMPLICIT NONE
+          integer iz
+	  real*8 xion
+          integer iph, iunf
+	  integer norb, norbco, iorb(-5:4), ihole,iholep, nqn(41), nk(41), i
+	  real*8 xnel(41), xnval(41), xmag(41)
+          iunf = 0
+          xmag = 0.d0
+          ihole = 0
+          iholep = 0
+          xion = 0.d0
+          iph = 0
+          nqn = -1
+          call getorb (iz, ihole, xion, iunf, norb, norbco, iorb, iholep, nqn, nk, xnel, xnval, xmag, iph)
+          norbco = 0
+          DO i = 1, norb
+             IF(xnval(i).EQ.0.d0) norbco = norbco+1
+          END DO
+      end subroutine get_norb
+

@@ -75,7 +75,7 @@ subroutine pot !KJ put everything in modules 7-09
   real*8 rhoval(251,0:nphx+1), rhoval_l(251,0:lx), edenvl(251,0:nphx)
   real*8 vvalgs (251,0:nphx)
 
-  real*8 ri(nrptx)
+  real*8 ri(nrptx), ri05(nrptx)
   real*8 dmag(251,0:nphx+1)
   real*8 xnval(41,0:nphx+1), eorb(41,0:nphx+1)
   integer kappa(41,0:nphx+1), iorb(-5:4,0:nphx+1), norb(0:nphx+1)
@@ -264,7 +264,9 @@ subroutine pot !KJ put everything in modules 7-09
   !     Atom r grid
   dx = 0.05d0
   x0 = 8.8d0
-
+  DO ir = 1, 251
+     ri05(ir) = exp (-8.8+0.05*(ir-1))
+  END DO
 
   !     Find self-consistent muffin-tin potential.
   qnrm(:)=0
@@ -546,17 +548,25 @@ subroutine pot !KJ put everything in modules 7-09
       enddo
       write(slog,'(a,i4,a)') 'Convergence reached in ',iscmt,' iterations.'
       call wlog(slog)
-      ! JK - Calculate F_k, G_k for mulitplet calculations.
-      do i=1, 251
-         write(56,*) ri(i), (rhoval_l(i,il), il=0,lx), rhoval(i,0)
-      end do
-      OPEN(UNIT=33,FILE='Slater_Condon.dat',STATUS='REPLACE')
-      WRITE(33,*) 'state1, state2, SCType, AISC, AtomicSC, ratio'
-      !norm = NORM2(dgc(:,18,0))
-      !PRINT*, 'ouside, norm=', norm
-      CALL fkgk(40, dgc(:,:,0), dpc(:,:,0), rhoval_l(:,2), ri(1:251),imt(0),iz(0))
     endif
     211 if (master) close(28)  ! convergence.scf file
+    ! JK - Calculate F_k, G_k for mulitplet calculations.
+    !do i=1, 251
+    !   write(56,*) ri(i), (rhoval_l(i,il), il=0,lx), rhoval(i,0)
+    !end do
+    
+    IF(master) THEN
+       OPEN(UNIT=33,FILE='Slater_Condon.dat',STATUS='REPLACE')
+       WRITE(33,*) 'state1, state2, SCType, AISC, AtomicSC, ratio'
+       !PRINT*, 'Outside fkgk'
+       !norm = NORM2(dgc(:,18,0))
+       !PRINT*, 'ouside, norm=', norm
+       IF(iscmt.GT.0) THEN 
+          CALL fkgk(dgc(:,:,0), dpc(:,:,0), rhoval_l(:,:), ri05(1:251),inrm(0),iz(0),lx,1)
+       ELSE
+          CALL fkgk(dgc(:,:,0), dpc(:,:,0), rhoval_l(:,:), ri05(1:251),inrm(0),iz(0),lx,0)
+       END IF
+    END IF
 
 
     if (track_dos_convergence) then

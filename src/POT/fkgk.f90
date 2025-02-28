@@ -1,9 +1,9 @@
-SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
+SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
   IMPLICIT NONE
   ! JK - Calculate Slater-Condon parameters Fk and Gk between core-orbitals and self-consistent valence
-  INTEGER kap(41), norb, inrm, ilast, iz
-  REAL(8) dgc(251,41), dpc(251,41), dr(251), rhoval_l(251), rho0(251), norm
-  INTEGER nnum(41) ! Principal quantum number
+  INTEGER kap(41), norb, inrm, ilast, iz, lx,iatomic
+  REAL(8) dgc(251,41), dpc(251,41), dr(251), rhoval_l(251,0:lx), rho0(251), norm
+  INTEGER nnum(41), norbco, norbval ! Principal quantum number
   INTEGER li, lj ! Orbital angular momentum
   INTEGER ji,jj ! Total angular momentu *2
   INTEGER i,j,k,ki,kj,kmi
@@ -26,6 +26,9 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
 !     &            -2,-1, 1,-2, 2, -3, 3,-4, 4,-5/
 
   call get_qns(iz,nnum,kap)
+  call get_norb(iz,norb,norbco)
+  !PRINT*, 'norb, norbco', norb, norbco
+  norb=40
   ilast = inrm
   DO i = 1, norb
      IF(nnum(i).LT.0) CYCLE
@@ -33,6 +36,7 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
      IF(norm.lt.1.d-12) THEN
         CYCLE
      END IF
+     !PRINT*, 'norm=', norm
      li = abs(kap(i))
      IF(kap(i).LT.0) THEN
         li = li - 1
@@ -43,12 +47,11 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
         ji = 2*li - 1
      END IF
      DO j = 1, i
+        !PRINT*, 'i,j', i, j
         IF(nnum(j).LT.0) CYCLE
         norm = NORM2(dgc(:,j))
         IF(norm.LT.1.d-12) CYCLE
-        IF(norm.lt.1.d-12) THEN
-           CYCLE
-        END IF
+        !PRINT*, 'norm2=', norm
         ki = abs(kap(i)) - 1
         kj = abs(kap(j)) - 1
         lj = abs(kap(j))
@@ -67,9 +70,16 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
         !PRINT*, 'k, Fk'
         frmt = '(I1,A1,A3,X,I1,A1,A3,X,A1,I1,X,3F10.5)'
         DO WHILE (k.LE.kmi) 
-           Fk = fkgk_int(i,i,j,j,k,dgc,dpc,rhoval_l,dr,ilast,alpha)
+           !PRINT*, i,j
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
-           Fk0 = fkgk_int(i,i,j,j,k,dgc,dpc,rho0,dr,ilast,alpha)
+           Fk0 = fkgk_int(i,i,j,j,k,dgc,dpc,rhoval_l,li,li,lj,lj,dr,ilast,norbco,alpha,lx,0)
+           IF((i.GT.norbco).OR.(j.GT.norbco)) THEN
+              !PRINT*, 'Using valence density'
+              Fk = fkgk_int(i,i,j,j,k,dgc,dpc,rhoval_l,li,li,lj,lj,dr,ilast,norbco,alpha,lx,iatomic)
+           ELSE
+              Fk = Fk0
+           END IF
+           !PRINT*, 'Fk0, Fk', Fk0, Fk
            IF(Fk0.GT.0.d0) THEN
               WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
            !ELSE
@@ -90,9 +100,13 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
         IF ((kap(i)*kap(j)).LT.0) k = k + 1
         kmi = ki+kj-1
         DO WHILE (k.LE.kmi)
-           Gk = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,dr,ilast, alpha)
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
-           Gk0 = fkgk_int(i,j,i,j,k,dgc,dpc,rho0,dr,ilast, alpha)
+           Gk0 = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,li,lj,li,lj,dr,ilast,norbco,alpha,lx,0)
+           IF((i.GT.norbco).OR.(j.GT.norbco)) THEN
+              Gk = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,li,lj,li,lj,dr,ilast, norbco, alpha, lx,iatomic)
+           ELSE
+              Gk = Gk0
+           END IF
            IF(Fk0.GT.0.d0) THEN
               WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0*hart, Gk/Gk0
            END IF
@@ -103,35 +117,61 @@ SUBROUTINE fkgk(norb,dgc,dpc,rhoval_l,dr,inrm,iz)
   END DO
 END SUBROUTINE fkgk
 
-REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,dr,ilast,alpha)
+REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco,alpha,lx,iatomic)
   !INPUT
-  INTEGER i,j,l,m,ir1, ir2
-  REAL(8) dgc(251,41), dpc(251,41), dr(251), dg1(251),dg2(251), rhoval_l(251)
+  IMPLICIT NONE
+  INTEGER i,j,l,m,k,ir1, ir2,norbco, li,lj,ll,lm,lx,iatomic,ilast
+  REAL(8) dgc(251,41), dpc(251,41), dr(251), dg1(251),dg2(251), rhoval_l(251,0:lx)
   REAL(8) f(251), g(251), ri(251), zk(251), yk(251), alpha
-  LOGICAL, PARAMETER :: UseProjection = .FALSE.
+  LOGICAL, PARAMETER :: UseProjection = .TRUE.
 
+  !PRINT*, 'Inside fkgk_int'
   alpha = 1.d0
   ! Double integral of phi_i(r)*phi_j(r)*r<**k/r>**(k+1)phi_l(r')\phi_m(r')
   fkgk_int = 0.d0
   ! Check that orbital indices are reasonable
   IF(i.LE.0.OR.j.le.0.OR.l.LE.0.OR.m.LE.0) THEN
-     PRINT*, "In fkgk: Orbitals indices must be positive:", i, j, l, m
+     !PRINT*, "In fkgk: Orbitals indices must be positive:", i, j, l, m
      STOP
   END IF
-  IF(i.EQ.8.OR.i.EQ.9) THEN ! Only works for 3d states.
+  IF((i.GT.norbco).AND.(iatomic.EQ.1)) THEN ! Only works for 3d states.
+  !IF(.FALSE.) THEN
      !Integrate density to get total charge.
-     dg1(1:251) = MAX(rhoval_l(1:251),0.d0)
+     dg1(1:251) = MAX(rhoval_l(1:251,li),0.d0)
      CALL trap(dr(1:ilast),dg1(1:ilast),ilast,yk(1))
-     dg1(1:251) = sqrt(max(rhoval_l(1:251),0.d0)/yk(1))
+     IF(DABS(yk(1)).GT.0.d0) THEN
+        !PRINT*, 'rhoval'
+        dg1(1:251) = sqrt(max(rhoval_l(1:251,li),0.d0)/yk(1))
+        IF(UseProjection) THEN
+           ! Project onto atomic state
+           dg1(1:251) = dg1(1:251)*sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
+           CALL trap(dr(1:ilast),dg1(1:ilast),ilast,alpha)
+           dg1(1:251) = sqrt((dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))*alpha)
+           !PRINT*, 'i,alpha=', i,li,alpha
+        END IF
+     ELSE
+        dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
+     END IF
   ELSE
      dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
   END IF
   
-  IF(j.EQ.8.OR.j.EQ.9) THEN
+  IF((j.GT.norbco).AND.(iatomic.EQ.1)) THEN
+  !IF(.FALSE.) THEN
      !Integrate density to get total charge.
-     dg2(1:251) = MAX(rhoval_l(1:251),0.d0)
+     dg2(1:251) = MAX(rhoval_l(1:251,lj),0.d0)
      CALL trap(dr(1:ilast),dg2(1:ilast),ilast,yk(1))
-     dg2(1:251) = sqrt(max(rhoval_l(1:251),0.d0)/yk(1))
+     IF(DABS(yk(1)).GT.0.d0) THEN
+        dg2(1:251) = sqrt(max(rhoval_l(1:251,lj),0.d0)/yk(1))
+        IF(UseProjection) THEN
+           ! Project onto atomic state
+           dg2(1:251) = dg2(1:251)*sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
+           CALL trap(dr(1:ilast),dg2(1:ilast),ilast,alpha)
+           dg2(1:251) = sqrt((dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))*alpha)
+        END IF
+     ELSE
+        dg2(1:251) = sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
+     END IF
   ELSE
      dg2(1:251) = sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
   END IF
@@ -139,8 +179,10 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,dr,ilast,alpha)
   
   !f(1:251) = (dgc(1:251,i)*dgc(1:251,j) + dpc(1:251,i)*dpc(1:251,j))*dr(1:251)**k
   f(1:251) = dg1(1:251)*dg2(1:251)*dr(1:251)**k
+  !PRINT*, 'dr', dr
   !g(1:251) = (dgc(1:251,i)*dgc(1:251,j) + dpc(1:251,i)*dpc(1:251,j))*dr(1:251)**(-k-1)
   g(1:251) = dg1(1:251)*dg2(1:251)*dr(1:251)**(-k-1)
+  !PRINT*, 'g', g
   yk = 0.d0
   DO ir1 = 1, ilast
      IF(ir1.EQ.1) THEN
@@ -158,38 +200,49 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,dr,ilast,alpha)
         zk(ir1) = zk(ir1)*dr(ir1)**(k+1)
      END IF
   END DO
+  !PRINT*, 'yk', yk
+  !PRINT*, 'zk', zk
   yk(:) = yk(:) + zk(:)
 
-  IF(l.NE.9) THEN
+  IF((l.LE.norbco).OR.(iatomic.EQ.0)) THEN
   !IF(.TRUE.) THEN
      dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
   ELSE
      !Integrate density to get total charge.
-     dg1(1:251) = MAX(rhoval_l(1:251),0.d0)
+     dg1(1:251) = MAX(rhoval_l(1:251,ll),0.d0)
      CALL trap(dr(1:ilast),dg1(1:ilast),ilast,f(1))
-     dg1(1:251) = sqrt(max(rhoval_l(1:251),0.d0)/f(1))
-     IF(UseProjection) THEN
-        ! Project onto atomic state
-        dg2(1:251) = dg2(1:251)*sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
-        CALL trap(dr(1:ilast),dg2(1:ilast),ilast,alpha)
-        dg2(1:251) = sqrt((dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))*alpha**2)
+     IF(DABS(f(1)).GT.0.d0) THEN
+        dg1(1:251) = sqrt(max(rhoval_l(1:251,ll),0.d0)/f(1))
+        IF(UseProjection) THEN
+           ! Project onto atomic state
+           dg1(1:251) = dg1(1:251)*sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
+           CALL trap(dr(1:ilast),dg1(1:ilast),ilast,alpha)
+           dg1(1:251) = sqrt((dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))*alpha)
+        END IF
+     ELSE
+        dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
      END IF
   END IF
   
-  IF(m.NE.9) THEN
+  IF((m.LE.norbco).OR.(iatomic.EQ.0)) THEN
   !IF(.TRUE.) THEN
      dg2(1:251) = sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
   ELSE
      !Integrate density to get total charge.
-     dg2(1:251) = MAX(rhoval_l(1:251),0.d0)
+     dg2(1:251) = MAX(rhoval_l(1:251,lm),0.d0)
      CALL trap(dr(1:ilast),dg2(1:ilast),ilast,f(1))
-     dg2(1:251) = sqrt(max(rhoval_l(1:251),0.d0)/f(1))
-     IF(UseProjection) THEN
-        ! Project onto atomic state
-        dg2(1:251) = dg2(1:251)*sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
-        CALL trap(dr(1:ilast),dg2(1:ilast),ilast,alpha)
-        dg2(1:251) = sqrt((dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))*alpha**2)
+     IF(DABS(f(1)).GT.0.d0) THEN
+        dg2(1:251) = sqrt(max(rhoval_l(1:251,lm),0.d0)/f(1))
+        IF(UseProjection) THEN
+           ! Project onto atomic state
+           dg2(1:251) = dg2(1:251)*sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
+           CALL trap(dr(1:ilast),dg2(1:ilast),ilast,alpha)
+           dg2(1:251) = sqrt((dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))*alpha)
+        END IF
+     ELSE
+        dg2(1:251) = sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
      END IF
+     dg2(1:251) = sqrt(max(rhoval_l(1:251,lm),0.d0)/f(1))
   END IF
 
   !dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
@@ -197,6 +250,7 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,dr,ilast,alpha)
   !f(1:251) = (dgc(1:251,l)*dgc(1:251,m) + dpc(1:251,l)*dpc(1:251,m))*yk(:)/dr(:)
   f(1:251) = dg1(1:251)*dg2(1:251)*yk(1:251)/dr(1:251)
   CALL trap(dr,f,ilast,fkgk_int)
+  !PRINT*, 'fkgk_int', fkgk_int
   return
 end FUNCTION fkgk_int
 

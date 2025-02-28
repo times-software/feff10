@@ -75,7 +75,7 @@
       end do
 !write(*,*) 'norb,xnel',norb,xnel(1:norb)
 !write(*,*) 'nz,xionin,xk',nz,xionin,xk
-      if ( abs(nz-xionin-xk) .gt. 0.001) call par_stop('check number of electrons in getorb.f')
+      !if ( abs(nz-xionin-xk) .gt. 0.001) call par_stop('check number of electrons in getorb.f')
 
       norbsc=norb
 ! nz atomic number     noi ionicity (nz-number of electrons)
