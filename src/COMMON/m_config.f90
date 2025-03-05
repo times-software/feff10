@@ -2516,7 +2516,7 @@ real*8 io,ecount
 			n=n+1
 			read(w(n),*,err=975) io
 			iocc(ip,ist)=abs(io)
-			if(io.gt.0) ival(ip,ist)=abs(io)
+			if(io.ge.0) ival(ip,ist)=abs(io)
 			ecount=ecount+abs(io)
 			if(w(n+1).eq.'s') then
 				n=n+2
@@ -2528,7 +2528,7 @@ real*8 io,ecount
 			   n=n+1
 			   read(w(n),*,err=975) io
 			   iocc(ip,ist+1)=abs(io)
-			   if(io.gt.0) ival(ip,ist+1)=abs(io)
+			   if(io.ge.0) ival(ip,ist+1)=abs(io)
 			   ecount=ecount+abs(io)
 			   if(w(n+1).eq.'s') then
 				  n=n+2

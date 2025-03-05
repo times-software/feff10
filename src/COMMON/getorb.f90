@@ -183,6 +183,7 @@
                endif
                if (i.eq.iscr .and. ihole.gt.0)  xnel(norb)=xnel(norb)+1  !add the screening electron
                xnval(norb)= f_ival(index,i,iphl) !valence occupation
+               !PRINT*, '1', norb, nqn(norb),nk(norb),xnval(norb),xnel(norb)
                if ((kappa(i).eq.-4 .or. kappa(i).eq.3 .or. &
                    &  kappa(i).eq.-5 .or. kappa(i).eq.4) .and.iunf.eq.0)  xnval(norb) = 0 !put f- and higher electron in the core, i.e. "freeze" them
                xmag(norb) = f_ispn(index,i,iphl)
@@ -191,6 +192,7 @@
                if (i.eq.iscr .and. ihole.gt.0) xnval(norb) = xnval(norb) + 1 !adjust valence occupation for screening electron
                if (i.eq.iion)  xnel(norb) = xnel(norb) - delion !adjust occupation for ionization  !KJ 5-2012 iscr-> iion bugfix
                if (i.eq.iion)  xnval(norb) = xnval(norb) - delion !adjust valence occupation for ionization
+               !PRINT*, '2', norb, nqn(norb),nk(norb),xnval(norb),xnel(norb)
             endif
          endif
       enddo
@@ -200,6 +202,7 @@
       do i = 1, norb
          if ( xnel(i).lt.0 .or.  xnel(i).gt.2*abs(nk(i)) .or. xnval(i).lt.0 .or. xnval(i).gt.2*abs(nk(i)) ) then
             write (slog,55) i
+            !PRINT*, i, xnel(i), xnval(i), nk(i)
    55       format(' error in getorb.f. Check occupation number for ',i3, '-th orbital. May be a problem with ionicity.')
             call wlog(slog)
             call par_stop('GETORB-99')
