@@ -82,6 +82,7 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
            !PRINT*, 'Fk0, Fk', Fk0, Fk
            IF(Fk0.GT.0.d0) THEN
               WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
+              !PRINT frmt, nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
            !ELSE
            !   RETURN
            END IF
@@ -120,11 +121,12 @@ END SUBROUTINE fkgk
 REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco,alpha,lx,iatomic)
   !INPUT
   IMPLICIT NONE
-  INTEGER i,j,l,m,k,ir1, ir2,norbco, li,lj,ll,lm,lx,iatomic,ilast
+  INTEGER i,j,l,m,k,ir1, ir2,norbco, li,lj,ll,lm,lx,iatomic,ilast, itmp
   REAL(8) dgc(251,41), dpc(251,41), dr(251), dg1(251),dg2(251), rhoval_l(251,0:lx)
   REAL(8) f(251), g(251), ri(251), zk(251), yk(251), alpha
-  LOGICAL, PARAMETER :: UseProjection = .TRUE.
-
+  LOGICAL, PARAMETER :: UseProjection = .FALSE.
+  itmp = ilast
+  !IF(iatomic.EQ.0) ilast = 251 
   !PRINT*, 'Inside fkgk_int'
   alpha = 1.d0
   ! Double integral of phi_i(r)*phi_j(r)*r<**k/r>**(k+1)phi_l(r')\phi_m(r')
@@ -144,14 +146,21 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
         dg1(1:251) = sqrt(max(rhoval_l(1:251,li),0.d0)/yk(1))
         IF(UseProjection) THEN
            ! Project onto atomic state
-           dg1(1:251) = dg1(1:251)*sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
+           dg1(1:ilast) = dg1(1:ilast)*sqrt(dgc(1:ilast,i)*dgc(1:ilast,i) + dpc(1:ilast,i)*dpc(1:ilast,i))
+           !dg1(1:251) = dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i)
            CALL trap(dr(1:ilast),dg1(1:ilast),ilast,alpha)
-           dg1(1:251) = sqrt((dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))*alpha)
+           !alpha = 1.d0
+           !print*, 'i,alpha=', i,alpha
+  
+           dg1(1:251) = sqrt((dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i)))*alpha
+           !dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
            !PRINT*, 'i,alpha=', i,li,alpha
         END IF
      ELSE
         dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
      END IF
+     ! test
+     !dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
   ELSE
      dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
   END IF
@@ -167,7 +176,10 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
            ! Project onto atomic state
            dg2(1:251) = dg2(1:251)*sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
            CALL trap(dr(1:ilast),dg2(1:ilast),ilast,alpha)
-           dg2(1:251) = sqrt((dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))*alpha)
+           !alpha = 1.d0
+           !print*, 'j,alpha=', j,alpha
+           dg2(1:251) = sqrt((dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j)))*alpha
+           !dg2(1:251) = sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
         END IF
      ELSE
         dg2(1:251) = sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
@@ -217,11 +229,16 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
            ! Project onto atomic state
            dg1(1:251) = dg1(1:251)*sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
            CALL trap(dr(1:ilast),dg1(1:ilast),ilast,alpha)
-           dg1(1:251) = sqrt((dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))*alpha)
+           !alpha = 1.d0
+           !print*, 'l,alpha=', l,alpha
+           dg1(1:251) = sqrt((dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l)))*alpha
+           !dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
         END IF
      ELSE
         dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
      END IF
+     ! test
+     !dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
   END IF
   
   IF((m.LE.norbco).OR.(iatomic.EQ.0)) THEN
@@ -237,12 +254,16 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
            ! Project onto atomic state
            dg2(1:251) = dg2(1:251)*sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
            CALL trap(dr(1:ilast),dg2(1:ilast),ilast,alpha)
-           dg2(1:251) = sqrt((dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))*alpha)
+           !alpha = 1.d0
+           !print*, 'm,alpha=', m,alpha
+           dg2(1:251) = sqrt((dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m)))*alpha
+           !dg2(1:251) = sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
         END IF
      ELSE
         dg2(1:251) = sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
      END IF
-     dg2(1:251) = sqrt(max(rhoval_l(1:251,lm),0.d0)/f(1))
+     !test
+     !dg2(1:251) = sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
   END IF
 
   !dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
@@ -251,6 +272,7 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
   f(1:251) = dg1(1:251)*dg2(1:251)*yk(1:251)/dr(1:251)
   CALL trap(dr,f,ilast,fkgk_int)
   !PRINT*, 'fkgk_int', fkgk_int
+  ilast = itmp
   return
 end FUNCTION fkgk_int
 
