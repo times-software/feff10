@@ -205,12 +205,12 @@
 
         ! JK - calculate rho_l out to last point for Slater-Condon parameters
         IF(iph.eq.0) THEN
-           do i = 1, 251
+           do i = 1, ilast
              xpc(i) = pn(i)*pr(i)-coni*pr(i)*pr(i)                         &
      &           + qn(i)*qr(i)-coni*qr(i)*qr(i)
            end do
-           do ir = 1, 251
-              call terpc(ri, xpc, 251, 3, ri05(ir), tempc)
+           do ir = 1, nr05
+              call terpc(ri, xpc, ilast, 3, ri05(ir), tempc)
               yrhoce_l(ir,lll)= yrhoce_l(ir,lll) - temp*tempc
            end do
         END IF
