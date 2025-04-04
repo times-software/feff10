@@ -556,8 +556,6 @@ subroutine pot !KJ put everything in modules 7-09
     !end do
     
     IF(master) THEN
-       OPEN(UNIT=33,FILE='Slater_Condon.dat',STATUS='REPLACE')
-       WRITE(33,*) 'state1, state2, SCType, AISC, AtomicSC, ratio'
        !PRINT*, 'Outside fkgk'
        !norm = NORM2(dgc(:,18,0))
        !PRINT*, 'ouside, norm=', norm

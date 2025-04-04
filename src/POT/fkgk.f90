@@ -2,13 +2,14 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
   IMPLICIT NONE
   ! JK - Calculate Slater-Condon parameters Fk and Gk between core-orbitals and self-consistent valence
   INTEGER kap(41), norb, inrm, ilast, iz, lx,iatomic
-  REAL(8) dgc(251,41), dpc(251,41), dr(251), rhoval_l(251,0:lx), rho0(251), norm
+  REAL(8) dgc(251,41), dpc(251,41), dgcnorm(251,41), dpcnorm(251,41)
+  REAL(8) dr(251), rhoval_l(251,0:lx), rho0(251), norm
   INTEGER nnum(41), norbco, norbval ! Principal quantum number
   INTEGER li, lj ! Orbital angular momentum
   INTEGER ji,jj ! Total angular momentu *2
   INTEGER i,j,k,ki,kj,kmi
   REAL(8) xji, xjj ! Total angular momentum
-  REAL(8) Fk, Gk, Fk0, Gk0, alpha
+  REAL(8) Fk, Gk, Fk0, Gk0, Fk0norm, Gk0norm, alpha
   REAL(8), EXTERNAL :: fkgk_int
   REAL(8), PARAMETER :: hart = 27.2114d0
   CHARACTER orb_ang_mom(0:4)
@@ -28,8 +29,20 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
   call get_qns(iz,nnum,kap)
   call get_norb(iz,norb,norbco)
   !PRINT*, 'norb, norbco', norb, norbco
+  OPEN(UNIT=33,FILE='Slater_Condon.dat',STATUS='REPLACE')
+  WRITE(33,*) 'state1, state2, SCType, AISC, AtomicSC(norm), AtomicSC, AISC/AtomicSC(norm), CorrectedSC'
   norb=40
   ilast = inrm
+  ! Normalize atomic wavefunctions at norman radius as well.
+  DO i = 1, norb
+     rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
+     CALL trap(dr(1:ilast),rho0(1:ilast),ilast,norm)
+     dgcnorm(1:ilast,i) = dgc(1:ilast,i)/SQRT(norm)
+     dpcnorm(1:ilast,i) = dpc(1:ilast,i)/SQRT(norm)
+     dgcnorm(ilast+1,:) = 0.d0
+     dpcnorm(ilast+1,:) = 0.d0
+  END DO
+     
   DO i = 1, norb
      IF(nnum(i).LT.0) CYCLE
      norm = NORM2(dgc(:,i))
@@ -68,20 +81,23 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
         kmi = 2*min(ki,kj)
         k = 0
         !PRINT*, 'k, Fk'
-        frmt = '(I1,A1,A3,X,I1,A1,A3,X,A1,I1,X,3F10.5)'
+        frmt = '(I1,A1,A3,X,I1,A1,A3,X,A1,I1,X,5F10.5)'
         DO WHILE (k.LE.kmi) 
            !PRINT*, i,j
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
+           ilast = 251 
            Fk0 = fkgk_int(i,i,j,j,k,dgc,dpc,rhoval_l,li,li,lj,lj,dr,ilast,norbco,alpha,lx,0)
+           ilast = inrm
+           Fk0norm = fkgk_int(i,i,j,j,k,dgcnorm,dpcnorm,rhoval_l,li,li,lj,lj,dr,ilast,norbco,alpha,lx,0)
            IF((i.GT.norbco).OR.(j.GT.norbco)) THEN
               !PRINT*, 'Using valence density'
-              Fk = fkgk_int(i,i,j,j,k,dgc,dpc,rhoval_l,li,li,lj,lj,dr,ilast,norbco,alpha,lx,iatomic)
+              Fk = fkgk_int(i,i,j,j,k,dgcnorm,dpcnorm,rhoval_l,li,li,lj,lj,dr,ilast,norbco,alpha,lx,iatomic)
            ELSE
               Fk = Fk0
            END IF
            !PRINT*, 'Fk0, Fk', Fk0, Fk
            IF(Fk0.GT.0.d0) THEN
-              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
+              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0norm*hart, Fk0*hart, Fk/Fk0norm, Fk0*hart*Fk/Fk0norm
               !PRINT frmt, nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
            !ELSE
            !   RETURN
@@ -102,14 +118,17 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
         kmi = ki+kj-1
         DO WHILE (k.LE.kmi)
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
+           ilast = 251
            Gk0 = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,li,lj,li,lj,dr,ilast,norbco,alpha,lx,0)
+           ilast = inrm
+           Gk0norm = fkgk_int(i,j,i,j,k,dgcnorm,dpcnorm,rhoval_l,li,lj,li,lj,dr,ilast,norbco,alpha,lx,0)
            IF((i.GT.norbco).OR.(j.GT.norbco)) THEN
-              Gk = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,li,lj,li,lj,dr,ilast, norbco, alpha, lx,iatomic)
+              Gk = fkgk_int(i,j,i,j,k,dgcnorm,dpcnorm,rhoval_l,li,lj,li,lj,dr,ilast, norbco, alpha, lx,iatomic)
            ELSE
               Gk = Gk0
            END IF
            IF(Fk0.GT.0.d0) THEN
-              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0*hart, Gk/Gk0
+              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0norm*hart, Gk0*hart, Gk/Gk0norm, Gk0*hart*Gk/Gk0norm
            END IF
            !PRINT*, k, Gk*hart
            k=k+2
