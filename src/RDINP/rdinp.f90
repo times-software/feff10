@@ -1375,6 +1375,9 @@
               if (nwords.gt.3) read(words(4),20,err=900) negrid
               if (nwords.gt.4) read(words(5),20,err=900) nmu
               if (nwords.gt.5) read(words(6),30,err=900) xntol
+      elseif (itok .eq. 110) then
+!              WARNION
+               WarnIon = .TRUE. 
       elseif (itok .eq. -1)  then
 !              END
                goto 220

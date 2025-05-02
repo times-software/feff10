@@ -534,7 +534,7 @@
 !		folp(0:nphx) -  overlap factor for rmt calculation
 		double precision, allocatable ::  xion(:)
 !		xion(0:nphx)  - ionicity, input
-		logical ExternalPot, FiniteNucleus
+		logical ExternalPot, FiniteNucleus, WarnIon
 	!     for OVERLAP option
 	    logical StartFromFile
 		! read potential from pot.bin file and start from there
@@ -618,8 +618,8 @@
         write(3,*) iscfth, xntol, nmu ! TS 07/2020
         write(3,10) 'negrid,  emaxscf'
         write(3,*) negrid, emaxscf
-        write(3,10) 'FiniteNucleus'
-        write(3,*) FiniteNucleus
+        write(3,10) 'FiniteNucleus, WarnIon'
+        write(3,*) FiniteNucleus, WarnIon
         close(3)
 		! standard formats for string, integers and real numbers
 	  10  format(a)
@@ -655,7 +655,7 @@
 			  read(3,*) ; read(3,*) scf_temperature, scf_thermal_vxc
         read(3,*) ; read(3,*) iscfth, xntol, nmu
         read(3,*) ; read(3,*) negrid, emaxscf
-        read(3,*) ; read(3,*) FiniteNucleus
+        read(3,*) ; read(3,*) FiniteNucleus, WarnIon
 			  55 continue
 			close(3)
 		end subroutine potential_read
@@ -664,6 +664,7 @@
       !call wlog('in potential_init')
       call potential_allocate
 			title(:) = ' '
+                        WarnIon = .FALSE.
 			mpot = 1
 			nph = 0
 			ntitle = 0

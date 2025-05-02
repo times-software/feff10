@@ -1,8 +1,8 @@
 import numpy as np
-fl1 = raw_input()
-fl2 = raw_input()
-c1 = input()-1
-c2 = input()-1
+fl1 = input()
+fl2 = input()
+c1 = int(input())-1
+c2 = int(input())-1
 x1,y1=np.loadtxt(fl1,usecols=(c1,c2),unpack=True)
 x2,y2=np.loadtxt(fl2,usecols=(c1,c2),unpack=True)
 xmin = max(x1[0],x2[0])

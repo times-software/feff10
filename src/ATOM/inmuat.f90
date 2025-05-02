@@ -6,6 +6,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine inmuat (ihole, xionin, iunf, xnval, iholep, xmag, iorb, iph, nq2)  !KJ 12-2010 added iph, nq2
+      use potential_inp,only: WarnIon
       implicit double precision (a-h,o-z)
 ! Josh Kas - Changed array dimensions from 30 to 41 for high Z elements
 ! according to Pavlo Baranov's changes.
@@ -75,7 +76,13 @@
       end do
 !write(*,*) 'norb,xnel',norb,xnel(1:norb)
 !write(*,*) 'nz,xionin,xk',nz,xionin,xk
-      if ( abs(nz-xionin-xk) .gt. 0.001) call par_stop('check number of electrons in getorb.f')
+      if ( abs(nz-xionin-xk) .gt. 0.001) then
+         if(WarnIon) then
+            call wlog('Warning: check number of electrons in getorb.f')
+         else
+            call par_stop('check number of electrons in getorb.f')
+         end if
+      end if
 
       norbsc=norb
 ! nz atomic number     noi ionicity (nz-number of electrons)

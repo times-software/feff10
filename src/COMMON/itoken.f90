@@ -236,6 +236,8 @@
             itoken = 108
          elseif (w .eq. 'SCFT') then !TS 07/2020
             itoken = 109
+         elseif (w .eq. 'WARN') then !JK 5/2025
+            itoken = 110
          elseif (w .eq. 'END ') then
             itoken = -1            
          else

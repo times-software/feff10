@@ -199,6 +199,8 @@
 !     check that all occupation numbers are within limits
       do i = 1, norb
          if ( xnel(i).lt.0 .or.  xnel(i).gt.2*abs(nk(i)) .or. xnval(i).lt.0 .or. xnval(i).gt.2*abs(nk(i)) ) then
+            PRINT*, 'iorb, xnel, xnval'
+            PRINT*, i, xnel(i), xnval(i)
             write (slog,55) i
    55       format(' error in getorb.f. Check occupation number for ',i3, '-th orbital. May be a problem with ionicity.')
             call wlog(slog)
