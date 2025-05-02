@@ -526,7 +526,7 @@
 		integer, allocatable :: iz(:)
 !		iz(0:nphx)    - atomic number, input
 		integer, allocatable :: lmaxsc(:)
-		real rfms1
+		real rfms1, rfms1_start
 		double precision gamach, rgrd, ca1, ecv, totvol
 		double precision, allocatable :: xnatph(:), folp(:), spinph(:)
 !		xnatph(0:nphx) - given unique pot, how many atoms are there
@@ -534,7 +534,7 @@
 !		folp(0:nphx) -  overlap factor for rmt calculation
 		double precision, allocatable ::  xion(:)
 !		xion(0:nphx)  - ionicity, input
-		logical ExternalPot, FiniteNucleus, WarnIon
+		logical ExternalPot, FiniteNucleus, WarnIon, ramp_scf
 	!     for OVERLAP option
 	    logical StartFromFile
 		! read potential from pot.bin file and start from there
@@ -546,7 +546,7 @@
 !		rovr(novrx,0:nphx)  -   r for overlap shell
 		! Added by Fer
 		! Used to correct the excitation energy for chemical shifts
-		integer  ChSh_Type
+		integer  ChSh_Type, nramp
 		integer configtype !KJ 12-2010 : which method for choosing atomic configuration?
 		double precision corval_emin  !KJ 12-2012 defines energy window for search for core-valence separation energy.
 
@@ -620,6 +620,8 @@
         write(3,*) negrid, emaxscf
         write(3,10) 'FiniteNucleus, WarnIon'
         write(3,*) FiniteNucleus, WarnIon
+        write(3,'(A)') 'ramp_scf  rfms_start  nramp'
+        write(3,*) ramp_scf, rfms1_start, nramp
         close(3)
 		! standard formats for string, integers and real numbers
 	  10  format(a)
@@ -656,6 +658,7 @@
         read(3,*) ; read(3,*) iscfth, xntol, nmu
         read(3,*) ; read(3,*) negrid, emaxscf
         read(3,*) ; read(3,*) FiniteNucleus, WarnIon
+        read(3,*) ; read(3,*) ramp_scf, rfms1_start, nramp
 			  55 continue
 			close(3)
 		end subroutine potential_read
@@ -710,6 +713,9 @@
       emaxscf = 5.0 ! eV
       negrid = 400
       FiniteNucleus = .FALSE.
+      ramp_scf = .FALSE.
+      rfms1_start = 0.0
+      nramp = 1
 		end subroutine potential_init
 
 	end module
@@ -803,7 +809,7 @@
 		implicit none
 
                 TYPE ScreenInputVars
-                   integer ner, nei, maxl, irrh, iend, lfxc, nrptx0
+                   integer ner, nei, maxl, irrh, iend, lfxc, nrptx0, icore
                    double precision emin, emax, eimax, ermin, rfms
                 END TYPE ScreenInputVars
 
@@ -826,6 +832,7 @@
 				   write(3,*) 'ermin',ScreenI%ermin
 				   write(3,*) 'rfms',ScreenI%rfms
 				   write(3,*) 'nrptx0',ScreenI%nrptx0
+				   write(3,*) 'icore',ScreenI%icore
                    close(3)
 				   return
 		end subroutine screen_write
@@ -856,8 +863,10 @@
 				   ScreenI%ermin = vars
 				elseif (str .eq. 'rfm') then
 				   ScreenI%rfms  = vars
-				elseif (str .eq. 'nrp')then
+				elseif (str .eq. 'nrp') then
 				   ScreenI%nrptx0  = vars
+                                elseif (str .eq. 'ico') then
+                                   ScreenI%icore = vars
 				else
 				   call wlog("Unrecognized keyword submitted to screen.inp in SCREEN_INP_PARSE ; aborting.")
 				   stop
@@ -928,7 +937,7 @@
 			call screen_init  !KJ set defaults in case screen.inp doesn't exist!
 			open (file=filename, unit=3, status='old', err=60)
 !KJ			read (3,*)  !KJ 11-2011 removing header line from screen.inp because it is incompatible with screen_inp_and_parse above.
-			do i = 1, 12
+			do i = 1, 100
 				read(3,*,end=60)  strs, vars
 				str = strs(1:3)
 				if (str .eq. 'ner') ScreenI%ner   = nint(vars)
@@ -943,6 +952,7 @@
 				if (str .eq. 'erm') ScreenI%ermin = vars
 				if (str .eq. 'rfm') ScreenI%rfms  = vars
 				if (str .eq. 'nrp') ScreenI%nrptx0  = nint(vars)
+				if (str .eq. 'ico') ScreenI%icore  = nint(vars)
 			end do
 		  60 continue
 		  close(3)
@@ -962,6 +972,7 @@
 		  ScreenI%lfxc  = 0
 		  ScreenI%rfms  = 4.0d0
 		  ScreenI%nrptx0 = 251
+		  ScreenI%icore = -1
 		end subroutine screen_init
 
 	end module
@@ -1290,6 +1301,7 @@
 			  read(3,*) ; read(3,*)  mfms, idwopt, minv
 			  read(3,*) ; read(3,*)  rfms2, rdirec, toler1, toler2
 			  read(3,*) ; read(3,*)  tk, thetad, sig2g
+                          PRINT*, 'nph=', nph
 			  read(3,*) ; read(3,*)  (lmaxph(iph),iph=0,nph)
 			  !KJ 7-09 Next line for feff8q
 			  read(3,*) ; read(3,*) ldecmx

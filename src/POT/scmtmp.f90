@@ -407,10 +407,12 @@
            do ir=1,nr05 (ip)
              edens(ir,ip)=edens(ir,ip)-edenvl(ir,ip)+rhoval(ir,ip)
            enddo
-           do ir=nr05 (ip)+1,251
-             edens(ir,ip)=0.0d0
-             edenvl(ir,ip)=0.0d0
-           enddo
+           ! JK - keep edens and edenvl at atomic values outside of last
+           ! point.
+           !do ir=nr05 (ip)+1,251
+           !  edens(ir,ip)=0.0d0
+           !  edenvl(ir,ip)=0.0d0
+           !enddo
         enddo
       endif
 

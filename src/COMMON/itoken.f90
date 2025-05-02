@@ -238,6 +238,8 @@
             itoken = 109
          elseif (w .eq. 'WARN') then !JK 5/2025
             itoken = 110
+         elseif (w .eq. 'SCFR') then !TS 07/2020
+            itoken = 111
          elseif (w .eq. 'END ') then
             itoken = -1            
          else
@@ -385,6 +387,8 @@
             if(itoken.eq.107) w='SCXC'
             if(itoken.eq.108) w='HIGHZ'
             if(itoken.eq.109) w='SCFTH'
+            if(itoken.eq.110) w='WARN'
+            if(itoken.eq.111) w='SCFR'
 
       elseif (flname(1:10).eq.'spring.inp') then
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

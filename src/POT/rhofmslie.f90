@@ -63,12 +63,18 @@ subroutine rhofmslie(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint, vint, &
   double precision:: dgcn(nrptx,41), dpcn(nrptx,41)
   complex*16 yrhoce(251,0:nphx)
 
-  integer iph, jri, jri1, i, itmp, iph0, il, ir, jumprm
+  integer iph, jri, jri1, i, itmp, iph0, il, ir, jumprm, lmaxsc_fms(0:nphx)
   complex*16 em, eref, ee
   !character*512 slog
 
   complex, intent(out):: gtr(0:lx, 0:nphx)
   complex*16, intent(out):: xrhoce(0:lx, 0:nphx), xrhole(0:lx,0:nphx), ph(lx+1, 0:nphx), yrhole(251,0:lx,0:nphx)
+
+
+  ! JK - set lmaxsc_fms to min of lmax and 3 (f states). Use atomic background only for states beyond that. 
+  do iph = 0, nph
+     lmaxsc_fms(iph) = min(lmaxsc(iph),3)
+  end do
 
   jumprm = jumprm0 ! Avoid changing global jumprm (even though it is changed back)
   do iph = 0, nph
@@ -116,10 +122,10 @@ subroutine rhofmslie(edens, edenvl, vtot, vvalgs, rmt, rnrm, rhoint, vint, &
   gtr(:,0:nph)=cmplx(0)
   if (rfms1 .gt. 0) then
     if (lfms1 .ne. 0) then
-      call fmsie( 0, nph, lmaxsc, ie,  em, eref, ph, iz, rfms1, lfms1, nat, iphat, rat, gtr,iscmt.eq.1)
+      call fmsie( 0, nph, lmaxsc_fms, ie,  em, eref, ph, iz, rfms1, lfms1, nat, iphat, rat, gtr,iscmt.eq.1)
     else
       do iph0 = 0, nph
-          call fmsie( iph0, nph, lmaxsc, ie, em, eref, ph, iz, rfms1, lfms1, nat, iphat, rat, gtr,iscmt.eq.1)
+          call fmsie( iph0, nph, lmaxsc_fms, ie, em, eref, ph, iz, rfms1, lfms1, nat, iphat, rat, gtr,iscmt.eq.1)
       enddo
     endif
   endif

@@ -1240,7 +1240,7 @@
          endif
       elseif (itok .eq. 91) then
 !           SCREEN - pass on some options to the facultative screen.inp file
-               if (nwords.lt.3) then
+         if (nwords.lt.3) then
             stop 'SCREEN card must be followed by precisely two arguments, e.g. "SCREEN rfms 5.5"'
          else
             str3=words(2)  !takes first 3 letters
@@ -1378,6 +1378,12 @@
       elseif (itok .eq. 110) then
 !              WARNION
                WarnIon = .TRUE. 
+      elseif (itok .eq. 111) then
+!              SCFRAMP [rscf_start  nramp]
+               ! Ramps scf radius from rscf_start to rscf in nramp steps
+               ramp_scf = .true.
+               if (nwords.gt.1) read(words(2),*) rfms1_start 
+               if (nwords.gt.2) read(words(3),*) nramp 
       elseif (itok .eq. -1)  then
 !              END
                goto 220

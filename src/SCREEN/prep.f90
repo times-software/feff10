@@ -103,6 +103,14 @@ subroutine prep (vr0, ixc0, nrx, ri, dx, x0, ilast, vch, wscrn, CRPA)
   !em(1:ne) = em(1:ne) + xmu
   call setegi(xmu+ScreenI%emin, xmu+ScreenI%emax, ScreenI%eimax, ScreenI%ermin, ScreenI%ner, ScreenI%nei, em, ne)
 
+  ! JK - Adding icore option to control core orbital that goes into wscrn
+  ! Replace core orbital dgc0 with that specified by user
+  PRINT*, 'icore = ', ScreenI%icore
+  IF (ScreenI%icore.GT.0) THEN
+     dgc0(:) = dgc(:,ScreenI%icore,0)
+     dpc0(:) = dpc(:,ScreenI%icore,0)
+  END IF
+
   !     compute phase shifts
   do iph = 0, nph
      IF(iph.EQ.0) THEN ! JK Fixed ihole bug 10/2010

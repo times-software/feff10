@@ -141,6 +141,8 @@ subroutine xsph
                        edens, vclap, vtot, edenvl, vvalgs, dmag, xnval,&
                        eorb, kappa, iorb, qnrm, xnmues, nohole, ihole, &
                        inters, totvol, iafolp, xion, iunf, iz, jumprm)
+!ecv = -50.d0/hart
+!PRINT*, 'ecv=', ecv
 !write(*,*) 'rnrm',rnrm
 !write(*,*) 'nph,nphx',nph,nphx
 if(.false.) then
@@ -485,9 +487,13 @@ endif
        open (unit=14, file='vtot.dat', status='replace',iostat=ios)
        call chopen (ios, 'vtot.dat', 'ffmod2(xsph)')
        do i = 1, 251
-          read(13,'(2e20.10)',end=20) dum1, dum2
+          read(13,*,end=20) dum1, dum2
           dum3 = vtot(i,0)
-          vtot(i,0) = vtot(i,0) - dum2
+          IF(ispec.EQ.2) THEN ! XES - switch sign of screened potential
+             vtot(i,0) = vtot(i,0) + dum2
+          ELSE
+             vtot(i,0) = vtot(i,0) - dum2
+          END IF
           write(14,'(3e20.10)') dum1, dum3, dum2
        end do
 20     continue
