@@ -125,6 +125,10 @@ subroutine pot !KJ put everything in modules 7-09
   IF(ramp_scf) THEN
      rfms1_end = rfms1
      rfms1 = rfms1_start
+     IF(rfms1.GE.rfms1_end) THEN
+        rfms1 = rfms1_end
+        nramp = 0
+     END IF
      iramp = 1
   END IF
      
@@ -406,7 +410,7 @@ subroutine pot !KJ put everything in modules 7-09
           call thscf_deinit
       endif
     else
-      IF(master) PRINT*, 'Running SCF with rscf = ', rfms1, iramp, nramp
+      IF(master) PRINT*, 'Running SCF with rscf = ', rfms1*bohr, iramp, nramp+1
       if (npr.le.1) then
         PRINT*, "Zero temperature single thread"
         call scmt(iscmt, ecv, nph, nat, vclap, edens, edenvl, vtot, vvalgs, rmt, rnrm, qnrm,   &
@@ -559,9 +563,9 @@ subroutine pot !KJ put everything in modules 7-09
     
     IF(ramp_scf) THEN
        ! increase rfms1 and restart scf loop
-       rfms1 = rfms1_start + (rfms1_end - rfms1_start)*DBLE(iramp)/DBLE(nramp)
-       iramp = iramp + 1
-       IF(rfms1.LE.rfms1_end) THEN
+       IF(rfms1.LT.rfms1_end) THEN
+         rfms1 = rfms1_start + (rfms1_end - rfms1_start)*DBLE(iramp)/DBLE(nramp)
+         iramp = iramp + 1
          GOTO 195
        END IF
     END IF
