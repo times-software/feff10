@@ -94,7 +94,7 @@ subroutine ff2xmu (ispec, ipr4, idwopt, critcw, s02, sig2g,       &
     ntfms = 1
     read(1, 113) titfms
     113    format(a)
-    read(1, 115) ne, ne1, ne3, nph, npadx
+    read(1, *) ne, ne1, ne3, nph, npadx
     115    format(5(1x,i7))
     !PRINT*, ne, ne1, ne3, nph, npadx
     call rdpadx(1, npadx, gtrtemp, ne*nip)  !KJ I added *nip, changed gtr to gtrtemp  1-06
@@ -309,7 +309,7 @@ subroutine ff2xmu (ispec, ipr4, idwopt, critcw, s02, sig2g,       &
                 do i = 1, nxsec
                   del = xk(i)**2 - xkxs(i)**2
                   ! JK - added extra test below because very large k fails the first test even if points are relatively very close
-                  if (abs(del) .gt.  eps4 .and. (abs(del)/xk(i)**2) .gt.eps4)  then 
+                  if (abs(del) .gt.  eps4 .and. (abs(del)/(xk(i)**2+0.001d0)) .gt.eps4)  then 
                     call wlog(' Emesh in feff.bin and xsect.bin different.')
                     call par_stop('FF2XMU-1')
                   endif

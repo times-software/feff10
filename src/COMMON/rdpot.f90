@@ -101,7 +101,8 @@
  132  continue
       if(.not.feff9format) then
 	     call wlog(':INFO FEFF9 is using a pot.bin and forf9.dat file from a FEFF8 source in routine rdpot.')
-	  endif
+      end if
+       
 !:KJ
 
       open (unit=3, file='pot.bin', status='old')
