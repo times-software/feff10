@@ -521,7 +521,11 @@ endif
           CALL vbh(dum1,0.d0,dum3) ! dum3 is vxc with ch
           dum1 = dum3 - dum2
           !KJ WRITE(18,'(8(f10.4,x))') ri(i), dum1,dum2,dum3   !KJ 1-2012 This was going to "fort.18" so I'm guessing it's debugging output?
-          vtot(i,0) = vtot(i,0) + dum1
+          IF(ispec.EQ.2) THEN ! XES - switch sign of screened potential
+             vtot(i,0) = vtot(i,0) - dum1
+          ELSE
+             vtot(i,0) = vtot(i,0) + dum1
+          END IF
        END DO
 
        nohole = 0

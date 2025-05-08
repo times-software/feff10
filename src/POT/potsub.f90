@@ -134,7 +134,15 @@ subroutine pot !KJ put everything in modules 7-09
      
   !     Josh - for now if nohole=2 reset to 0 so that regular nohole potential is used
   nhtmp = nohole
-  if (nohole.eq.2) nohole = 0
+  if (nohole.eq.2) then
+     ! nohole = 2 means rpa core-hole. For XAS, add screened core-hole to nohole calculation
+     ! while for XES, subtract screened core-hole to core-hole calculation.
+     if(ispec.EQ.2) then
+        nohole = -1
+     else
+        nohole = 0
+     end if
+  end if
   !     Josh
 
   if (StartFromFile) then
