@@ -535,13 +535,19 @@ CONTAINS
     defermi = (2*window_size_terp*tk)/DBLE(nxmu)
     efermi_m3 = efermi - window_size_terp*tk + coni*DIMAG(emxs(1))
     efermi_p3 = efermi + window_size_terp*tk + coni*DIMAG(emxs(1))
-
+    IF(DBLE(efermi_m3).LT.DBLE(emxs(1))) THEN
+       call wlog("WARNING: xmu_m3 less than first point in energy grid. Check results.")
+    ELSEIF(DBLE(efermi_p3).GT.DBLE(emxs(ne4))) THEN
+       call wlog("WARNING: xmu_p3 greater than last point in energy grid. Check results.")
+    END IF
     ! Find where does xmu +/- window_terp lies on the contour
-    ind_m3 = binarysearch(DBLE(efermi_m3), DBLE(emxs), ne4)-1
-    ind_p3 = binarysearch(DBLE(efermi_p3), DBLE(emxs), ne4)
+    ! JK - Adding MAX/MIN to be sure no out of bounds arrays.
+    ind_m3 = MAX(binarysearch(DBLE(efermi_m3), DBLE(emxs), ne4)-1,1)
+    ind_p3 = MIN(binarysearch(DBLE(efermi_p3), DBLE(emxs), ne4),ne4)
 
     IF (ind_m3.EQ.0) BUG=.TRUE.
     IF (BUG) THEN
+      ! This shouldn't happen any more - JK.
       ! Need to be careful regarding the window_size_terp
       ! efermi_m3 must be greater than emxs(1)
       ! TODO: implement optimum window_size_terp
