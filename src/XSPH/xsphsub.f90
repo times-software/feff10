@@ -209,7 +209,7 @@ endif
     e_chsh = -sh_eng(1,1)
     write(6,fmt='(a,f20.10)') 'e_chsh: ', e_chsh
     emu = e_chsh + erelax
-
+    if (ChSh_Type.EQ.4) emu = emu + xmu
   end if
 
   ! Write potentials for feffFP
