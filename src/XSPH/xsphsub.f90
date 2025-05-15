@@ -182,7 +182,7 @@ endif
   end if
 
 ! Use the one calculated here
-  if ( (ChSh_Type == 2) .or. (ChSh_Type == 3) ) then
+  if ( (ChSh_Type >= 2) ) then
 
 ! Set the target center
     iCenter = 0
@@ -201,12 +201,12 @@ endif
 !   sh_adpc          = adpc(:,:,iCenter)
     sh_adgc          =  0.0d0
     sh_adpc          =  0.0d0
-    sh_eorb          = eorbTmp(:,iCenter)
+    sh_eorb          = eorb(:) !eorbTmp(:,iCenter)
     sh_kappa         = kappa
 
     call correorb(sh_iz, sh_ihole, sh_rmt, sh_jri, sh_dx,sh_ri, sh_p2f, sh_edge, sh_vxc, &
                   sh_dgcn, sh_dpcn, sh_adgc, sh_adpc, sh_eorb, sh_neg, sh_eng, sh_rhoj, sh_kappa, sh_norbp, 0) !KJ iph=0
-    e_chsh = -sh_eng(1,1)
+    e_chsh = -sh_eng(1,sh_ihole)
     write(6,fmt='(a,f20.10)') 'e_chsh: ', e_chsh
     emu = e_chsh + erelax
     if (ChSh_Type.EQ.4) emu = emu + xmu

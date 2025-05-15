@@ -135,6 +135,8 @@
          END IF
          
          IF(iGridType(nGrid).ne.0) THEN
+            READ(Words(3),*) GridMax(nGrid)
+            READ(Words(4),*) GridStep(nGrid)
             IF(Words(2).eq.'last') THEN
                ! Set the grid minimum to the max of the last grid.
                IF(nGrid.gt.1) THEN
@@ -146,8 +148,6 @@
             ELSE
                READ(Words(2),*) GridMin(nGrid)
             END IF
-            READ(Words(3),*) GridMax(nGrid)
-            READ(Words(4),*) GridStep(nGrid)
          END IF
 
          IF(iGridType(nGrid).eq.0) THEN
