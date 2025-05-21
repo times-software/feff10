@@ -7,7 +7,7 @@
  CONTROL          1       1       0       1       1       1
 
  *          ixc  [ Vr  Vi ]
- EXCHANGE     0
+ EXCHANGE     0 0.0 0.0
 
  *            r_scf  [ l_scf   n_scf   ca ]
  SCF          4.000

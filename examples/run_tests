@@ -6,9 +6,10 @@ files=`find -name referencexmu.dat |grep -v HUBBARD`
 pd=`pwd`
 if [ "X$1" == "X" ]
 then
-	cmd="feff10test 20"
+	cmd="feff10test 40"
 else
 	cmd='echo'
+	skip=1
 fi
 pd=`pwd`
 rm -f test.log
@@ -22,6 +23,19 @@ do
 	echo "Test: $file"
 	echo '##################################################################################################'
 	echo '##################################################################################################'
+	if [ $skip -eq 0 ]
+	then
+		# Clean out any files from a previous run
+		rm -f `ls *.inp |grep -v feff.inp`
+		rm -f *.bin
+		rm -f xmu.dat xmu1.dat xmu2.dat
+		rm -f log*
+		rm -f `ls *.dat |grep -v reference`
+		rm -f convergence.scf*
+		rm -f *.out
+		rm -f fort.*
+		rm -f rsqr.in
+	fi
 	$cmd |tee feff.out |sed 's/^/       /'
         # Get reference files.
         rfiles=`ls reference*`

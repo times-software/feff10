@@ -286,7 +286,7 @@
 !              HOLE     1  1.0
 !                   holecode s02
                read(words(2),20,err=900)  ihole
-               if (nwords.gt.2) read(words(3),30,err=900)  s02h
+               if (nwords.gt.2) read(words(3),*,err=900)  s02h
                mode = 0
             elseif (itok .eq. 3)  then
 !              OVERLAP iph
@@ -334,10 +334,10 @@
                vi0=0.0
                read(words(2),20,err=900)  ixc
          if (ixc.lt.0) ixc=0  !default
-!              if (nwords.ge.3) (read(words(3),30,err=900)  vr0
-                read(words(3),30,err=900)  vr0
-!              if (nwords.ge.4) read(words(4),30,err=900)  vi0
-                read(words(4),30,err=900)  vi0
+!              if (nwords.ge.3) (read(words(3),*,err=900)  vr0
+                read(words(3),*,err=900)  vr0
+!              if (nwords.ge.4) read(words(4),*,err=900)  vi0
+                read(words(4),*,err=900)  vi0
                if (nwords .gt. 4) read(words(5),20,err=900)  ixc0
                !if (ixc0.lt.0) ixc0=2  !default
                mode = 0
@@ -345,7 +345,7 @@
 !              ION  iph xion(iph)
                read(words(2),20,err=900)  iph
                call phstop(iph,line)
-               read(words(3),30,err=900)  xion(iph)
+               read(words(3),*,err=900)  xion(iph)
                mode = 0
             elseif (itok .eq. 7)  then
 !              TITLE title...
@@ -363,11 +363,11 @@
                ifolp = 1
                read(words(2),20,err=900)  iph
                call phstop(iph,line)
-               read(words(3),30,err=900)  folp(iph)
+               read(words(3),*,err=900)  folp(iph)
                mode = 0
             elseif (itok .eq. 9)  then
 !              RPATH rmax (max r for ss and pathfinder)
-               read(words(2),30,err=900)  rmax
+               read(words(2),*,err=900)  rmax
                !KJ apparently (at least on mac+ifort) this does not crash for an empty "RPATH" card, but just reads rmax=0 and continues on.
                !   rmax is then set to a default (I think 2x nn distance?) somewhere below.
             elseif (itok .eq. 10)  then
@@ -385,8 +385,8 @@
 !                   idwopt = 5 use Dynamical Matrix method !FDV
 !                   idwopt = -1,-2,... don't calculate DW factors
 !                   These add to any sig2 from SIG2 card or files.dat
-               read(words(2),30,err=900)  tk
-               read(words(3),30,err=900)  thetad
+               read(words(2),*,err=900)  tk
+               read(words(3),*,err=900)  thetad
                idwopt=0
                if (nwords.gt.3) then
                  read(words(4),20,err=900)  idwopt
@@ -433,7 +433,7 @@
 !              RMULTIPLIER  rmult
 !              Multiples atom coord, rss, overlap and rmax distances by
 !              rmult (default 1).  DOES NOT modify sig2g
-               read(words(2),30,err=900)  rmult
+               read(words(2),*,err=900)  rmult
                mode = 0
             elseif (itok .eq. 12)  then
 !              SS index ipot deg rss
@@ -446,8 +446,8 @@
                endif
                read(words(2),20,err=900)  indss(nss)
                read(words(3),20,err=900)  iphss(nss)
-               read(words(4),30,err=900)  degss(nss)
-               read(words(5),30,err=900)  rss(nss)
+               read(words(4),*,err=900)  degss(nss)
+               read(words(5),*,err=900)  rss(nss)
                mode = 0
             elseif (itok .eq. 13)  then
 !              PRINT  ipr1  ipr2  ipr3  ipr4 ipr5 ipr6
@@ -506,8 +506,8 @@
                mode = 0
             elseif (itok .eq. 16)  then
 !              CRIT critcw critpw
-               read(words(2),30,err=900)  critcw
-               read(words(3),30,err=900)  critpw
+               read(words(2),*,err=900)  critcw
+               read(words(3),*,err=900)  critpw
                mode = 0
             elseif (itok .eq. 17)  then
 !              NOGEOM (do not write geom.dat) (disabled)
@@ -520,15 +520,15 @@
             elseif (itok .eq. 19)  then
 !              PCRIT  pcritk pcrith
 !                     (keep and heap criteria for pathfinder)
-               read(words(2),30,err=900)  pcritk
-               read(words(3),30,err=900)  pcrith
+               read(words(2),*,err=900)  pcritk
+               read(words(3),*,err=900)  pcrith
                mode = 0
             elseif (itok .eq. 20)  then
 !              SIG2  sig2g   global sig2 used by ff2chi, summed with
 !              correlated debye model if DEBYE card used, and with
 !              sig2 from files.dat if non-zero.
 !              Units are Ang**2
-               read(words(2),30,err=900)  sig2g
+               read(words(2),*,err=900)  sig2g
                mode = 0
             elseif (itok .eq. 21)  then
 !              XANES ( xkmax  xkstep vixan)
@@ -541,9 +541,9 @@
 !              energies up to kmax. Near the Fermi level the energy
 !              grid is regular in energy with step=vixan
 !              the default value is vixan=gamma_ch/2+vi
-               if (nwords.gt.1) read(words(2),30,err=900)  xkmax
-               if (nwords.gt.2) read(words(3),30,err=900)  xkstep
-               if (nwords.gt.3) read(words(4),30,err=900)  vixan
+               if (nwords.gt.1) read(words(2),*,err=900)  xkmax
+               if (nwords.gt.2) read(words(3),*,err=900)  xkstep
+               if (nwords.gt.3) read(words(4),*,err=900)  vixan
 
 !              sanity checks
                if (xkstep.lt.0.01) xkstep = 0.01d0
@@ -556,37 +556,37 @@
 !              e0 shift is in eV, edge will be edge-e0
 !              lambda corr is a const imag energy in eV
 !              e0 and lambda corr same as vr0 and vi0 in EXCH card
-               read(words(2),30,err=900)  vrcorr
-               read(words(3),30,err=900)  vicorr
+               read(words(2),*,err=900)  vrcorr
+               read(words(3),*,err=900)  vicorr
                mode = 0
             elseif (itok .eq. 23)  then
 !              AFOLP use generalized automatic folp
                folpx = 1.15
-               if (nwords.ge.2) read(words(2),30,err=900)  folpx
+               if (nwords.ge.2) read(words(2),*,err=900)  folpx
                mode =0
             elseif (itok .eq. 24)  then
 !              EXAFS  xkmax for energy grid
-               read(words(2),30,err=900)  xkmax
+               read(words(2),*,err=900)  xkmax
                mode = 0
             elseif (itok .eq. 25)  then
 !              POLARIZATION  X Y Z
                ipol = 1
 !              run linear polarization code
-               read(words(2),30,err=900)  evec(1)
-               read(words(3),30,err=900)  evec(2)
-               read(words(4),30,err=900)  evec(3)
+               read(words(2),*,err=900)  evec(1)
+               read(words(3),*,err=900)  evec(2)
+               read(words(4),*,err=900)  evec(3)
                mode = 0
             elseif (itok .eq. 26)  then
 !              ELLIPTICITY  E incident direction
-               read(words(2),30,err=900)  elpty
-               read(words(3),30,err=900)  xivec(1)
-               read(words(4),30,err=900)  xivec(2)
-               read(words(5),30,err=900)  xivec(3)
+               read(words(2),*,err=900)  elpty
+               read(words(3),*,err=900)  xivec(1)
+               read(words(4),*,err=900)  xivec(2)
+               read(words(5),*,err=900)  xivec(3)
                mode = 0
             elseif (itok .eq. 27)  then
 !              RGRID  rgrd
 !              rgrd will be dpas, default is 0.03 in feff7
-               read(words(2),30,err=900)  rgrd
+               read(words(2),*,err=900)  rgrd
                write(slog,'(a,1pe13.5)') ' RGRID, rgrd; ', rgrd
                call wlog(slog)
                i = 1 + int (12.5d0 / rgrd)
@@ -616,7 +616,7 @@
                end if
             elseif (itok .eq. 31)  then
 !              SIG3 alphat  thetae   first and third cumulants for ss paths
-               read(words(2),30,err=900)  alphat
+               read(words(2),*,err=900)  alphat
                if (nwords.ge.3) read(words(3),20,err=900)  thetae
                write(slog,'(a,1pe13.5)') ' SIG3, alphat ; ', alphat
                call wlog(slog)
@@ -632,9 +632,9 @@
                read(words(2),20,err=900)  ispin
 !              set default spin along z axis
                if (ispin.ne.0) spvec(3) = 1.d0
-               if (nwords.gt.2) read(words(3),30,err=900)  spvec(1)
-               if (nwords.gt.3) read(words(4),30,err=900)  spvec(2)
-               if (nwords.gt.4) read(words(5),30,err=900)  spvec(3)
+               if (nwords.gt.2) read(words(3),*,err=900)  spvec(1)
+               if (nwords.gt.3) read(words(4),*,err=900)  spvec(2)
+               if (nwords.gt.4) read(words(5),*,err=900)  spvec(3)
             elseif (itok .eq. 35)  then
 !              EDGE     L3
 !                   holecode
@@ -672,12 +672,12 @@
                nscmt = nbr
                ca1 = 0.2d0
 
-               read(words(2),30,err=900)  rfms1
+               read(words(2),*,err=900)  rfms1
                if (nwords.gt.2) read(words(3),20,err=900)  lfms1
                if (nwords.gt.3) read(words(4),20,err=900)  nscmt
-               if (nwords.gt.4) read(words(5),30,err=900)  ca1
+               if (nwords.gt.4) read(words(5),*,err=900)  ca1
                if (nwords.gt.5) read(words(6),20,err=900)  nmix
-               if (nwords.gt.6) read(words(7),30,err=900)  ecv
+               if (nwords.gt.6) read(words(7),*,err=900)  ecv
                if (nwords.gt.7) read(words(8),20,err=900)  icoul
                if (nscmt.le.0 .or. nscmt.gt.nbr) then  !KJ 12-2011 I added the diagnostic message - the user may want to know, y'know?
             call wlog('Invalid number of SCF iterations specified.  Reset to hardwired limit.')
@@ -685,7 +685,7 @@
 
 !            elseif (itok .eq. 107) then
 !              SCXC
-!               read(words(2),30,err=900) iscfxc !-LC- 11=vBh 12=PZ 21=PDW 22=KSDFT
+!               read(words(2),*,err=900) iscfxc !-LC- 11=vBh 12=PZ 21=PDW 22=KSDFT
 !write(*,*) "RDINP1", iscfxc
 !               !-LC- check if the value of iscfxc is valid
 !               if ( (iscfxc .eq. 11) .or. (iscfxc .eq.12) .or. (iscfxc .eq. 21) .or. (iscfxc .eq. 22) ) then
@@ -712,21 +712,21 @@
             elseif (itok .eq. 37)  then
 !              FMS   rfms2  (lfms2 minv toler1 toler2 rdirec)
 !              radius of the cluster to do FMS
-               read(words(2),30,err=900)  rfms2
+               read(words(2),*,err=900)  rfms2
                if (nwords.gt.2) read(words(3),20,err=900)  lfms2
                if (nwords.gt.3) read(words(4),20,err=900)  minv
-               if (nwords.gt.4) read(words(5),30,err=900)  toler1
-               if (nwords.gt.5) read(words(6),30,err=900)  toler2
-               if (nwords.gt.6) read(words(7),30,err=900)  rdirec
+               if (nwords.gt.4) read(words(5),*,err=900)  toler1
+               if (nwords.gt.5) read(words(6),*,err=900)  toler2
+               if (nwords.gt.6) read(words(7),*,err=900)  rdirec
                if (rdirec .gt. 2*rfms2 .or. rdirec.lt.0) rdirec=2*rfms2
                if (lfms2.gt.0) lfms2 = 1
          do_fms = 1  !flag that FMS algorithm should run
             elseif (itok .eq. 38)  then
 !              LDOS  emin  emax  eimag  neldos
                mldos = 1
-               read(words(2),30,err=900)  emin
-               read(words(3),30,err=900)  emax
-               read(words(4),30,err=900)  eimag
+               read(words(2),*,err=900)  emin
+               read(words(3),*,err=900)  emax
+               read(words(4),*,err=900)  eimag
                if (nwords.gt.4) read(words(5),20,err=900)  neldos
                if (neldos.gt.nex) then
                  write (slog, "(a,i4,a)") &
@@ -743,17 +743,17 @@
 !              inters = 0 extended V_int (average over all atoms)
 !              more obscure options described in manual
                read(words(2),20,err=900)  inters
-               if (nwords.ge.3) read(words(3),30,err=900)  totvol
+               if (nwords.ge.3) read(words(3),*,err=900)  totvol
             elseif (itok .eq. 40) then
 !              CFAV  iphabs nabs rclabs
                read(words(2),20,err=900)  iphabs
                read(words(3),20,err=900)  nabs
-               read(words(4),30,err=900)  rclabs
+               read(words(4),*,err=900)  rclabs
                if (rclabs.lt.0.5) rclabs=big
                mode = 0
             elseif (itok .eq. 41) then
 !              S02  s02
-               read(words(2),30,err=900)  s02
+               read(words(2),*,err=900)  s02
                mode = 0
             elseif (itok .eq. 42)  then
 !              XES ( emin  emax estep)
@@ -767,9 +767,9 @@
 !              with new meaning for ispec=2: xkmax=emin, xkstep=emax
 !              and vixan=estep
                xkstep=0.01d0
-               if (nwords.gt.1) read(words(2),30,err=900)  xkmax
-               if (nwords.gt.2) read(words(3),30,err=900)  xkstep
-               if (nwords.gt.3) read(words(4),30,err=900)  vixan
+               if (nwords.gt.1) read(words(2),*,err=900)  xkmax
+               if (nwords.gt.2) read(words(3),*,err=900)  xkstep
+               if (nwords.gt.3) read(words(4),*,err=900)  vixan
 !              sanity checks
                !xkstep = 0.01d0 : JK changed xkstep to max energy.
                if (xkstep.le.xkmax) xkstep=0.01d0
@@ -787,9 +787,9 @@
 !              energies up to kmax. Near the Fermi level the energy
 !              grid is regular in energy with step=vixan
 !              the default value is vixan=gamma_ch/2+vi
-               if (nwords.gt.1) read(words(2),30,err=900)  xkmax
-               if (nwords.gt.2) read(words(3),30,err=900)  xkstep
-               if (nwords.gt.3) read(words(4),30,err=900)  vixan
+               if (nwords.gt.1) read(words(2),*,err=900)  xkmax
+               if (nwords.gt.2) read(words(3),*,err=900)  xkstep
+               if (nwords.gt.3) read(words(4),*,err=900)  vixan
 !              sanity checks
                if (xkstep.lt.0.01) xkstep = 0.01d0
 !              if (xkstep.gt.1.0) xkstep = 1.0d0
@@ -803,9 +803,9 @@
                ispec = 4
                call wlog(' FPRIME:')
 !              set the energy grid.
-               read(words(2),30,err=900)  xkmax
-               read(words(3),30,err=900)  xkstep
-               if (nwords.gt.3) read(words(4),30,err=900)  vixan
+               read(words(2),*,err=900)  xkmax
+               read(words(3),*,err=900)  xkstep
+               if (nwords.gt.3) read(words(4),*,err=900)  vixan
 !              sanity checks
                if (xkstep.lt.xkmax) xkstep = xkmax
                mode = 0
@@ -864,11 +864,11 @@
             elseif (itok .eq. 54)  then ! Added by Josh Kas
 !              SFSE k0 (print out self energy Sig(k0,E) )
                ipsk = 1
-               read(words(2),30,err=900)  wsigk
+               read(words(2),*,err=900)  wsigk
             elseif (itok .eq. 55) then ! Added by Josh Kas
 !              RCONV (print running convolution with file cfname at energy cen)
 !              RCONV cen cname
-               read(words(2),30,err=900) cen
+               read(words(2),*,err=900) cen
                cfname = words(3)(1:12)
             elseif (itok.eq.56) then  !KJ added this card 1-06
 !              ELNES
@@ -882,9 +882,9 @@
 !              energies up to kmax. Near the Fermi level the energy
 !              grid is regular in energy with step=vixan
 !              the default value is vixan=gamma_ch/2+vi
-               if (nwords.gt.1) read(words(2),30,err=900)  xkmax
-               if (nwords.gt.2) read(words(3),30,err=900)  xkstep
-               if (nwords.gt.3) read(words(4),30,err=900)  vixan
+               if (nwords.gt.1) read(words(2),*,err=900)  xkmax
+               if (nwords.gt.2) read(words(3),*,err=900)  xkstep
+               if (nwords.gt.3) read(words(4),*,err=900)  vixan
 !              sanity checks
                if (xkstep.lt.0.01) xkstep = dble(0.01)
                if (xkstep.gt.2.0) xkstep = dble(0.5)
@@ -903,7 +903,7 @@
                eels=1   ! switch on EXELFS
                absolu=1 !no renormalization in ff2x
 !              EXAFS  xkmax for energy grid
-               if (nwords.gt.1) read(words(2),30,err=900)  xkmax
+               if (nwords.gt.1) read(words(2),*,err=900)  xkmax
                  ipol=1   ! override previous entries on POLARIZATION and ELLIPTICITY cards
                  elpty=0
            do i=1,3
@@ -914,7 +914,7 @@
             elseif (itok .eq. 58) then !KJ added this card 1-06
 !               MAGIC card
                  magic=1
-                 read(words(2),30,err=900) emagic
+                 read(words(2),*,err=900) emagic
                  icnt=5  ! number of lines to read
             elseif (itok .eq. 59) then !KJ added this card 3-06
 !               ABSOLUTE card
@@ -967,9 +967,9 @@
           if(nwords.gt.5) read(words(6),20,err=900) usesym
             elseif (itok .eq. 66) then  !KJ 8/06
 !               STRFAC card
-                  read(words(2),30,err=900) streta
-                  read(words(3),30,err=900) strgmax
-                  read(words(4),30,err=900) strrmax
+                  read(words(2),*,err=900) streta
+                  read(words(3),*,err=900) strgmax
+                  read(words(4),*,err=900) strrmax
             elseif (itok .eq. 67) then  !KJ 8/06
 !               BANDSTRUCTURE card
                   call wlog ('BANDSTRUCTURE card is experimental.')
@@ -978,9 +978,9 @@
              call wlog('BANDSTRUCTURE requires at least: emin  emax  estep  ikpath')
              call par_stop(' ')
           endif
-          read(words(2),30,err=900) emin_band
-          read(words(3),30,err=900) emax_band
-          read(words(4),30,err=900) estep_band
+          read(words(2),*,err=900) emin_band
+          read(words(3),*,err=900) emax_band
+          read(words(4),*,err=900) estep_band
           read(words(5),20,err=900) ikpath
           if(nwords.ge.6) read(words(6),20,err=900) nkp_band
           if(nwords.ge.7) read(words(7),*,err=900) freeprop
@@ -1017,8 +1017,8 @@
                          call wlog('Energy grid to be read from file.')
                       elseif(iegrid.eq.3) then
                          read(words(3),20,err=900) egrid3a
-                         read(words(4),30,err=900) egrid3b
-                         read(words(5),30,err=900) egrid3c
+                         read(words(4),*,err=900) egrid3b
+                         read(words(5),*,err=900) egrid3c
                          call wlog('Energy grid on exponential mesh.')
                       else
                          iegrid=0
@@ -1088,10 +1088,10 @@
          !read the first vector from the current line:
          if (qaverage) then
 !                    just read one component, assume spherical averaging
-                     read(words(3),30,err=900)  qvec(3)
+                     read(words(3),*,err=900)  qvec(3)
              if(nq.gt.1) then
-              read(words(4),30,err=900) dummy
-            dummy2=0.d0; if(nwords.ge.5) read(words(5),30,err=900) dummy2
+              read(words(4),*,err=900) dummy
+            dummy2=0.d0; if(nwords.ge.5) read(words(5),*,err=900) dummy2
             qw(1)=dcmplx(dummy,dummy2) !weight
            endif
                      qvec(2)=0.0d0
@@ -1102,12 +1102,12 @@
                         call par_stop(' ')
                      end if
          else
-                     read(words(3),30,err=900)  qvec(1)
-                     read(words(4),30,err=900)  qvec(2)
-                     read(words(5),30,err=900)  qvec(3)
+                     read(words(3),*,err=900)  qvec(1)
+                     read(words(4),*,err=900)  qvec(2)
+                     read(words(5),*,err=900)  qvec(3)
              if(nq.gt.1) then
-                read(words(6),30,err=900) dummy
-                dummy2=0.d0; if(nwords.ge.7) read(words(7),30,err=900) dummy2
+                read(words(6),*,err=900) dummy
+                dummy2=0.d0; if(nwords.ge.7) read(words(7),*,err=900) dummy2
                 qw(1)=dcmplx(dummy,dummy2)
            endif
              qn(1)=dsqrt(qvec(1)**2+qvec(2)**2+qvec(3)**2)
@@ -1124,9 +1124,9 @@
                   if (qaverage) then
              if(nwords.lt.2) stop 'expecting "q qweight" in feff.inp'
 !                    just read one component, assume spherical averaging
-                     read(words(1),30,err=900) qvec(3)
-           read(words(2),30,err=900) dummy
-           dummy2=0.d0; if(nwords.ge.3) read(words(3),30,err=900) dummy2
+                     read(words(1),*,err=900) qvec(3)
+           read(words(2),*,err=900) dummy
+           dummy2=0.d0; if(nwords.ge.3) read(words(3),*,err=900) dummy2
            qw(i)=dcmplx(dummy,dummy2)
                      qvec(2)=0.0d0
                      qvec(1)=0.0d0
@@ -1137,11 +1137,11 @@
                      end if
                   else
              if(nwords.lt.4) stop 'expecting "qx qy qz qweight" in feff.inp'
-                     read(words(1),30,err=900)  qvec(1)
-                     read(words(2),30,err=900)  qvec(2)
-                     read(words(3),30,err=900)  qvec(3)
-           read(words(4),30,err=900) dummy
-           dummy2=0.d0; if(nwords.ge.5) read(words(5),30,err=900) dummy2
+                     read(words(1),*,err=900)  qvec(1)
+                     read(words(2),*,err=900)  qvec(2)
+                     read(words(3),*,err=900)  qvec(3)
+           read(words(4),*,err=900) dummy
+           dummy2=0.d0; if(nwords.ge.5) read(words(5),*,err=900) dummy2
            qw(i)=dcmplx(dummy,dummy2)
              qn(i)=dsqrt(qvec(1)**2+qvec(2)**2+qvec(3)**2)
                   end if
@@ -1164,7 +1164,7 @@
                lopt=.true.
             elseif (itok .eq. 82) then
 !           EPS0 - set dielectric constant for MPSE calculation.
-               read(words(2),30,err=900) Eps0
+               read(words(2),*,err=900) Eps0
             elseif (itok .eq. 83) then
 !           OPCONS - create loss.dat file for MPSE from internal database.
                run_opcons = .TRUE.
@@ -1196,8 +1196,8 @@
              qqmdff=-1.d0
              cosmdff_dum=0.d0
           elseif(nwords.eq.4) then  ! use only q from the NRIXS list; generate q' using:
-               read(words(3),30,err=900) qqmdff
-               read(words(4),30,err=900) cosmdff_dum
+               read(words(3),*,err=900) qqmdff
+               read(words(4),*,err=900) cosmdff_dum
           else  !invalid syntax
              stop "fatal error in feff.inp - expecting:   MDFF 2  q'  angle              or     MDFF 2"
           endif
@@ -1265,7 +1265,7 @@
                nohole = 0
                save_gg_slice = .true.
          ltmp=0  !KJ 10-2012 bugfix for Win "ltmp used without being defined"
-               if (nwords.gt.1) read(words(2),30,err=900) pqmax
+               if (nwords.gt.1) read(words(2),*,err=900) pqmax
                if (nwords.gt.2) read(words(3),20,err=900) npq
                if (nwords.gt.3) read(words(4),20,err=900) ltmp
                if (ltmp.gt.0) force_jzzp = .true.
@@ -1274,7 +1274,7 @@
                do_rhozzp = .true.
       elseif (itok .eq. 96) then
 !           CGRID - grid parameters for COMPTON,RHOZZP
-              if (nwords.gt.1) read(words(2),30,err=900) zpmax
+              if (nwords.gt.1) read(words(2),*,err=900) zpmax
               if (nwords.gt.2) read(words(3),20,err=900) ns
               if (nwords.gt.3) read(words(4),20,err=900) nphi
               if (nwords.gt.4) read(words(5),20,err=900) nz
@@ -1283,7 +1283,7 @@
 !      CORVAL - set minimum energy for core-valence separation energy search
 !             This card is a temporary fix until we fix the core-valence problem properly (FEFF9.7?)
         if (nwords.gt.1) then
-           read(words(2),30,err=900) corval_emin ! eV
+           read(words(2),*,err=900) corval_emin ! eV
         else
            call wlog('Ignoring CORVAL card without parameter corval_emin')
         endif
@@ -1291,14 +1291,14 @@
 !           SIGGK - multiply fine structure chi(k) by energy-dependent but otherwise global Debye-Waller factor
 !                 i.e. chi(k) * exp{-(sig_gk k)^2}
        if (nwords.gt.1) then
-          read(words(2),30,err=900) sig_gk  ! in Angstrom (not Angstrom^2)
+          read(words(2),*,err=900) sig_gk  ! in Angstrom (not Angstrom^2)
         else
            call wlog('Ignoring SIGGK card without parameter sig_gk')
         endif
 
       elseif (itok .eq. 99) then
 !           TEMPERATURE - valence electron temperature for SCF loop
-              if (nwords.gt.1) read(words(2),30,err=900) scf_temperature
+              if (nwords.gt.1) read(words(2),*,err=900) scf_temperature
               ! if (nwords.gt.2) read(words(3),20,err=900) scf_thermal_vxc
               if (nwords.gt.2) read(words(3),20,err=900) iscfxc
               electronic_temperature = scf_temperature
@@ -1336,15 +1336,15 @@
                i_hubbard = 2
                mldos_hubb = 2
          !     l_hubbard=3
-               read(words(2),30,err=900)  U_hubbard
-               read(words(3),30,err=900)  J_hubbard
-               read(words(4),30,err=900)  fermi_shift
+               read(words(2),*,err=900)  U_hubbard
+               read(words(3),*,err=900)  J_hubbard
+               read(words(4),*,err=900)  fermi_shift
                read(words(5),20,err=900)  l_hubbard
       elseif (itok .eq. 105) then
 !            CRPA
                CRPAI%do_CRPA=1
                read(words(2),20,err=900) CRPAI%l_crpa
-               read(words(3),30,err=900)  CRPAI%rcut
+               read(words(3),*,err=900)  CRPAI%rcut
       elseif (itok .eq. 106) then
             ! FULLSPECTRUM
                mFullSpectrum = 1
@@ -1352,7 +1352,7 @@
       elseif (itok .eq. 107) then
 !              SCXC
                read(words(2),20,err=900) iscfxc
-!               read(words(2),30,err=900) iscfxc !-LC- 11=vBh 12=PZ 21=PDW 22=KSDFT
+!               read(words(2),*,err=900) iscfxc !-LC- 11=vBh 12=PZ 21=PDW 22=KSDFT
 !               !-LC- check if the value of iscfxc is valid
                if ( (iscfxc .ne. 11) .and. (iscfxc .ne.12) .and. (iscfxc .ne. 21) .and. (iscfxc .ne. 22) ) then
                   call wlog('Error: iscfxc should take one of the values &
@@ -1371,10 +1371,10 @@
               xntol = 1e-4
               nmu = 100
               read(words(2),20,err=900) iscfth
-              if (nwords.gt.2) read(words(3),30,err=900) emaxscf
+              if (nwords.gt.2) read(words(3),*,err=900) emaxscf
               if (nwords.gt.3) read(words(4),20,err=900) negrid
               if (nwords.gt.4) read(words(5),20,err=900) nmu
-              if (nwords.gt.5) read(words(6),30,err=900) xntol
+              if (nwords.gt.5) read(words(6),*,err=900) xntol
       elseif (itok .eq. 110) then
 !              WARNION
                WarnIon = .TRUE. 
@@ -1437,7 +1437,7 @@
             endif
             read(words(1),20,err=900) iphovr(iovr,iph)
             read(words(2),20,err=900) nnovr(iovr,iph)
-            read(words(3),30,err=900) rovr(iovr,iph)
+            read(words(3),*,err=900) rovr(iovr,iph)
          elseif (mode .eq. 3)  then
             if (itok .ne. 0)  then
 !              We're done reading unique potential definitions
@@ -1487,11 +1487,11 @@
                 'as it may be unstable or give very poor results otherwise.')
             endif
             if (nwords .ge. 6) then
-              read(words(6),30,err=900) xnatph(iph)
+              read(words(6),*,err=900) xnatph(iph)
               lxnat = 1
             endif
             if (nwords .ge. 7) then
-              read(words(7),30,err=900) spinph(iph)
+              read(words(7),*,err=900) spinph(iph)
             endif
       nph_read=iph
            elseif (mode.eq.4) then  !KJ 1-06 this mode added to read ELNES card
