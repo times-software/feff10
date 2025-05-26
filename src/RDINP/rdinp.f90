@@ -722,12 +722,13 @@
                if (lfms2.gt.0) lfms2 = 1
          do_fms = 1  !flag that FMS algorithm should run
             elseif (itok .eq. 38)  then
-!              LDOS  emin  emax  eimag  neldos
+!              LDOS  emin  emax  eimag  neldos ldostype
                mldos = 1
                read(words(2),*,err=900)  emin
                read(words(3),*,err=900)  emax
                read(words(4),*,err=900)  eimag
                if (nwords.gt.4) read(words(5),20,err=900)  neldos
+               if (nwords.gt.5) read(words(6),20,err=900)  ldostype
                if (neldos.gt.nex) then
                  write (slog, "(a,i4,a)") &
                    "Warning - the number of energy points specified " // &
