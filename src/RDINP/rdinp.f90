@@ -1741,7 +1741,7 @@
 
          !List atoms up to at least rmax + 33%
          magnifier=1.33d0
-         ratomslist=max(20.d0,magnifier*rmax)
+         ratomslist=max(8.d0,magnifier*rmax)
          i1=int(ratomslist/dsqrt(a1(1)**2+a1(2)**2+a1(3)**2))+1
          i2=int(ratomslist/dsqrt(a2(1)**2+a2(2)**2+a2(3)**2))+1
          i3=int(ratomslist/dsqrt(a3(1)**2+a3(2)**2+a3(3)**2))+1
@@ -1762,12 +1762,12 @@
          if(j.gt.nattx) then
           if(i1+i2+i3.eq.0) then
                  call par_stop ('WARNING - current value of nattx does not allow to calculate up to rmax as specified in feff.inp')
-        else
-           i1=i1-1
-         i2=i2-1
-         i3=i3-1
-         goto 4245
-        endif
+          else
+             i1=i1-1
+             i2=i2-1
+             i3=i3-1
+             goto 4245
+          endif
          endif
           nshift=0
           shift(:,:)=0.d0

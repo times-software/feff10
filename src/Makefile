@@ -182,11 +182,11 @@ mpi:
 	echo -e $(parmessg1) $(parmessg2) $(parmessg3)
 
 src:
-	cp PAR/sequential.src PAR/par.f90
+	cp PAR/sequential.src PAR/parallel.f90
 	perl Utility/make_modular_sourcefiles.pl
 
 srcmpi:
-	cp PAR/parallel.src PAR/par.f90
+	cp PAR/parallel.src PAR/parallel.f90
 	perl Utility/make_modular_sourcefiles.pl mpi
 
 deps:
