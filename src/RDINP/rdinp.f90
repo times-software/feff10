@@ -1384,6 +1384,17 @@
                ramp_scf = .true.
                if (nwords.gt.1) read(words(2),*) rfms1_start 
                if (nwords.gt.2) read(words(3),*) nramp 
+      elseif (itok .eq. 112) then
+!              TOLSCF tolmu [tolq tolqp]
+               read(words(2),*) tmp
+               if(tmp .lt. 0.d0) then
+                  tolq = tolq*tmp
+                  tolqp = tolqp*tmp
+                  tolmu = tolmu*tmp 
+               else
+                  if(nwords.gt.2) read(words(3),*) tolq
+                  if(nwords.gt.3) read(words(4),*) tolqp
+               end if
       elseif (itok .eq. -1)  then
 !              END
                goto 220

@@ -240,6 +240,8 @@
             itoken = 110
          elseif (w .eq. 'SCFR') then !TS 07/2020
             itoken = 111
+         elseif (w .eq. 'TOLS') then !JJK
+            itoken = 112
          elseif (w .eq. 'END ') then
             itoken = -1            
          else
@@ -389,7 +391,7 @@
             if(itoken.eq.109) w='SCFTH'
             if(itoken.eq.110) w='WARN'
             if(itoken.eq.111) w='SCFR'
-
+            if(itoken.eq.112) w='TOLS'
       elseif (flname(1:10).eq.'spring.inp') then
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !     These tokens are for spring.inp (input for eq of motion method)

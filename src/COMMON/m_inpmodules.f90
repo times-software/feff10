@@ -527,7 +527,7 @@
 !		iz(0:nphx)    - atomic number, input
 		integer, allocatable :: lmaxsc(:)
 		real rfms1, rfms1_start
-		double precision gamach, rgrd, ca1, ecv, totvol
+		double precision gamach, rgrd, ca1, ecv, totvol, tolmu, tolq, tolqp
 		double precision, allocatable :: xnatph(:), folp(:), spinph(:)
 !		xnatph(0:nphx) - given unique pot, how many atoms are there
 !                      of this type? (used for interstitial calc)
@@ -552,9 +552,9 @@
 
 
 !       criteria for self-consistency
-    real*8,parameter :: tolmu = 1.D-3  ! Fermi level (Ha)
-    real*8,parameter :: tolq = 1.D-3   ! net charge on atom iph (e)
-    real*8,parameter :: tolqp = 2.D-4  ! partial charge (e.g. l=1) on atom iph (e)
+    !real*8,parameter :: tolmu = 1.D-3  ! Fermi level (Ha)
+    !real*8,parameter :: tolq = 1.D-3   ! net charge on atom iph (e)
+    !real*8,parameter :: tolqp = 2.D-4  ! partial charge (e.g. l=1) on atom iph (e)
     real*8,parameter :: tolsum = 0.05  ! total valence charge in Norman sphere compared to formal valence charge
 
     ! criteria for thermal-scf
@@ -622,6 +622,8 @@
         write(3,*) FiniteNucleus, WarnIon
         write(3,'(A)') 'ramp_scf  rfms_start  nramp'
         write(3,*) ramp_scf, rfms1_start, nramp
+        write(3,10) 'tolmu, tolq, tolqp'
+        write(3,30) tolmu, tolq, tolqp
         close(3)
 		! standard formats for string, integers and real numbers
 	  10  format(a)
@@ -659,6 +661,7 @@
         read(3,*) ; read(3,*) negrid, emaxscf
         read(3,*) ; read(3,*) FiniteNucleus, WarnIon
         read(3,*) ; read(3,*) ramp_scf, rfms1_start, nramp
+        read(3,*) ; read(3,*) tolmu, tolq, tolqp
 			  55 continue
 			close(3)
 		end subroutine potential_read
@@ -666,6 +669,9 @@
 		subroutine potential_init
       !call wlog('in potential_init')
       call potential_allocate
+      tolmu = 1.d-3
+      tolq = 1.d-3
+      tolqp = 2.d-4
 			title(:) = ' '
                         WarnIon = .FALSE.
 			mpot = 1
