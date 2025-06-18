@@ -6,7 +6,7 @@
 
  *	T	T_Debye	1=Equations of Motion Method
  DEBYE   300.  600.  1
- EXAFS
+ EXAFS 20
   
  POTENTIALS
  *   ipot   z  label

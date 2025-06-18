@@ -10,5 +10,5 @@ xmax = min(x1[-1],x2[-1])
 x = np.linspace(xmin,xmax,100)
 y1_interp=np.interp(x,x1,y1)
 y2_interp=np.interp(x,x2,y2)
-rsqr = (y2_interp - y1_interp)**2/(y1_interp + y2_interp)
+rsqr = (y2_interp - y1_interp)**2/(y1_interp + y2_interp)**2
 print(np.average(rsqr))

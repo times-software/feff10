@@ -3,19 +3,19 @@ TITLE	Gd_L1 hcp
 XMCD
 EDGE L1	1.0
 SPIN	1
-EXCHANGE	2
+EXCHANGE 2 0.0 0.0
 RGRID	0.01
 
 CONTROL	1 1 1 1 1 1
 RPATH	7.29
 CRITERIA	0.0	0.0	* curved	plane
 DEBYE	150	176
-XANES
+XANES 8
 
 POTENTIALS
 *	ipot	z	label
-	0	64	Gd
-	1	64	Gd
+	0	64	Gd 
+	1	64	Gd 
 
 ATOMS                          * this list contains 19 atoms
  *   x          y          z      ipot  tag           distance

@@ -6,7 +6,8 @@ files=`find -name referencexmu.dat |grep -v HUBBARD`
 pd=`pwd`
 if [ "X$1" == "X" ]
 then
-	cmd="feff10test 40"
+	cmd="feff10test 20"
+	skip=0
 else
 	cmd='echo'
 	skip=1
@@ -26,11 +27,13 @@ do
 	if [ $skip -eq 0 ]
 	then
 		# Clean out any files from a previous run
-		rm -f `ls *.inp |grep -v feff.inp`
+		inp_files='band.inp compton.inp config.inp crpa.inp density.inp dmdw.inp eels.inp ff2x.inp fms.inp fullspectrum.inp genfmt.inp global.inp grid.inp hubbard.inp ldos.inp opcons.inp paths.inp pot.inp reciprocal.inp rixs.inp screen.inp sfconv.inp xsph.inp'
+		dat_fils="apl.dat atom*.dat atoms.dat axafs.dat chemical.dat chi*.dat config.dat contour.dat crit.dat curve.dat danes.dat .dimensions.dat edges.dat eels.dat emesh.dat exc.dat files.dat fpf0.dat geom.dat gg.dat gtr* kmesh.dat ldos*.dat leg1.dat list*.dat lmdos*.dat log*.dat magic.dat misc.dat mpse.dat paths.dat phase.dat pot*.dat prexmu.dat ratio.dat raw.dat residue.dat rhoc*.dat s2*.dat specfunct.dat vtot.dat wscrn.dat xmu*.dat xsec*.dat"
+		rm -f $inp_files
+		rm -f $dat_files
 		rm -f *.bin
 		rm -f xmu.dat xmu1.dat xmu2.dat
 		rm -f log*
-		rm -f `ls *.dat |grep -v reference`
 		rm -f convergence.scf*
 		rm -f *.out
 		rm -f fort.*
@@ -44,22 +47,29 @@ do
 		fl=`echo $rfile |sed -e's/reference//g'`
 		if [ "X$fl" == "Xxmu.dat" ]
 		then
-			grep -v '#' xmu.dat |nl > xmu1.dat 
-			grep -v '#' $rfile |nl > xmu2.dat
-			echo 
-			echo '##################################################################################################'
-			echo '##################################################################################################'
-			echo -n "$fl: "
-			echo 'xmu.dat' > rsqr.in
-			echo 'referencexmu.dat' >> rsqr.in
-			echo 1 >> rsqr.in
-			echo 4 >> rsqr.in
-			python $pd/rsqr.py < rsqr.in| awk '{if($1*100.0 < 0.1) print "pass"; else print "fail", $1*100.0}' 
-			echo '##################################################################################################'
-			echo '##################################################################################################'
-			echo -n "$file: " >> $pd/test.log
-			python $pd/rsqr.py < rsqr.in| awk '{if($1*100.0 < 0.1) print "pass"; else print "fail", $1*100.0}' >> $pd/test.log
-			echo
+			if [ -e $fl ]
+			then
+				grep -v '#' xmu.dat |nl > xmu1.dat 
+				grep -v '#' $rfile |nl > xmu2.dat
+				echo 
+				echo '##################################################################################################'
+				echo '##################################################################################################'
+				echo -n "$fl: "
+				echo 'xmu.dat' > rsqr.in
+				echo 'referencexmu.dat' >> rsqr.in
+				echo 1 >> rsqr.in
+				echo 4 >> rsqr.in
+				python $pd/rsqr.py < rsqr.in| awk '{if($1*100.0 < 0.1) print "pass"; else print "fail", $1*100.0}' 
+				echo '##################################################################################################'
+				echo '##################################################################################################'
+				echo -n "$file: " >> $pd/test.log
+				python $pd/rsqr.py < rsqr.in| awk '{if($1*100.0 < 0.1) print "pass"; else print "fail", $1*100.0}' >> $pd/test.log
+				echo
+			else
+				echo -n "$file: " >> $pd/test.log
+				echo "fail: xmu.dat not found"
+				echo "fail: xmu.dat not found" >> $pd/test.log
+			fi
 		else
 			echo '##################################################################################################'
 			echo '##################################################################################################'
