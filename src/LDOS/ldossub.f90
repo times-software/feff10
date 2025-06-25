@@ -19,7 +19,7 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
   use DimsMod, only: nphx=>nphu, nrptx, lx, nex, ltot, natx
   use constants
   use par
-  use ldos_inp,only: neldos
+  use ldos_inp,only: neldos,ldostype
   implicit none
 !Changed the dimensions to 40 to account for superheavy elements. Pavlo Baranov 07/2016
   ! Input
@@ -168,7 +168,7 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
         call fmsdos(2, rfms2, lfms2, iph0, idwopt, tk,thetad,sig2g,   &
              &      lmaxph, nat, iphat, rat, inclus(0),               &
              &      ne, ne1, ne3, nph, em, eref, iz, ph,              &
-             &      minv, rdirec, toler1, toler2)
+             &      minv, rdirec, toler1, toler2, ldostype)
         do iph0 = 1, nph
            inclus(iph0) = inclus(0)
         enddo
@@ -177,14 +177,14 @@ subroutine ldos ( nph, edens, edenvl, dmag, vtot, vvalgs,      &
            call fmsdos(2, rfms2, lfms2,iph0,idwopt,tk,thetad,sig2g,    &
                 &      lmaxph, nat, iphat, rat, inclus(iph0),          &
                 &      ne, ne1, ne3, nph, em, eref, iz, ph,            &
-                &       minv, rdirec, toler1, toler2)
+                &       minv, rdirec, toler1, toler2, ldostype)
         enddo
      endif
 
      do iph = 0,nph
         if(master)write (slog,'(a, i5)') 'Writing DOS for atom type ', iph
         call wlog(slog) 
-        call ff2rho (critcw, ne, xrhoce(0,1,iph), xrhole(0,1,iph), iph, msapp, em, lfms2, qnrm, xnmues, xmu, inclus)
+        call ff2rho (critcw, ne, xrhoce(0,1,iph), xrhole(0,1,iph), iph, msapp, em, lfms2, qnrm, xnmues, xmu, inclus, ldostype)
      enddo
 
      call par_barrier
