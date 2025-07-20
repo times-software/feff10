@@ -302,14 +302,16 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
                              
                              ! im_1 = im, im_2 = -1 * im
                              im_1 = im
-                             im_2 = im + ((2*il+1) / 2 + 1)
+                             ! OLD, im_2 = im + ((2*il+1) / 2 + 1)
+                             im_2 = 2*il+1 + 1 - im
                              coef_1 = conis/sqrt(2.0)
                              coef_2 = conis/sqrt(2.0) * -1 * (-1)**(im - ((2*il+1) / 2 + 1))
                              gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
                              coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
 
                              ! im_1 = -1 * im, im_2 = im
-                             im_1 = im + ((2*il+1) / 2 + 1)
+                             ! OLD, im_1 = im + ((2*il+1) / 2 + 1)
+                             im_1 = 2*il+1 + 1 - im
                              im_2 = im
                              coef_1 = conis/sqrt(2.0) * -1 * (-1)**(im - ((2*il+1) / 2 + 1))
                              coef_2 = conis/sqrt(2.0)
@@ -317,8 +319,10 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
                              coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
  
                              ! im_1 = -1 * im, im_2 = -1 * im
-                             im_1 = im + ((2*il+1) / 2 + 1)
-                             im_2 = im + ((2*il+1) / 2 + 1)
+                             ! OLD, im_1 = im + ((2*il+1) / 2 + 1)
+                             ! OLD, im_2 = im + ((2*il+1) / 2 + 1)
+                             im_1 = (2*il+1) + 1 - im
+                             im_2 = (2*il+1) + 1 - im
                              coef_1 = conis/sqrt(2.0) * -1 * (-1)**(im - ((2*il+1) / 2 + 1))
                              coef_2 = conis/sqrt(2.0) * -1 * (-1)**(im - ((2*il+1) / 2 + 1))
                              gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
@@ -344,14 +348,16 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
                              
                              ! im_1 = im, im_2 = -1 * im
                              im_1 = im
-                             im_2 = im - ((2*il+1) / 2 + 1)
+                             ! OLD, im_2 = im - ((2*il+1) / 2 + 1)
+                             im_2 = 2*il+2 - im
                              coef_1 = 1/sqrt(2.0)
                              coef_2 = 1/sqrt(2.0) * (-1)**(im - ((2*il+1) / 2 + 1))
                              gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
                              coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
 
                              ! im_1 = -1 * im, im_2 = im
-                             im_1 = im - ((2*il+1) / 2 + 1)
+                             ! OLD, im_1 = im - ((2*il+1) / 2 + 1)
+                             im_1 = 2*il+2 - im
                              im_2 = im
                              coef_1 = 1/sqrt(2.0) * (-1)**(im - ((2*il+1) / 2 + 1))
                              coef_2 = 1/sqrt(2.0)
@@ -359,8 +365,10 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
                              coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
  
                              ! im_1 = -1 * im, im_2 = -1 * im
-                             im_1 = im - ((2*il+1) / 2 + 1)
-                             im_2 = im - ((2*il+1) / 2 + 1)
+                             ! OLD, im_1 = im - ((2*il+1) / 2 + 1)
+                             ! OLD, im_2 = im - ((2*il+1) / 2 + 1)
+                             im_1 = 2*il+2 - im
+                             im_2 = 2*il+2 - im
                              coef_1 = 1/sqrt(2.0)
                              coef_2 = 1/sqrt(2.0)
                              gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
