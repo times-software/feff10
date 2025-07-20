@@ -88,7 +88,7 @@
       do iat = 1,natt
          if (iat.ne.iatabs) then
             tmp = dist (ratx(1,iat), ratx(1,iatabs))
-            if (tmp.gt.0.1 .and. tmp.le.rclabs) then
+            if (tmp.gt.0 .and. tmp.le.rclabs) then
                nat = nat + 1
                if (nat.gt.natx) then
                  write (slog, 307) nat, natx

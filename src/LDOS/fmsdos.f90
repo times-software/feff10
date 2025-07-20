@@ -5,10 +5,12 @@
 ! $Date: 2012/05/15 22:57:34 $
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
      &            lmaxph, nat, iphat, ratdbl, inclus,                &
      &            ne, ne1, ne3, nph, em, eref, iz, ph,               &
-     &            minv, rdirec, toler1, toler2 )
+     &            minv, rdirec, toler1, toler2, ldostype)
   !     uses Bruce Ravel subroutine to do FMS for LDOS
   !     written by alexei ankudinov 06.2000 from fmstot.f
 
@@ -30,6 +32,7 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
   integer, intent(in) :: ne,ne1,ne3,ifms,lfms
   integer, intent(in) :: iph0,idwopt,nat,nph
   integer, intent(out) :: inclus
+  integer, intent(in) :: ldostype
   real,    intent(in) :: rdirec,toler1,toler2,rclust
   integer, intent(in), dimension(natx) :: iphat
   real*8,  intent(in), dimension(3,natx) :: ratdbl
@@ -56,6 +59,8 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
   integer :: nsp,ispin,j,ip,ios,isp
   integer :: is,i,indx,length,maxlen,ixl,iyl
   integer :: il,ix,im,ii,ie,ipp,ill
+  integer :: im_1,im_2
+  complex*8 :: coef_1,coef_2
   real*8  :: wall_prep,wall_yprep
   integer :: i_for_next_report
   integer, parameter :: i_report_granularity=20
@@ -95,7 +100,7 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
 
   !KJ allocate gtr dynamically ; for mt-potential, sum over m
   ! for full potential, save m-dependent information.
-  if(fullpot) then
+  if(fullpot.or.(ldostype>0)) then
      nlgtr=(lx+1)**2
   else
      nlgtr=lx
@@ -268,15 +273,120 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
                  IL_LOOP: do il=0,lmaxph(ip)
                     ix = il**2
                     do im=1,2*il+1
-                       if(fullpot) then
-                          gtr(ix+im,ip,ie)=gg(ix+im,ix+im,ip)*  exp(2*conis*xphase(1, il,ip))/(2*il+1)
-                          if (worker) gtrloc(ix+im,ip,isize) = gtr(ix+im,ip,ie)
+                       if(fullpot.or.(ldostype>0)) then
+                         if(ldostype == 2) then
+                           gtr(ix+im,ip,ie)=gg(ix+im,ix+im,ip)*  exp(2*conis*xphase(1, il,ip))/(2*il+1)
+                         elseif(ldostype == 1) then
+                          
+                          ! CC, code to change basis from l,m spherical harmonics to real spherical harmonics
+                          ! Things get a bit confusing because im starts counting from 1 instead of -l
+
+                          ! Conversion from regular shepherical harmonics (Y_l^{m}) to real spherical harmonics (Y_{l,m})
+                          ! Y_lm = conis/srqt(2.0) (Y_l^{m} - (-1)**(m) Y_l^{-m}), m < 0
+                          ! Y_lm = Y_l^{m}), m = 0
+                          ! Y_lm = 1/srqt(2.0) (Y_l^{-m} + (-1)**(m) Y_l^{m}), m > 0
+
+                          ! Basis transformation of gg(m,m')
+                          ! gg(a,a') (Real SH) = Sum_{m,m'} <Y_la|Y_l^m>gg(m,m')<Y_l^m'|Y_la>
+                            
+
+                           if (im < ((2*il+1) / 2 + 1)) then
+                             
+                             ! im_1 = im, im_2 = im
+                             im_1 = im
+                             im_2 = im
+                             coef_1 = conis/sqrt(2.0)
+                             coef_2 = conis/sqrt(2.0)
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+                             
+                             ! im_1 = im, im_2 = -1 * im
+                             im_1 = im
+                             ! OLD, im_2 = im + ((2*il+1) / 2 + 1)
+                             im_2 = 2*il+1 + 1 - im
+                             coef_1 = conis/sqrt(2.0)
+                             coef_2 = conis/sqrt(2.0) * -1 * (-1)**(im - ((2*il+1) / 2 + 1))
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+
+                             ! im_1 = -1 * im, im_2 = im
+                             ! OLD, im_1 = im + ((2*il+1) / 2 + 1)
+                             im_1 = 2*il+1 + 1 - im
+                             im_2 = im
+                             coef_1 = conis/sqrt(2.0) * -1 * (-1)**(im - ((2*il+1) / 2 + 1))
+                             coef_2 = conis/sqrt(2.0)
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+ 
+                             ! im_1 = -1 * im, im_2 = -1 * im
+                             ! OLD, im_1 = im + ((2*il+1) / 2 + 1)
+                             ! OLD, im_2 = im + ((2*il+1) / 2 + 1)
+                             im_1 = (2*il+1) + 1 - im
+                             im_2 = (2*il+1) + 1 - im
+                             coef_1 = conis/sqrt(2.0) * -1 * (-1)**(im - ((2*il+1) / 2 + 1))
+                             coef_2 = conis/sqrt(2.0) * -1 * (-1)**(im - ((2*il+1) / 2 + 1))
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+
+                           elseif (im == ((2*il+1) / 2 + 1)) then
+                             im_1 = im
+                             im_2 = im
+                             coef_1 = 1
+                             coef_2 = 1
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+                           
+                           elseif (im > ((2*il+1) / 2 + 1)) then
+                             
+                             ! im_1 = im, im_2 = im
+                             im_1 = im
+                             im_2 = im
+                             coef_1 = 1/sqrt(2.0) * (-1)**(im - ((2*il+1) / 2 + 1))
+                             coef_2 = 1/sqrt(2.0) * (-1)**(im - ((2*il+1) / 2 + 1))
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+                             
+                             ! im_1 = im, im_2 = -1 * im
+                             im_1 = im
+                             ! OLD, im_2 = im - ((2*il+1) / 2 + 1)
+                             im_2 = 2*il+2 - im
+                             coef_1 = 1/sqrt(2.0)
+                             coef_2 = 1/sqrt(2.0) * (-1)**(im - ((2*il+1) / 2 + 1))
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+
+                             ! im_1 = -1 * im, im_2 = im
+                             ! OLD, im_1 = im - ((2*il+1) / 2 + 1)
+                             im_1 = 2*il+2 - im
+                             im_2 = im
+                             coef_1 = 1/sqrt(2.0) * (-1)**(im - ((2*il+1) / 2 + 1))
+                             coef_2 = 1/sqrt(2.0)
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+ 
+                             ! im_1 = -1 * im, im_2 = -1 * im
+                             ! OLD, im_1 = im - ((2*il+1) / 2 + 1)
+                             ! OLD, im_2 = im - ((2*il+1) / 2 + 1)
+                             im_1 = 2*il+2 - im
+                             im_2 = 2*il+2 - im
+                             coef_1 = 1/sqrt(2.0)
+                             coef_2 = 1/sqrt(2.0)
+                             gtr(ix+im,ip,ie) = gtr(ix+im,ip,ie) + conjg(coef_1) * gg(ix+im_1, ix+im_2, ip) * &
+                             coef_2 * exp(2*conis*xphase(1, il,ip))/(2*il+1)
+
+                           endif
+                         else
+                           print*,ldostype
+                           call par_stop('ldostype has unrecognized integer value')
+                         endif
+
+                         if (worker) gtrloc(ix+im,ip,isize) = gtr(ix+im,ip,ie)
                        else
                           gtr(il,ip,ie)=gtr(il,ip,ie)+ gg(ix+im,ix+im,ip)
                        endif
                     enddo
-                    if(.not.fullpot) gtr(il,ip,ie)= gtr(il,ip,ie)* exp(2*conis*xphase(1, il,ip))/(2*il+1)
-                    if (worker.and.(.not.fullpot)) then 
+                    if(.not.(fullpot.or.(ldostype>0))) gtr(il,ip,ie)= gtr(il,ip,ie)* exp(2*conis*xphase(1, il,ip))/(2*il+1)
+                    if (worker.and.(.not.(fullpot.or.(ldostype>0)))) then 
                        gtrloc(il,ip,isize) = gtr(il,ip,ie)
                     endif
                  enddo IL_LOOP
@@ -352,7 +462,6 @@ subroutine fmsdos(ifms, rclust, lfms,iph0,idwopt,tk,thetad,sigma2,   &
   ! Deallocate local variables
   deallocate(gtr,gtrloc)
   deallocate(lcalc,gg,xphase,pstab,map,ck,etab,ptab)
-
   return
 
 !1475 continue
