@@ -745,6 +745,7 @@
 !              more obscure options described in manual
                read(words(2),20,err=900)  inters
                if (nwords.ge.3) read(words(3),*,err=900)  totvol
+               if (nwords.ge.4) read(words(4),*,err=900) vint_scl
             elseif (itok .eq. 40) then
 !              CFAV  iphabs nabs rclabs
                read(words(2),20,err=900)  iphabs

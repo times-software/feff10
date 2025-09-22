@@ -250,6 +250,7 @@ subroutine pot !KJ put everything in modules 7-09
   &            ixc, rhoint,vint, rs, xf, xmu, xmunew,                &
   &            rnrmav, qtotel, inters, totvol) !KJ ,EmptyCell)
   xmu = xmunew
+  if(master) PRINT*, 'vint = ', vint
 
   ! Debug: FDV
   !       write(6,*) ' Entering afolp'

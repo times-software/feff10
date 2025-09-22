@@ -527,7 +527,7 @@
 !		iz(0:nphx)    - atomic number, input
 		integer, allocatable :: lmaxsc(:)
 		real rfms1, rfms1_start
-		double precision gamach, rgrd, ca1, ecv, totvol, tolmu, tolq, tolqp
+		double precision gamach, rgrd, ca1, ecv, totvol, vint_scl, tolmu, tolq, tolqp
 		double precision, allocatable :: xnatph(:), folp(:), spinph(:)
 !		xnatph(0:nphx) - given unique pot, how many atoms are there
 !                      of this type? (used for interstitial calc)
@@ -586,8 +586,8 @@
 			  do ititle = 1, ntitle
 		         write(3,10) title(ititle)
 			  enddo
-			  write(3,10) 'gamach, rgrd, ca1, ecv, totvol, rfms1, corval_emin'
-			  write(3,30)  gamach, rgrd, ca1, ecv, totvol, rfms1, corval_emin
+			  write(3,10) 'gamach, rgrd, ca1, ecv, totvol, vint_scl, rfms1, corval_emin'
+			  write(3,30)  gamach, rgrd, ca1, ecv, totvol, vint_scl, rfms1, corval_emin
 			  write(3,10) ' iz, lmaxsc, xnatph, xion, folp'
         ! CC Changed 120 format to accommodate more extreme stoichiometries
 		  120   format ( 2i5, 4f20.10)
@@ -642,7 +642,7 @@
 			  do ititle = 1, ntitle
 		         read(3,*) title(ititle)
 			  enddo
-			  read(3,*) ; read(3,*)  gamach, rgrd, ca1, ecv, totvol, rfms1, corval_emin
+			  read(3,*) ; read(3,*)  gamach, rgrd, ca1, ecv, totvol, vint_scl, rfms1, corval_emin
 			  read(3,*)
 			  do ip = 0, nph
 		        read(3,*) iz(ip), lmaxsc(ip), xnatph(ip), xion(ip), folp(ip)
@@ -698,6 +698,7 @@
 			ecv = -40*1.d0
 			rgrd = 0.05 * 1.d0
 			totvol = 0.d0
+                        vint_scl = 1.d0
 			gamach = 0.d0 !initialized later by setgam
 			xnatph(:) = 0.d0
 			spinph(:) = -1.d10

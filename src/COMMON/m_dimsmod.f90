@@ -28,7 +28,7 @@ module DimsMod
 !  integer,parameter :: nphx   = 14      ! Max number of unique potentials (potph)
   integer,parameter :: ltot   = 24      ! Max number of ang mom (arrays 1:ltot+1)
   integer,parameter :: nrptx  = 1251    ! Loucks r grid used through overlap and in phase work arrays
-  integer,parameter :: nex    = 2000     ! Number of energy points genfmt, etc.
+  integer,parameter :: nex    = 100000     ! Number of energy points genfmt, etc.
   integer,parameter :: lamtot = 15      ! Max number of distinct lambda's for genfmt 15 handles iord 2 and exact ss
   integer,parameter :: mtot   = 4       ! Vary mmax and nmax independently
   integer,parameter :: ntot   = 2 

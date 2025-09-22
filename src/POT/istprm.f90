@@ -16,7 +16,7 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
   use constants
   use DimsMod, only: natx, nphx=>nphu, novrx, novp
   use pdw_mod
-  use potential_inp, only: iscfxc, scf_temperature, scf_thermal_vxc !-LC- iscfxc
+  use potential_inp, only: iscfxc, scf_temperature, scf_thermal_vxc, vint_scl !-LC- iscfxc
 
   use pz_mod
   use ksdt_mod
@@ -404,11 +404,11 @@ subroutine istprm ( nph, nat, iphat, rat, iatph, xnatph,          &
 
   !     find potential inside mt sphere and vint
   call ovp2mt(nph, vtot, 1, qtotel, ri, xnatph, lnear, inrm, imt, rnrm, rmt, cmovp, ipiv, vint,inters)
-
+  vint = vint*vint_scl
   if (vint.ge.xmu) then
     call wlog(' WARNING:interstitial level found above Fermi level.')
     call wlog(' Results may be unreliable. See manual for details.')
-    vint = xmu - 0.05d0
+    ! vint = xmu - 0.05d0  JK - turn this off for this version.
     call ovp2mt(nph, vtot, 2, qtotel, ri, xnatph, lnear, inrm, imt, rnrm, rmt, cmovp, ipiv, vint,inters)
   endif
   call fermi (rhoint, vint, xmunew, rs, xf)
