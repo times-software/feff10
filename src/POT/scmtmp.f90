@@ -13,7 +13,7 @@
      &                xnferm, xnvmu, xnval,                             &
      &                x0, ri, dx, xnatph, xion, iunf, iz,               &
      &                adgc, adpc, dgc,dpc, ihole,                       &
-     &                rat,iatph,iphat, lmaxsc, rhoval, xnmues, ok,      &
+     &                rat,iatph,iphat, lmaxsc, rhoval, rhoval_l, xnmues, ok,      &
      &                rgrd, nohole, nscmt, icoul, ca1, rfms1, lfms1,    &
      &                gtr, xrhole, xrhoce, yrhole, yrhoce )
 
@@ -49,7 +49,7 @@
 
 !     input and output
       dimension edens(251,0:nphx), edenvl(251,0:nphx)
-      dimension rhoval(251,0:nphx+1)
+      dimension rhoval(251,0:nphx+1), rhoval_l(251,0:lx)
 
 !     work space
 
@@ -58,19 +58,19 @@
       dimension adgc(10,41,0:nphx+1), adpc(10,41,0:nphx+1)
       dimension dgcn(nrptx,41), dpcn(nrptx,41)
 
-      complex*16 yrhocp(251,0:nphx)
+      complex*16 yrhocp(251,0:nphx), yrhocp_l(251,0:lx)
 
 !     special dimension for MPI
 !     Maxprocs = max number of processors for parallel execution
 !--   This is set in parallel.h
 !     npr - actual number of processors is passed to this subroutine
 
-      complex*16 yrhoce(251,0:nph,npr)
+      complex*16 yrhoce(251,0:nph,npr), yrhoce_l(251,0:lx,npr)
 
       integer iph
 !     complex energy grid emg is decomposed into em and eref
       parameter (negx = 80)
-      complex*16 emg(negx), em, eref, ee, ep, fl, fr, fxa
+      complex*16 emg(negx), em, eref, ee, ep, fl, fl_l, fr, fr_l, fxa
 !     nflrx should be odd and defines the max of Im energy for
 !     the countour 
       parameter (nflrx = 17)
@@ -110,6 +110,7 @@
 
 !     initialize new valence density
       rhoval(:,:) = 0
+      rhoval_l(:,:) = 0
 
       call grids (ecv, xmu, negx, neg, emg, step, nflrx)
 
@@ -121,6 +122,7 @@
       xrhoce(:,:,:) = 0
       xnmues(:,:) = 0
       yrhoce(:,:,:) = 0
+      yrhoce_l(:,:,:) = 0
       iflr = nflrx
       iflrp = nflrx
 
@@ -190,7 +192,7 @@
                  rmt(iph), rnrm(iph), vtotph, vvalph, xnval(1,iph),     &
                  dgcn, dpcn, eref, adgc(1,1,iph), adpc(1,1,iph),        &
                  xrhole(0,iph,ipr), xrhoce(0,iph,ipr),                  &
-                 yrhole(1,0,iph,ipr), yrhoce(1,iph,ipr),                &
+                 yrhole(1,0,iph,ipr), yrhoce(1,iph,ipr),yrhoce_l(1,0,ipr),                &
                  ph(1,iph), iz(iph), xion(iph), iunf, itmp,lmaxsc(iph), iph) !KJ iph
         enddo   ! iph=0,nph
 
@@ -237,6 +239,7 @@
           endif
           if (ixly(1) .ne. 0)  call par_send_dc(yrhole(1,0,0,ipr),ixly(1), 0, this_process)
           if (ixlc(1) .ne. 0)  call par_send_dc(yrhoce(1,0,ipr),ixlc(1), 0, this_process)
+          call par_send_dc(yrhoce_l(1,0,ipr),251*(lx+1), 0, this_process)
         else if (master) then
           do i = 1,n2-n1
 !-- Receive pointers for gtr buffer from i
@@ -251,6 +254,7 @@
             endif
             if (ixly(1) .ne. 0)  call par_recv_dc(yrhole(1,0,0,i+1),ixly(1),i,i)
             if (ixlc(1) .ne. 0)  call par_recv_dc(yrhoce(1,0,i+1),ixlc(1),i,i)
+            call par_recv_dc(yrhoce_l(1,0,i+1),251*(lx+1),i,i)
           enddo
         endif
 !-- Broadcast gtr
@@ -262,6 +266,7 @@
         call par_bcast_dc(xrhole(0,0,1),ilen,0)
         call par_bcast_dc(yrhole(1,0,0,1),ileny,0)
         call par_bcast_dc(yrhoce(1,0,1),ilenc,0)
+        call par_bcast_dc(yrhoce_l(1,0,1),251*(lx+1)*(n2-n1+1),0)
         call seconds(wall_commend)
         wall_comm = wall_comm + wall_commend - wall_commst
       endif
@@ -279,6 +284,7 @@
 !         the absolutely first point on energy grid - get the integral started
           xrhocp(0:lx,0:nph) = xrhoce(0:lx,0:nph, ipr)
           yrhocp(1:251,0:nph) = yrhoce(1:251,0:nph, ipr)
+          yrhocp_l(1:251,0:lx) = yrhoce_l(1:251,0:lx, ipr)
         endif
 
         xntot = 0
@@ -288,7 +294,7 @@
         do iph = 0,nph
 !         Calculate density and integrated number of electrons in each channel for each type of atoms density, etc.  Find total charge xntot. 
           call ff2g (gtr(0,iph,ipr), iph,ie, nr05(iph), xrhoce(0,0,ipr), xrhole(0,iph,ipr), xrhocp, ee, ep, yrhole(1,0,iph,ipr),     &
-            yrhoce(1,iph,ipr),yrhocp(1,iph),rhoval(1,iph), xnmues(0,iph), xnatph(iph), xntot, iflr, iflrp, fl, fr,iunf)
+            yrhoce(1,iph,ipr),yrhoce_l(1,0,ipr), yrhocp(1,iph), yrhocp_l, rhoval(1,iph), rhoval_l(1,iph), xnmues(0,iph), xnatph(iph), xntot, iflr, iflrp, fl, fr,iunf)
         enddo
 
 !       check whether Fermi level is found between points n1 and n2, and decide on next set of energy points;
@@ -333,6 +339,15 @@
                  rhoval(ir,iph) = rhoval(ir,iph) + a * bb
                enddo
              enddo !iph
+             do il = 0,lx
+                 do ir = 1, nr05(0)
+                     fl = yrhocp_l(ir,il) * 2
+                     fr = yrhoce_l(ir,il,ipr) * 2
+                     fxa = a*fl + (1-a)*fr
+                     bb = dimag((ep-ee)*(fr+fxa)/2 + coni*dimag(ee)*(fr-fl))
+                     rhoval_l(ir,il) = rhoval_l(ir,il) + a * bb
+                 enddo
+             enddo
 
 !            exit from the energy loop since Fermi level is found
              goto 305
@@ -341,6 +356,7 @@
         ep = emg(ie)
         xrhocp(0:lx,0:nph) = xrhoce(0:lx,0:nph, ipr)
         yrhocp(1:251,0:nph) = yrhoce(1:251,0:nph, ipr)
+        yrhocp_l(1:251,0:lx) = yrhoce_l(1:251,0:lx, ipr)
 
  300  continue
 

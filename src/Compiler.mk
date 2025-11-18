@@ -30,8 +30,8 @@
 #              gfortran
 ########################################
  F90 =  gfortran
- #FLAGS = -O0 -ffree-line-length-none -fcheck=bounds -g  -ffpe-trap=invalid
- FLAGS = -O0 -ffree-line-length-none -fcheck=bounds -ffpe-trap=invalid -g -fallow-argument-mismatch
+ FLAGS = -O0 -ffree-line-length-none -fcheck=bounds -g  -ffpe-trap=invalid
+ #FLAGS = -O0 -ffree-line-length-none -fcheck=bounds -ffpe-trap=invalid -g -fallow-argument-mismatch
 
 ########################################
 #              mkl
@@ -80,5 +80,5 @@ endif
 #              mpi
 ########################################
  MPIF90 = mpif90
- MPIFLAGS =  -O3 -ffree-line-length-none
+ MPIFLAGS =  -O0 -ffree-line-length-none -fcheck=bounds
 # MPIFLAGS = -O3 -check arg_temp_created -gen-interfaces -warn interfaces -g -fp-stack-check -traceback  -heap-arrays -check bounds

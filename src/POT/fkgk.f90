@@ -7,9 +7,9 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
   INTEGER nnum(41), norbco, norbval ! Principal quantum number
   INTEGER li, lj ! Orbital angular momentum
   INTEGER ji,jj ! Total angular momentu *2
-  INTEGER i,j,k,ki,kj,kmi
+  INTEGER i,j,k,ki,kj,kmi, ir
   REAL(8) xji, xjj ! Total angular momentum
-  REAL(8) Fk, Gk, Fk0, Gk0, Fk0norm, Gk0norm, alpha
+  REAL(8) Fk, Gk, Fk0, Gk0, Fk0norm, Gk0norm, alpha, Gktest
   REAL(8), EXTERNAL :: fkgk_int
   REAL(8), PARAMETER :: hart = 27.2114d0
   CHARACTER orb_ang_mom(0:4)
@@ -30,7 +30,7 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
   call get_norb(iz,norb,norbco)
   !PRINT*, 'norb, norbco', norb, norbco
   OPEN(UNIT=33,FILE='Slater_Condon.dat',STATUS='REPLACE')
-  WRITE(33,*) 'state1, state2, SCType, AISC, AtomicSC(norm), AtomicSC, AISC/AtomicSC(norm), CorrectedSC'
+  WRITE(33,*) 'state1, state2, SCType, AISC, AtomicSC(norm), AtomicSC, AISC/AtomicSC(norm), CorrectedSC, Atomic(no-approx), %error'
   norb=40
   ilast = inrm
   ! Normalize atomic wavefunctions at norman radius as well.
@@ -78,10 +78,15 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
         END IF
         !PRINT*, nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2)
         !PRINT*, nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2)
+        !IF((i.EQ.11).AND.(j.EQ.9)) THEN
+        !   DO ir = 1, 251
+        !      WRITE(89,*) dr(ir), SQRT(dgc(ir,i)**2), SQRT(dgc(ir,j)**2), SQRT(rhoval_l(ir,li)), SQRT(rhoval_l(ir,lj))
+        !   END DO
+        !END IF
         kmi = 2*min(ki,kj)
         k = 0
         !PRINT*, 'k, Fk'
-        frmt = '(I1,A1,A3,X,I1,A1,A3,X,A1,I1,X,5F10.5)'
+        frmt = '(I1,A1,A3,X,I1,A1,A3,X,A1,I1,X,7F10.5)'
         DO WHILE (k.LE.kmi) 
            !PRINT*, i,j
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
@@ -93,11 +98,11 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
               !PRINT*, 'Using valence density'
               Fk = fkgk_int(i,i,j,j,k,dgcnorm,dpcnorm,rhoval_l,li,li,lj,lj,dr,ilast,norbco,alpha,lx,iatomic)
            ELSE
-              Fk = Fk0
+              Fk = Fk0norm
            END IF
            !PRINT*, 'Fk0, Fk', Fk0, Fk
            IF(Fk0.GT.0.d0) THEN
-              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0norm*hart, Fk0*hart, Fk/Fk0norm, Fk0*hart*Fk/Fk0norm
+              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0norm*hart, Fk0*hart, Fk/Fk0norm, Fk0*hart*Fk/Fk0norm, 0.d0, 0.0
               !PRINT frmt, nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj),tot_ang_mom((jj-1)/2),'F', k, Fk*hart, Fk0*hart, Fk/Fk0
            !ELSE
            !   RETURN
@@ -120,15 +125,16 @@ SUBROUTINE fkgk(dgc,dpc,rhoval_l,dr,inrm,iz,lx,iatomic)
            rho0(:) = dgc(:,i)*dgc(:,i)+dpc(:,i)*dpc(:,i)
            ilast = 251
            Gk0 = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,li,lj,li,lj,dr,ilast,norbco,alpha,lx,0)
+           Gktest = fkgk_int(i,j,i,j,k,dgc,dpc,rhoval_l,li,lj,li,lj,dr,ilast,norbco,alpha,lx,-1)
            ilast = inrm
            Gk0norm = fkgk_int(i,j,i,j,k,dgcnorm,dpcnorm,rhoval_l,li,lj,li,lj,dr,ilast,norbco,alpha,lx,0)
            IF((i.GT.norbco).OR.(j.GT.norbco)) THEN
               Gk = fkgk_int(i,j,i,j,k,dgcnorm,dpcnorm,rhoval_l,li,lj,li,lj,dr,ilast, norbco, alpha, lx,iatomic)
            ELSE
-              Gk = Gk0
+              Gk = Gk0norm
            END IF
-           IF(Fk0.GT.0.d0) THEN
-              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0norm*hart, Gk0*hart, Gk/Gk0norm, Gk0*hart*Gk/Gk0norm
+           IF(Gk0.GT.0.d0) THEN
+              WRITE(33,fmt = frmt) nnum(i), orb_ang_mom(li), tot_ang_mom((ji-1)/2), nnum(j), orb_ang_mom(lj), tot_ang_mom((jj-1)/2), 'G', k, Gk*hart, Gk0norm*hart, Gk0*hart, Gk/Gk0norm, Gk0*hart*Gk/Gk0norm, Gktest*hart, ABS(Gktest-Gk0)/Gk0*100.d0
            END IF
            !PRINT*, k, Gk*hart
            k=k+2
@@ -181,7 +187,11 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
      ! test
      !dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
   ELSE
-     dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
+     IF(iatomic.EQ.0) THEN
+        dg1(1:251) = sqrt(dgc(1:251,i)*dgc(1:251,i) + dpc(1:251,i)*dpc(1:251,i))
+     ELSE
+        dg1(1:251) = dgc(1:251,i) 
+     END IF
   END IF
   
   IF((j.GT.norbco).AND.(iatomic.EQ.1)) THEN
@@ -204,9 +214,13 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
         dg2(1:251) = sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
      END IF
   ELSE
-     dg2(1:251) = sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
+     IF(iatomic.EQ.0) THEN
+        dg2(1:251) = sqrt(dgc(1:251,j)*dgc(1:251,j) + dpc(1:251,j)*dpc(1:251,j))
+     ELSE
+        dg2(1:251) = dgc(1:251,j) 
+     END IF
   END IF
-
+  
   
   !f(1:251) = (dgc(1:251,i)*dgc(1:251,j) + dpc(1:251,i)*dpc(1:251,j))*dr(1:251)**k
   f(1:251) = dg1(1:251)*dg2(1:251)*dr(1:251)**k
@@ -235,9 +249,13 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
   !PRINT*, 'zk', zk
   yk(:) = yk(:) + zk(:)
 
-  IF((l.LE.norbco).OR.(iatomic.EQ.0)) THEN
+  IF((l.LE.norbco).OR.(iatomic.LE.0)) THEN
   !IF(.TRUE.) THEN
-     dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
+     IF(iatomic.EQ.0) THEN
+        dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
+     ELSE
+        dg1(1:251) = dgc(1:251,l) 
+     END IF
   ELSE
      !Integrate density to get total charge.
      dg1(1:251) = MAX(rhoval_l(1:251,ll),0.d0)
@@ -260,9 +278,13 @@ REAL(8) FUNCTION fkgk_int(i,j,l,m,k,dgc,dpc,rhoval_l,li,lj,ll,lm,dr,ilast,norbco
      !dg1(1:251) = sqrt(dgc(1:251,l)*dgc(1:251,l) + dpc(1:251,l)*dpc(1:251,l))
   END IF
   
-  IF((m.LE.norbco).OR.(iatomic.EQ.0)) THEN
+  IF((m.LE.norbco).OR.(iatomic.LE.0)) THEN
   !IF(.TRUE.) THEN
-     dg2(1:251) = sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
+     IF(iatomic.EQ.0) THEN
+        dg2(1:251) = sqrt(dgc(1:251,m)*dgc(1:251,m) + dpc(1:251,m)*dpc(1:251,m))
+     ELSE
+        dg2(1:251) = dgc(1:251,m) 
+     END IF
   ELSE
      !Integrate density to get total charge.
      dg2(1:251) = MAX(rhoval_l(1:251,lm),0.d0)

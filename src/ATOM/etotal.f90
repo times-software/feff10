@@ -58,6 +58,7 @@
  20         iv=iv+1
             cer(iv)=fdrirk(i,i,j,j,k)
             ener(1) = ener(1) + cer(iv) * akeato(i,j,k) / a
+            PRINT*, 'fk', i, j, k, cer(iv)*hart
             mk(iv)=k
             if (iv.lt.3) go to 30
             iv=0
@@ -80,7 +81,9 @@
             kmi=l+m-1
  50         iv=iv+1
             cer(iv)=fdrirk(i,j,i,j,k)
+            PRINT*, 'gk', i, j, k, cer(iv)*hart
             ener(2) = ener(2) - cer(iv) * bkeato(i,j,k) * a
+           
             mk(iv)=k
             if (iv.lt.3) go to 60 
             iv=0

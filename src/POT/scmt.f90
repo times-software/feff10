@@ -258,6 +258,15 @@
                 rhoval(ir,iph) = rhoval(ir,iph) + a * bb
               enddo
              enddo
+             do il = 0, lx
+                 do ir = 1,nr05(0)
+                     fl = yrhocp_l(ir,il) * 2
+                     fr = yrhoce_l(ir,il) * 2
+                     fxa = a*fl + (1-a)*fr
+                     bb = dimag((ep-ee)*(fr+fxa)/2 + coni*dimag(ee)*(fr-fl))
+                     rhoval_l(ir,il) = rhoval_l(ir,il) + a * bb
+                 enddo
+             enddo
         else
 !          continue search ; goto 25 eventually
            if (iflr.eq.iflrp) then
