@@ -22,7 +22,7 @@ subroutine OpenErrorfileAtLaunch(ModuleName)
    character*500 :: ErrorMessage
 ! Modified by FDV:
 ! Using shorter lines to help compile in Solaris Studio
-   ErrorMessage= 'Starting FEFF9 module ' //ModuleName// &
+   ErrorMessage= 'Starting FEFF module ' //ModuleName// &
                  '.  If this message is still here after the module' // &
                  ' finishes running, it must have crashed. The content ' // &
                  'of this file is wiped on successful termination.'

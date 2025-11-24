@@ -15,6 +15,7 @@ program  ffmod8
 
   use DimsMod, only: nrptx, init_dimensions
   use constants
+  use screen_inp
   use par  
   use potential_inp,only:nohole,potential_read
   use errorfile
@@ -31,17 +32,18 @@ program  ffmod8
   call OpenErrorfileAtLaunch('screen')
   call init_dimensions
 
+  !=================================================================
+  !     read  INPUT data files: geom.inc and ldos.inp.
+  !=================================================================
+  call rdgeom ! read geom.inp and ldos.inp
+  if (.NOT.ScreenI%Run) goto 5
   call potential_read
-  if (nohole.ne.2) goto 5
+  !if (nohole.ne.2) goto 5
 
   call wlog('Calculating screened core-hole potential ...')
   open (unit=11, file='logscreen.dat', status='unknown', iostat=ios)
   call chopen (ios, 'logscreen.dat', 'feff')
 
-  !=================================================================
-  !     read  INPUT data files: geom.inc and ldos.inp.
-  !=================================================================
-  call rdgeom ! read geom.inc and ldos.inp
 
   !=================================================================
   !     Prepare, then start the calculation

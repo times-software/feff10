@@ -33,7 +33,7 @@
       double precision  rat(3,natx)
 
 !     Local stuff
-      real*8,parameter :: big = 1.0e5
+      real*8,parameter :: big = 1.0e5, hh_bond=0.70d0, small_bond=0.9d0
       character*512 slog
 	  integer iz1,iz2
 
@@ -88,7 +88,8 @@
       do iat = 1,natt
          if (iat.ne.iatabs) then
             tmp = dist (ratx(1,iat), ratx(1,iatabs))
-            if (tmp.gt.0 .and. tmp.le.rclabs) then
+            ! JJK - changed to ge below since duplicate sites are not flagged below as too close.
+            if (tmp.ge.0 .and. tmp.le.rclabs) then
                nat = nat + 1
                if (nat.gt.natx) then
                  write (slog, 307) nat, natx
@@ -171,19 +172,34 @@
          do jat = iat+1, nat
             rtmp = dist(rat(1,iat),rat(1,jat))
             if (rtmp .lt. ratmin)  ratmin = rtmp
-            if (rtmp .lt. 1.75 * bohr)  then
+            if (rtmp .lt. small_bond)  then
 			
 			   ! iat:  position in the list ordered by distance to absorber
 			   ! iatx: position in the unordered list as entered in feff.inp
 			   ! (in practice, many feff.inp have been ordered by another application and the 2 are the same)
                iatx = index(iat)
                jatx = index(jat)
-			   iz1=iz(iphat(iat))
-			   iz2=iz(iphat(jat))
-			   if(iz1.ne.1 .or. iz2.ne.1 .or. rtmp.lt. 0.70) then
-			      !KJ 11/2010:
-				  ! added distance and atomic number to warning message (duh)
-				  ! separate threshold for H-H bond (which is 0.74A = 1.4 bohr long)
+               iz1=iz(iphat(iat))
+               iz2=iz(iphat(jat))
+               if((iz1.eq.1 .and. iz2.eq.1 .and. rtmp.le.hh_bond/10.d0).or.(rtmp.le.small_bond/10.d0)) then
+                  !KJ 11/2010:
+                  ! added distance and atomic number to warning message (duh)
+                  ! separate threshold for H-H bond (which is 0.74A = 1.4 bohr long)
+
+                  call wlog(' :ERROR  TWO ATOMS VERY CLOSE TOGETHER. CHECK INPUT. STOPPING')
+                  write(slog,'(a,2i8,a,e13.5,a)') ' atoms ', iatx, jatx,' distance ',rtmp,' Angstrom'
+                  call wlog(slog)
+                  write(slog,'(i5,1p,3e13.5,a,i4)') iatx, (ratx(i,iatx),i=1,3), ' Z=',iz1
+                  call wlog(slog)
+                  write(slog,'(i5,1p,3e13.5,a,i4)') jatx, (ratx(i,jatx),i=1,3), ' Z=',iz2
+                  call wlog(slog)
+                  call par_stop('RDINP')
+               endif
+               if(iz1.ne.1 .or. iz2.ne.1 .or. rtmp.lt. hh_bond) then
+                  !KJ 11/2010:
+                  ! added distance and atomic number to warning message (duh)
+                  ! separate threshold for H-H bond (which is 0.74A = 1.4 bohr long)
+
                   call wlog(' :WARNING  TWO ATOMS VERY CLOSE TOGETHER. CHECK INPUT.')
                   write(slog,'(a,2i8,a,e13.5,a)') ' atoms ', iatx, jatx,' distance ',rtmp,' Angstrom'
                   call wlog(slog)

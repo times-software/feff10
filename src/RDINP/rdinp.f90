@@ -40,7 +40,7 @@
     use compton_inp
     use dimsmod, only: nheadx, nrptx, nspx, nspu, lx, nclusx, nphu, &
       nphxhardlimit, nwordx, write_dimensions, set_dimensions_for_rdinp
-    use screen_inp,only:screen_inp_parse
+    use screen_inp,only:screen_inp_parse, ScreenI
     use crpa_inp
     use band_inp, emin_band=>emin,emax_band=>emax,estep_band=>estep,nkp_band=>nkp  !avoid contamination between modules
     use errorfile
@@ -993,7 +993,8 @@
                    if(TRIM(ADJUSTL(words(2))).eq.'NONE') then
                       nohole = 0
                    elseif(TRIM(ADJUSTL(words(2))).eq.'RPA') then
-                      nohole = 2
+                      nohole = 0
+                      ScreenI%run = .TRUE.
                    elseif((TRIM(ADJUSTL(words(2))).eq.'FSR') .or. (TRIM(ADJUSTL(words(2))).eq.'REGULAR')) then
                       !I'm keeping 'regular' here for compatibility - don't tell John :)
                       nohole = -1
@@ -1246,8 +1247,8 @@
             stop 'SCREEN card must be followed by precisely two arguments, e.g. "SCREEN rfms 5.5"'
          else
             str3=words(2)  !takes first 3 letters
-          read(words(3),*) dummy
-          call screen_inp_parse(str3,dummy) !KJ 1-2012 used to be "call screen_inp_parse_and_write(str3,dummy)"
+          !read(words(3),*) dummy
+          call screen_inp_parse(str3,words(3)) !KJ 1-2012 used to be "call screen_inp_parse_and_write(str3,dummy)"
           call wlog(":INFO  User provides options for screen.inp")
          endif
       elseif (itok .eq. 92) then

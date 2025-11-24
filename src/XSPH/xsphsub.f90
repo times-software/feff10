@@ -17,6 +17,7 @@ subroutine xsph
   use constants
   use potential_inp
   use ldos_inp
+  use screen_inp
   use nrixs_inp
   use errorfile
   use hubbard_inp
@@ -133,6 +134,9 @@ subroutine xsph
   x0 = 8.8d0
 ! Phase r grid
   dxnew = rgrd
+
+
+  call screen_read
 
   call rdpot ( ntitle, title, rnrmav, xmu, vint, rhoint,            &
                        emu_pot, s02, erelax, wp, ecv,rs,xf, qtotel,        &
@@ -480,7 +484,7 @@ endif
 
 ! Josh - if nohole = 2, read wscrn.dat and add ch pot to vtot.
 ! Need to add file check and emesh check.
-    if (nohole.eq.2)  then
+    if (ScreenI%run.AND.(nohole.NE.1))  then
        open (unit=13, file='wscrn.dat', status='old', iostat=ios)
        call chopen (ios, 'wscrn.dat', 'ffmod2(xsph)')
        read(13,*)  !KJ 12-2011 I added a header
@@ -488,6 +492,7 @@ endif
        call chopen (ios, 'vtot.dat', 'ffmod2(xsph)')
        do i = 1, 251
           read(13,*,end=20) dum1, dum2
+          dum2 = dum2*ScreenI%strength
           dum3 = vtot(i,0)
           IF(ispec.EQ.2) THEN ! XES - switch sign of screened potential
              vtot(i,0) = vtot(i,0) + dum2
