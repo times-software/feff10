@@ -350,6 +350,7 @@ subroutine fmstot
         end if
      else
         ! Set up map of (!KJ gg?) to processor 
+        map(:) = 0
         do is = 1,numprocs-1
            istart = is*iblock + 1 
            do ii=istart,ne,numprocs*iblock
